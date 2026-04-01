@@ -261,12 +261,12 @@ export default function SettingsPage() {
       {/* Theme */}
       <div className="glass-card rounded-2xl p-6">
         <h2 className="mb-4 text-base font-semibold">Тема оформлення</h2>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-3 gap-2">
           {(["light", "dark", "system"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTheme(t)}
-              className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+              className={`rounded-xl px-2 py-3 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 theme === t
                   ? "bg-emerald-500/15 text-emerald-600 ring-2 ring-emerald-500/30 dark:text-emerald-400"
                   : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"

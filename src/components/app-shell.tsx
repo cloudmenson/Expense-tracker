@@ -91,39 +91,47 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* ── Mobile bottom nav ── */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[calc(60px+env(safe-area-inset-bottom))] items-start justify-around border-t border-white/10 bg-surface/70 pb-[env(safe-area-inset-bottom)] pt-1 backdrop-blur-2xl lg:hidden dark:border-white/5">
-        {navItems.map((item) => {
-          const active =
-            item.href === "/"
-              ? pathname === "/"
-              : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center gap-0.5 py-1 text-[10px] font-semibold touch-manipulation select-none transition-all ${
-                active ? "text-emerald-500" : "text-foreground/35"
-              }`}
-            >
-              <div
-                className={`flex items-center justify-center rounded-xl px-4 py-1 transition-all ${
-                  active
-                    ? "bg-emerald-500/15 shadow-sm shadow-emerald-500/10"
-                    : ""
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex flex-col border-t border-white/10 bg-surface/80 backdrop-blur-2xl lg:hidden dark:border-white/5">
+        <div className="flex h-16 items-stretch">
+          {navItems.map((item) => {
+            const active =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-1 flex-col items-center justify-center gap-1 touch-manipulation select-none transition-colors ${
+                  active ? "text-emerald-500" : "text-foreground/40"
                 }`}
               >
-                <item.icon
-                  className={`h-5 w-5 transition-all ${active ? "scale-110" : ""}`}
-                />
-              </div>
-              {item.label}
-            </Link>
-          );
-        })}
+                <div
+                  className={`flex h-9 w-14 items-center justify-center rounded-2xl transition-all ${
+                    active
+                      ? "bg-emerald-500/15 shadow-sm shadow-emerald-500/10"
+                      : ""
+                  }`}
+                >
+                  <item.icon
+                    className={`h-5.5 w-5.5 transition-transform ${
+                      active ? "scale-110" : ""
+                    }`}
+                  />
+                </div>
+                <span className="max-w-full truncate px-1 text-[9.5px] font-semibold leading-none">
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+        {/* Safe area bottom padding */}
+        <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
 
       {/* Space for bottom nav on mobile */}
-      <div className="h-[calc(60px+env(safe-area-inset-bottom))] shrink-0 lg:hidden" />
+      <div className="h-[calc(64px+env(safe-area-inset-bottom))] shrink-0 lg:hidden" />
     </div>
   );
 }

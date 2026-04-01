@@ -47,9 +47,10 @@ export function Modal({
       {/* Panel */}
       <div
         ref={ref}
-        className={`relative w-full ${maxW} animate-in slide-in-from-bottom-4 rounded-t-3xl sm:rounded-3xl border border-white/15 bg-surface/80 p-6 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-surface/90`}
+        className={`relative flex max-h-[92dvh] w-full flex-col ${maxW} animate-in slide-in-from-bottom-4 overflow-hidden rounded-t-3xl sm:rounded-3xl border border-white/15 bg-surface/80 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-surface/90`}
       >
-        <div className="mb-5 flex items-center justify-between">
+        {/* Fixed header */}
+        <div className="flex shrink-0 items-center justify-between border-b border-foreground/5 px-6 py-5">
           <h2 className="text-lg font-semibold">{title}</h2>
           <button
             onClick={onClose}
@@ -58,7 +59,10 @@ export function Modal({
             <X className="h-4 w-4" />
           </button>
         </div>
-        {children}
+        {/* Scrollable content */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+          {children}
+        </div>
       </div>
     </div>
   );

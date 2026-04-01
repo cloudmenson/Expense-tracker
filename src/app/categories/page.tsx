@@ -13,7 +13,9 @@ export default function CategoriesPage() {
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
-  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
+    null,
+  );
 
   const getCatCount = (catId: string) =>
     expenses.filter((e) => e.categoryId === catId).length;

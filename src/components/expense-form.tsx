@@ -217,7 +217,7 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
         <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
           Категорія
         </label>
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+        <div className="grid grid-cols-5 gap-2 sm:grid-cols-6">
           {categories.map((cat) => (
             <button
               key={cat.id}
@@ -239,7 +239,7 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
       </div>
 
       {/* Date + Paid by */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
             Дата

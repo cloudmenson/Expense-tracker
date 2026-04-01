@@ -78,7 +78,10 @@ export function ExpenseListItem({
         {confirmDelete ? (
           <>
             <button
-              onClick={() => { onDelete(expense.id); setConfirmDelete(false); }}
+              onClick={() => {
+                onDelete(expense.id);
+                setConfirmDelete(false);
+              }}
               className="flex h-8 items-center rounded-lg bg-rose-500/15 px-2 text-xs font-semibold text-rose-500 transition-colors hover:bg-rose-500/25"
             >
               Так
