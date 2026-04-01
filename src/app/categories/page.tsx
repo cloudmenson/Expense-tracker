@@ -98,21 +98,21 @@ export default function CategoriesPage() {
                 style={{ backgroundColor: cat.color }}
               />
 
-              {/* Actions */}
-              <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+              {/* Actions — always visible on mobile */}
+              <div className="flex shrink-0 gap-0.5 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
                 <button
                   onClick={() => {
                     setEditing(cat);
                     setShowForm(true);
                   }}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-foreground/10 hover:text-foreground"
+                  className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-foreground/10 hover:text-foreground active:bg-foreground/10"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 {cat.isCustom && (
                   <button
                     onClick={() => handleDelete(cat)}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
+                    className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-rose-500/10 hover:text-rose-500 active:bg-rose-500/10 active:text-rose-500"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>

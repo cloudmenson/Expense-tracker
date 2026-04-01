@@ -146,7 +146,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Profile settings */}
-      <div className="glass-card rounded-2xl p-6">
+      <div className="glass-card rounded-2xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Профілі</h2>
         <div className="grid gap-6 sm:grid-cols-2">
           {/* Person 1 */}
@@ -226,7 +226,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Budget settings */}
-      <div className="glass-card rounded-2xl p-6">
+      <div className="glass-card rounded-2xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Бюджет</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
@@ -259,7 +259,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Theme */}
-      <div className="glass-card rounded-2xl p-6">
+      <div className="glass-card rounded-2xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Тема оформлення</h2>
         <div className="grid grid-cols-3 gap-2">
           {(["light", "dark", "system"] as const).map((t) => (
@@ -283,7 +283,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Save */}
-      <button onClick={handleSave} className="btn-primary" disabled={saving}>
+      <button onClick={handleSave} className="btn-primary w-full sm:w-auto" disabled={saving}>
         {saving ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
@@ -293,19 +293,19 @@ export default function SettingsPage() {
       </button>
 
       {/* Data management */}
-      <div className="glass-card rounded-2xl p-6">
+      <div className="glass-card rounded-2xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Керування даними</h2>
         <p className="mb-4 text-sm text-foreground/50">
           Всього: {expenses.length} витрат, {categories.length} категорій
         </p>
-        <div className="flex flex-wrap gap-3">
-          <button onClick={handleExport} className="btn-secondary">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <button onClick={handleExport} className="btn-secondary w-full sm:w-auto">
             <Download className="h-4 w-4" />
             Експорт JSON
           </button>
           <button
             onClick={handleImport}
-            className="btn-secondary"
+            className="btn-secondary w-full sm:w-auto"
             disabled={importing}
           >
             <Upload className="h-4 w-4" />
@@ -313,7 +313,7 @@ export default function SettingsPage() {
           </button>
           <button
             onClick={() => setShowClear(true)}
-            className="inline-flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/5 px-5 py-2.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-500/10 dark:text-rose-400"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/5 px-5 py-2.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-500/10 sm:w-auto dark:text-rose-400"
           >
             <Trash2 className="h-4 w-4" />
             Очистити все

@@ -11,22 +11,21 @@ import {
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const navItems = [
-  { href: "/", label: "Огляд", icon: LayoutDashboard },
-  { href: "/expenses", label: "Витрати", icon: Receipt },
-  { href: "/categories", label: "Категорії", icon: FolderOpen },
-  { href: "/analytics", label: "Аналітика", icon: BarChart3 },
-  { href: "/settings", label: "Налаштування", icon: Settings },
+const NAV_ITEMS = [
+  { href: "/", label: "Огляд", mobileLabel: "Огляд", icon: LayoutDashboard },
+  { href: "/expenses", label: "Витрати", mobileLabel: "Витрати", icon: Receipt },
+  { href: "/categories", label: "Категорії", mobileLabel: "Категорії", icon: FolderOpen },
+  { href: "/analytics", label: "Аналітика", mobileLabel: "Аналітика", icon: BarChart3 },
+  { href: "/settings", label: "Налаштування", mobileLabel: "Налашт.", icon: Settings },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
+    <>
       {/* ── Desktop sidebar ── */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r border-white/10 bg-surface/60 backdrop-blur-2xl lg:flex dark:border-white/5">
-        {/* Logo */}
         <div className="flex h-16 items-center gap-3 px-6">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-emerald-400 to-lime-400 text-lg shadow-lg shadow-emerald-500/25">
             💚
@@ -35,10 +34,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             Budget&nbsp;for&nbsp;Two
           </span>
         </div>
-
-        {/* Nav */}
         <nav className="mt-2 flex flex-1 flex-col gap-1 px-3">
-          {navItems.map((item) => {
+          {NAV_ITEMS.map((item) => {
             const active =
               item.href === "/"
                 ? pathname === "/"
@@ -61,15 +58,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-
-        {/* Bottom */}
         <div className="border-t border-white/10 p-4 dark:border-white/5">
           <ThemeToggle />
         </div>
       </aside>
 
-      {/* ── Mobile header ── */}
-      <header className="sticky top-0 z-30 flex h-[calc(56px+env(safe-area-inset-top))] items-end border-b border-white/10 bg-surface/70 px-4 pb-2 backdrop-blur-2xl lg:hidden dark:border-white/5">
+      {/* ── Mobile header (fixed) ── */}
+      <header className="fixed inset-x-0 top-0 z-40 flex items-end border-b border-white/10 bg-surface/80 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] backdrop-blur-2xl lg:hidden dark:border-white/5">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-emerald-400 to-lime-400 text-base">
@@ -84,16 +79,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* ── Content ── */}
-      <main className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain lg:pl-[260px]">
-        <div className="mx-auto max-w-6xl px-4 pb-6 pt-5 sm:px-6 lg:px-8 lg:py-8">
+      <main className="flex-1 pt-[calc(52px+max(12px,env(safe-area-inset-top)))] pb-[calc(56px+env(safe-area-inset-bottom))] lg:pl-[260px] lg:pt-0 lg:pb-0">
+        <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
           {children}
         </div>
       </main>
 
-      {/* ── Mobile bottom nav ── */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex flex-col border-t border-white/10 bg-surface/80 backdrop-blur-2xl lg:hidden dark:border-white/5">
-        <div className="flex h-16 items-stretch">
-          {navItems.map((item) => {
+      {/* ── Mobile bottom nav (fixed) ── */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-surface/80 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl lg:hidden dark:border-white/5">
+        <div className="mx-auto flex h-14 max-w-lg items-stretch">
+          {NAV_ITEMS.map((item) => {
             const active =
               item.href === "/"
                 ? pathname === "/"
@@ -102,36 +97,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-1 flex-col items-center justify-center gap-1 touch-manipulation select-none transition-colors ${
-                  active ? "text-emerald-500" : "text-foreground/40"
-                }`}
+                className="group relative flex flex-1 touch-manipulation select-none flex-col items-center justify-center gap-0.5 active:opacity-70"
               >
-                <div
-                  className={`flex h-9 w-14 items-center justify-center rounded-2xl transition-all ${
+                {/* Active pill */}
+                {active && (
+                  <span className="absolute inset-x-2 top-0 h-[3px] rounded-b-full bg-emerald-500" />
+                )}
+                <item.icon
+                  className={`h-[22px] w-[22px] ${
                     active
-                      ? "bg-emerald-500/15 shadow-sm shadow-emerald-500/10"
-                      : ""
+                      ? "text-emerald-500"
+                      : "text-foreground/35"
+                  }`}
+                />
+                <span
+                  className={`text-[10px] font-semibold leading-none ${
+                    active ? "text-emerald-500" : "text-foreground/35"
                   }`}
                 >
-                  <item.icon
-                    className={`h-5.5 w-5.5 transition-transform ${
-                      active ? "scale-110" : ""
-                    }`}
-                  />
-                </div>
-                <span className="max-w-full truncate px-1 text-[9.5px] font-semibold leading-none">
-                  {item.label}
+                  {item.mobileLabel}
                 </span>
               </Link>
             );
           })}
         </div>
-        {/* Safe area bottom padding */}
-        <div className="h-[env(safe-area-inset-bottom)]" />
       </nav>
-
-      {/* Space for bottom nav on mobile */}
-      <div className="h-[calc(64px+env(safe-area-inset-bottom))] shrink-0 lg:hidden" />
-    </div>
+    </>
   );
 }

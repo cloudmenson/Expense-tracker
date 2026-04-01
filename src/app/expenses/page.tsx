@@ -128,7 +128,7 @@ export default function ExpensesPage() {
       </div>
 
       {/* Filters */}
-      <div className="glass-card flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center">
+      <div className="glass-card flex flex-col gap-3 rounded-2xl p-3 sm:flex-row sm:items-center sm:p-4">
         {/* Search */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/30" />
@@ -142,11 +142,11 @@ export default function ExpensesPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="input-glass min-w-30 text-sm"
+            className="input-glass text-sm"
           >
             <option value="all">Всі місяці</option>
             {months.map((m) => (
@@ -159,7 +159,7 @@ export default function ExpensesPage() {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="input-glass min-w-30 text-sm"
+            className="input-glass text-sm"
           >
             <option value="all">Всі категорії</option>
             {categories.map((c) => (
@@ -172,7 +172,7 @@ export default function ExpensesPage() {
           <select
             value={selectedPerson}
             onChange={(e) => setSelectedPerson(e.target.value)}
-            className="input-glass min-w-25 text-sm"
+            className="input-glass text-sm"
           >
             <option value="all">Всі</option>
             <option value="person1">{settings.person1Name}</option>
@@ -182,7 +182,7 @@ export default function ExpensesPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as "date" | "amount")}
-            className="input-glass min-w-25 text-sm"
+            className="input-glass text-sm"
           >
             <option value="date">За датою</option>
             <option value="amount">За сумою</option>
