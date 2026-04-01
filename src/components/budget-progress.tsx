@@ -19,7 +19,7 @@ export function BudgetProgress({
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
-            Бюджет на месяц
+            Бюджет на місяць
           </p>
           <p className="mt-1 text-2xl font-bold tracking-tight">
             {currency} {spent.toLocaleString("en-US")}
@@ -58,7 +58,7 @@ export function BudgetProgress({
 
       {isOver && (
         <p className="mt-2 text-xs font-medium text-rose-500">
-          Превышение на {currency} {(spent - budget).toLocaleString("en-US")}
+          Перевищення на {currency} {(spent - budget).toLocaleString("en-US")}
         </p>
       )}
     </div>

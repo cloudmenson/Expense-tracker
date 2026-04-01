@@ -48,7 +48,7 @@ export default function DashboardPage() {
   const pieData = catBreakdown.map((cb) => {
     const cat = categories.find((c) => c.id === cb.categoryId);
     return {
-      name: cat?.name ?? "Другое",
+      name: cat?.name ?? "Інше",
       value: cb.total,
       color: cat?.color ?? "#94a3b8",
     };
@@ -74,7 +74,7 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Обзор
+            Огляд
           </h1>
           <p className="mt-1 text-sm text-foreground/50">{summary.label}</p>
         </div>
@@ -86,17 +86,17 @@ export default function DashboardPage() {
           className="btn-primary"
         >
           <Plus className="h-4 w-4" />
-          Добавить расход
+          Додати витрату
         </button>
       </div>
 
       {expenses.length === 0 ? (
         <EmptyState
           icon={Wallet}
-          title="Пока нет расходов"
-          description="Добавьте первый расход, чтобы начать отслеживать бюджет вместе"
+          title="Поки немає витрат"
+          description="Додайте першу витрату, щоб почати відстежувати бюджет разом"
           action={{
-            label: "Добавить расход",
+            label: "Додати витрату",
             onClick: () => setShowForm(true),
           }}
         />
@@ -105,7 +105,7 @@ export default function DashboardPage() {
           {/* Stats grid */}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
-              label="Всего за месяц"
+              label="Всього за місяць"
               value={formatMoney(summary.total, settings.currency)}
               icon={Wallet}
               color="emerald"
@@ -124,7 +124,7 @@ export default function DashboardPage() {
               color="rose"
             />
             <StatCard
-              label="Средний расход"
+              label="Середня витрата"
               value={formatMoney(
                 filterByMonth(expenses, monthKey).length > 0
                   ? Math.round(
@@ -158,9 +158,9 @@ export default function DashboardPage() {
           {/* Recent expenses */}
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-semibold">Последние расходы</h2>
+              <h2 className="text-base font-semibold">Останні витрати</h2>
               <span className="text-xs text-foreground/40">
-                {expenses.length} всего
+                {expenses.length} всього
               </span>
             </div>
             <div className="space-y-2">
@@ -188,7 +188,7 @@ export default function DashboardPage() {
       <Modal
         open={showForm}
         onClose={() => setShowForm(false)}
-        title={editing ? "Редактировать расход" : "Новый расход"}
+        title={editing ? "Редагувати витрату" : "Нова витрата"}
         size="md"
       >
         <ExpenseForm expense={editing} onDone={() => setShowForm(false)} />

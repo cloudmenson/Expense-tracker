@@ -106,20 +106,20 @@ export default function SettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Настройки
+          Налаштування
         </h1>
         <p className="mt-1 text-sm text-foreground/50">
-          Персонализация и управление данными
+          Персоналізація та керування даними
         </p>
       </div>
 
       {/* Profile settings */}
       <div className="glass-card rounded-2xl p-6">
-        <h2 className="mb-4 text-base font-semibold">Профили</h2>
+        <h2 className="mb-4 text-base font-semibold">Профілі</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Имя партнёра 1
+              Ім&apos;я партнера 1
             </label>
             <input
               type="text"
@@ -130,7 +130,7 @@ export default function SettingsPage() {
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Имя партнёра 2
+              Ім&apos;я партнера 2
             </label>
             <input
               type="text"
@@ -155,19 +155,14 @@ export default function SettingsPage() {
               onChange={(e) => setCurrency(e.target.value)}
               className="input-glass w-full"
             >
-              <option value="$">$ Доллар</option>
-              <option value="€">€ Евро</option>
-              <option value="£">£ Фунт</option>
-              <option value="¥">¥ Йена</option>
-              <option value="₸">₸ Тенге</option>
-              <option value="₴">₴ Гривна</option>
-              <option value="zł">zł Злотый</option>
-              <option value="₺">₺ Лира</option>
+              <option value="$">$ Долар</option>
+              <option value="€">€ Євро</option>
+              <option value="₴">₴ Гривня</option>
             </select>
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Месячный бюджет
+              Місячний бюджет
             </label>
             <input
               type="number"
@@ -182,7 +177,7 @@ export default function SettingsPage() {
 
       {/* Theme */}
       <div className="glass-card rounded-2xl p-6">
-        <h2 className="mb-4 text-base font-semibold">Тема оформления</h2>
+        <h2 className="mb-4 text-base font-semibold">Тема оформлення</h2>
         <div className="flex gap-3">
           {(["light", "dark", "system"] as const).map((t) => (
             <button
@@ -195,10 +190,10 @@ export default function SettingsPage() {
               }`}
             >
               {t === "light"
-                ? "☀️ Светлая"
+                ? "☀️ Світла"
                 : t === "dark"
-                  ? "🌙 Тёмная"
-                  : "💻 Системная"}
+                  ? "🌙 Темна"
+                  : "💻 Системна"}
             </button>
           ))}
         </div>
@@ -216,25 +211,29 @@ export default function SettingsPage() {
 
       {/* Data management */}
       <div className="glass-card rounded-2xl p-6">
-        <h2 className="mb-4 text-base font-semibold">Управление данными</h2>
+        <h2 className="mb-4 text-base font-semibold">Керування даними</h2>
         <p className="mb-4 text-sm text-foreground/50">
-          Всего: {expenses.length} расходов, {categories.length} категорий
+          Всього: {expenses.length} витрат, {categories.length} категорій
         </p>
         <div className="flex flex-wrap gap-3">
           <button onClick={handleExport} className="btn-secondary">
             <Download className="h-4 w-4" />
-            Экспорт JSON
+            Експорт JSON
           </button>
-          <button onClick={handleImport} className="btn-secondary">
+          <button
+            onClick={handleImport}
+            className="btn-secondary"
+            disabled={importing}
+          >
             <Upload className="h-4 w-4" />
-            Импорт JSON
+            Імпорт JSON
           </button>
           <button
             onClick={() => setShowClear(true)}
             className="inline-flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/5 px-5 py-2.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-500/10 dark:text-rose-400"
           >
             <Trash2 className="h-4 w-4" />
-            Очистить всё
+            Очистити все
           </button>
         </div>
       </div>
@@ -243,15 +242,15 @@ export default function SettingsPage() {
       <Modal
         open={showClear}
         onClose={() => setShowClear(false)}
-        title="Очистить все данные?"
+        title="Очистити всі дані?"
         size="sm"
       >
         <div className="space-y-4">
           <div className="flex items-center gap-3 rounded-xl bg-rose-500/10 p-4">
             <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" />
             <p className="text-sm text-foreground/70">
-              Это действие удалит все расходы, пользовательские категории и
-              сбросит настройки. Это нельзя отменить.
+              Ця дія видалить усі витрати, користувацькі категорії та скине
+              налаштування. Це неможливо скасувати.
             </p>
           </div>
           <div className="flex gap-3">
@@ -259,13 +258,13 @@ export default function SettingsPage() {
               onClick={() => setShowClear(false)}
               className="btn-secondary flex-1"
             >
-              Отмена
+              Скасувати
             </button>
             <button
               onClick={handleClearAll}
               className="flex-1 rounded-xl bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
             >
-              Удалить всё
+              Видалити все
             </button>
           </div>
         </div>

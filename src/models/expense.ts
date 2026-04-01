@@ -22,6 +22,16 @@ const ExpenseSchema = new Schema(
     date: { type: String, required: true },
     note: { type: String, default: "" },
     emoji: { type: String, default: "" },
+    items: {
+      type: [
+        {
+          name: { type: String, required: true },
+          price: { type: Number, required: true },
+          _id: false,
+        },
+      ],
+      default: [],
+    },
   },
   {
     timestamps: true,

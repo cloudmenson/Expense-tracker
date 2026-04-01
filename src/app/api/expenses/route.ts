@@ -18,6 +18,7 @@ export async function GET() {
       date: e.date,
       note: e.note ?? "",
       emoji: e.emoji ?? "",
+      items: (e.items as Array<{ name: string; price: number }>) ?? [],
       createdAt:
         e.createdAt instanceof Date
           ? e.createdAt.toISOString()
@@ -52,6 +53,7 @@ export async function POST(request: Request) {
       date: body.date,
       note: body.note ?? "",
       emoji: body.emoji ?? "",
+      items: body.items ?? [],
     });
 
     const result = {
@@ -63,6 +65,7 @@ export async function POST(request: Request) {
       date: expense.date,
       note: expense.note ?? "",
       emoji: expense.emoji ?? "",
+      items: (expense.items as Array<{ name: string; price: number }>) ?? [],
       createdAt: expense.createdAt
         ? new Date(expense.createdAt as unknown as string).toISOString()
         : new Date().toISOString(),

@@ -12,11 +12,11 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 
 const navItems = [
-  { href: "/", label: "Обзор", icon: LayoutDashboard },
-  { href: "/expenses", label: "Расходы", icon: Receipt },
-  { href: "/categories", label: "Категории", icon: FolderOpen },
-  { href: "/analytics", label: "Аналитика", icon: BarChart3 },
-  { href: "/settings", label: "Настройки", icon: Settings },
+  { href: "/", label: "Огляд", icon: LayoutDashboard },
+  { href: "/expenses", label: "Витрати", icon: Receipt },
+  { href: "/categories", label: "Категорії", icon: FolderOpen },
+  { href: "/analytics", label: "Аналітика", icon: BarChart3 },
+  { href: "/settings", label: "Налаштування", icon: Settings },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -91,7 +91,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* ── Mobile bottom nav ── */}
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[calc(60px+env(safe-area-inset-bottom))] items-start justify-around border-t border-white/10 bg-surface/70 pb-[env(safe-area-inset-bottom)] pt-1.5 backdrop-blur-2xl lg:hidden dark:border-white/5">
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex h-[calc(60px+env(safe-area-inset-bottom))] items-start justify-around border-t border-white/10 bg-surface/70 pb-[env(safe-area-inset-bottom)] pt-1 backdrop-blur-2xl lg:hidden dark:border-white/5">
         {navItems.map((item) => {
           const active =
             item.href === "/"
@@ -101,11 +101,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-1 py-1 text-[10px] font-medium transition-colors ${
-                active ? "text-emerald-500" : "text-foreground/40"
+              className={`flex flex-col items-center gap-0.5 py-1 text-[10px] font-semibold transition-all ${
+                active ? "text-emerald-500" : "text-foreground/35"
               }`}
             >
-              <item.icon className="h-5 w-5" />
+              <div
+                className={`flex items-center justify-center rounded-xl px-4 py-1 transition-all ${
+                  active
+                    ? "bg-emerald-500/15 shadow-sm shadow-emerald-500/10"
+                    : ""
+                }`}
+              >
+                <item.icon
+                  className={`h-5 w-5 transition-all ${active ? "scale-110" : ""}`}
+                />
+              </div>
               {item.label}
             </Link>
           );

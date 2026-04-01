@@ -7,6 +7,12 @@ export interface Category {
   isCustom: boolean;
 }
 
+/* ─── Shopping list item ─── */
+export interface ExpenseItem {
+  name: string;
+  price: number;
+}
+
 /* ─── Expense ─── */
 export interface Expense {
   id: string;
@@ -17,6 +23,7 @@ export interface Expense {
   date: string;
   note?: string;
   emoji?: string;
+  items?: ExpenseItem[];
   createdAt: string;
   updatedAt: string;
 }
@@ -30,6 +37,7 @@ export interface ExpenseDraft {
   date: string;
   note?: string;
   emoji?: string;
+  items?: ExpenseItem[];
 }
 
 /* ─── Summary helpers ─── */

@@ -1,12 +1,12 @@
 export const siteConfig = {
   name: "Budget for Two",
   description:
-    "Приватный трекер для двоих — расходы, бюджет, аналитика и контроль финансов в одном красивом приложении.",
+    "Приватний трекер для двох — витрати, бюджет, аналітика та контроль фінансів в одному красивому застосунку.",
   navigation: [
-    { href: "/", label: "Обзор" },
-    { href: "/expenses", label: "Расходы" },
-    { href: "/categories", label: "Категории" },
-    { href: "/analytics", label: "Аналитика" },
-    { href: "/settings", label: "Настройки" },
+    { href: "/", label: "Огляд" },
+    { href: "/expenses", label: "Витрати" },
+    { href: "/categories", label: "Категорії" },
+    { href: "/analytics", label: "Аналітика" },
+    { href: "/settings", label: "Налаштування" },
   ],
 };

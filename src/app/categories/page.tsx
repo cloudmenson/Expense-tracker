@@ -21,7 +21,9 @@ export default function CategoriesPage() {
 
   const handleDelete = (cat: Category) => {
     if (getCatCount(cat.id) > 0) {
-      alert(`Нельзя удалить: ${getCatCount(cat.id)} расходов в этой категории`);
+      alert(
+        `Неможливо видалити: ${getCatCount(cat.id)} витрат у цій категорії`,
+      );
       return;
     }
     deleteCategory(cat.id);
@@ -33,10 +35,10 @@ export default function CategoriesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Категории
+            Категорії
           </h1>
           <p className="mt-1 text-sm text-foreground/50">
-            {categories.length} категорий
+            {categories.length} категорій
           </p>
         </div>
         <button
@@ -47,7 +49,7 @@ export default function CategoriesPage() {
           className="btn-primary"
         >
           <Plus className="h-4 w-4" />
-          Новая категория
+          Нова категорія
         </button>
       </div>
 
@@ -80,7 +82,7 @@ export default function CategoriesPage() {
                   )}
                 </div>
                 <p className="mt-0.5 text-xs text-foreground/40">
-                  {count} расходов · {total.toLocaleString("en-US")}
+                  {count} витрат · {total.toLocaleString("en-US")}
                 </p>
               </div>
 
@@ -119,7 +121,7 @@ export default function CategoriesPage() {
       <Modal
         open={showForm}
         onClose={() => setShowForm(false)}
-        title={editing ? "Редактировать категорию" : "Новая категория"}
+        title={editing ? "Редагувати категорію" : "Нова категорія"}
         size="sm"
       >
         <CategoryForm category={editing} onDone={() => setShowForm(false)} />

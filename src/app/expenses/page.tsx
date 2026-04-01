@@ -78,7 +78,7 @@ export default function ExpensesPage() {
   const totalFiltered = filtered.reduce((s, e) => s + e.amount, 0);
 
   const exportCSV = () => {
-    const header = "Дата,Название,Категория,Сумма,Оплатил,Заметка\n";
+    const header = "Дата,Назва,Категорія,Сума,Платив,Нотатка\n";
     const rows = filtered.map((e) => {
       const cat = categories.find((c) => c.id === e.categoryId)?.name ?? "";
       const person =
@@ -102,10 +102,10 @@ export default function ExpensesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Расходы
+            Витрати
           </h1>
           <p className="mt-1 text-sm text-foreground/50">
-            {filtered.length} записей ·{" "}
+            {filtered.length} записів ·{" "}
             {formatMoney(totalFiltered, settings.currency)}
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function ExpensesPage() {
             className="btn-primary"
           >
             <Plus className="h-4 w-4" />
-            Добавить
+            Додати
           </button>
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function ExpensesPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/30" />
           <input
             type="text"
-            placeholder="Поиск расходов..."
+            placeholder="Пошук витрат..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="input-glass w-full pl-9"
@@ -148,7 +148,7 @@ export default function ExpensesPage() {
             onChange={(e) => setSelectedMonth(e.target.value)}
             className="input-glass min-w-30 text-sm"
           >
-            <option value="all">Все месяцы</option>
+            <option value="all">Всі місяці</option>
             {months.map((m) => (
               <option key={m} value={m}>
                 {m}
@@ -161,7 +161,7 @@ export default function ExpensesPage() {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="input-glass min-w-30 text-sm"
           >
-            <option value="all">Все категории</option>
+            <option value="all">Всі категорії</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.emoji} {c.name}
@@ -174,7 +174,7 @@ export default function ExpensesPage() {
             onChange={(e) => setSelectedPerson(e.target.value)}
             className="input-glass min-w-25 text-sm"
           >
-            <option value="all">Все</option>
+            <option value="all">Всі</option>
             <option value="person1">{settings.person1Name}</option>
             <option value="person2">{settings.person2Name}</option>
           </select>
@@ -184,8 +184,8 @@ export default function ExpensesPage() {
             onChange={(e) => setSortBy(e.target.value as "date" | "amount")}
             className="input-glass min-w-25 text-sm"
           >
-            <option value="date">По дате</option>
-            <option value="amount">По сумме</option>
+            <option value="date">За датою</option>
+            <option value="amount">За сумою</option>
           </select>
         </div>
       </div>
@@ -194,15 +194,15 @@ export default function ExpensesPage() {
       {filtered.length === 0 ? (
         <EmptyState
           icon={Receipt}
-          title="Ничего не найдено"
+          title="Нічого не знайдено"
           description={
             expenses.length === 0
-              ? "Добавьте первый расход"
-              : "Попробуйте изменить фильтры"
+              ? "Додайте першу витрату"
+              : "Спробуйте змінити фільтри"
           }
           action={
             expenses.length === 0
-              ? { label: "Добавить расход", onClick: () => setShowForm(true) }
+              ? { label: "Додати витрату", onClick: () => setShowForm(true) }
               : undefined
           }
         />
@@ -230,7 +230,7 @@ export default function ExpensesPage() {
       <Modal
         open={showForm}
         onClose={() => setShowForm(false)}
-        title={editing ? "Редактировать расход" : "Новый расход"}
+        title={editing ? "Редагувати витрату" : "Нова витрата"}
         size="md"
       >
         <ExpenseForm expense={editing} onDone={() => setShowForm(false)} />

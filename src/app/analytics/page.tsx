@@ -55,7 +55,7 @@ export default function AnalyticsPage() {
   const pieData = catBreakdown.map((cb) => {
     const cat = categories.find((c) => c.id === cb.categoryId);
     return {
-      name: cat?.name ?? "Другое",
+      name: cat?.name ?? "Інше",
       value: cb.total,
       color: cat?.color ?? "#94a3b8",
     };
@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
     }
     return Object.entries(catMap)
       .map(([catId, vals]) => ({
-        category: categories.find((c) => c.id === catId)?.name ?? "Другое",
+        category: categories.find((c) => c.id === catId)?.name ?? "Інше",
         person1: vals.person1,
         person2: vals.person2,
       }))
@@ -106,12 +106,12 @@ export default function AnalyticsPage() {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Аналитика
+          Аналітика
         </h1>
         <EmptyState
           icon={BarChart3}
-          title="Нет данных для анализа"
-          description="Добавьте расходы, чтобы увидеть красивые графики и статистику"
+          title="Немає даних для аналізу"
+          description="Додайте витрати, щоб побачити графіки та статистику"
         />
       </div>
     );
@@ -123,10 +123,10 @@ export default function AnalyticsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Аналитика
+            Аналітика
           </h1>
           <p className="mt-1 text-sm text-foreground/50">
-            Детальная статистика расходов
+            Детальна статистика витрат
           </p>
         </div>
         <div className="flex gap-2">
@@ -140,7 +140,7 @@ export default function AnalyticsPage() {
                   : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
               }`}
             >
-              {p} мес
+              {p} міс.
             </button>
           ))}
         </div>
@@ -149,25 +149,25 @@ export default function AnalyticsPage() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Всего расходов"
+          label="Всього витрат"
           value={formatMoney(totalAll, settings.currency)}
           icon={Wallet}
           color="emerald"
         />
         <StatCard
-          label="В среднем/мес"
+          label="Середнє/міс"
           value={formatMoney(Math.round(avgMonthly), settings.currency)}
           icon={TrendingUp}
           color="sky"
         />
         <StatCard
-          label="Макс. расход"
+          label="Макс. витрата"
           value={formatMoney(biggestExpense, settings.currency)}
           icon={TrendingDown}
           color="rose"
         />
         <StatCard
-          label="Топ категория"
+          label="Топ категорія"
           value={topCat ? `${topCat.emoji} ${topCat.name}` : "—"}
           sub={
             topCategory ? formatMoney(topCategory.total, settings.currency) : ""
@@ -195,7 +195,7 @@ export default function AnalyticsPage() {
       {/* Top expenses table */}
       <div className="glass-card rounded-2xl p-5">
         <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
-          Топ-10 расходов за месяц
+          Топ-10 витрат за місяць
         </p>
         <div className="space-y-2">
           {currentExpenses

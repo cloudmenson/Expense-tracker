@@ -30,6 +30,7 @@ export async function PUT(
       date: expense.date,
       note: expense.note ?? "",
       emoji: expense.emoji ?? "",
+      items: (expense.items as Array<{ name: string; price: number }>) ?? [],
       createdAt:
         expense.createdAt instanceof Date
           ? expense.createdAt.toISOString()

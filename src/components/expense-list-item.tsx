@@ -38,7 +38,7 @@ export function ExpenseListItem({
         <div className="flex items-baseline gap-2">
           <p className="truncate font-semibold">{expense.title}</p>
           <span className="shrink-0 rounded-md bg-foreground/5 px-1.5 py-0.5 text-[10px] font-medium text-foreground/40">
-            {category?.name ?? "Другое"}
+            {category?.name ?? "Інше"}
           </span>
         </div>
         <p className="mt-0.5 text-xs text-foreground/40">

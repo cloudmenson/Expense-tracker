@@ -53,7 +53,7 @@ export function CategoryForm({ category, onDone }: CategoryFormProps) {
         <EmojiPicker value={emoji} onChange={setEmoji} />
         <input
           type="text"
-          placeholder="Название категории"
+          placeholder="Назва категорії"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="input-glass flex-1 text-base"
@@ -63,7 +63,7 @@ export function CategoryForm({ category, onDone }: CategoryFormProps) {
 
       <div>
         <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-          Цвет
+          Колір
         </label>
         <div className="flex flex-wrap gap-2">
           {PRESET_COLORS.map((c) => (
@@ -83,7 +83,7 @@ export function CategoryForm({ category, onDone }: CategoryFormProps) {
       </div>
 
       <button type="submit" className="btn-primary w-full">
-        {category ? "Сохранить" : "Создать категорию"}
+        {category ? "Зберегти" : "Створити категорію"}
       </button>
     </form>
   );
