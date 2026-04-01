@@ -239,6 +239,19 @@ input[type="date"].input-glass::-webkit-date-and-time-value {
   animation: slide-in-from-bottom 0.3s ease-out;
 }
 
+/* Splash screen ping */
+@keyframes splash-ping {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+}
+
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
   width: 6px;
