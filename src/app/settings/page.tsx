@@ -12,32 +12,62 @@ import {
 import { useExpenseStore } from "@/lib/store";
 import { useTheme } from "@/components/theme-provider";
 import { Modal } from "@/components/ui/modal";
+import { useToast } from "@/components/ui/toast";
 import * as api from "@/lib/api-client";
+
+const PRESET_COLORS = [
+  "#22c55e",
+  "#84cc16",
+  "#14b8a6",
+  "#06b6d4",
+  "#3b82f6",
+  "#6366f1",
+  "#8b5cf6",
+  "#a855f7",
+  "#ec4899",
+  "#f43f5e",
+  "#f97316",
+  "#eab308",
+  "#ef4444",
+  "#64748b",
+];
 
 export default function SettingsPage() {
   const { settings, updateSettings, expenses, categories, _setAll, hydrate } =
     useExpenseStore();
   const { theme, setTheme } = useTheme();
+  const { toast } = useToast();
   const [showClear, setShowClear] = useState(false);
   const [saving, setSaving] = useState(false);
   const [importing, setImporting] = useState(false);
 
   const [person1Name, setPerson1Name] = useState(settings.person1Name);
   const [person2Name, setPerson2Name] = useState(settings.person2Name);
+  const [person1Color, setPerson1Color] = useState(
+    settings.person1Color ?? "#22c55e",
+  );
+  const [person2Color, setPerson2Color] = useState(
+    settings.person2Color ?? "#3b82f6",
+  );
   const [currency, setCurrency] = useState(settings.currency);
   const [budget, setBudget] = useState(settings.monthlyBudget);
 
   const handleSave = async () => {
     setSaving(true);
-    updateSettings({
-      person1Name,
-      person2Name,
-      currency,
-      monthlyBudget: budget,
-    });
-    // Small delay for visual feedback
-    await new Promise((r) => setTimeout(r, 400));
-    setSaving(false);
+    try {
+      updateSettings({
+        person1Name,
+        person2Name,
+        currency,
+        monthlyBudget: budget,
+        person1Color,
+        person2Color,
+      });
+      await new Promise((r) => setTimeout(r, 300));
+      toast("Налаштування збережено", "success");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleExport = async () => {
@@ -52,8 +82,9 @@ export default function SettingsPage() {
       a.download = "budget-for-two-backup.json";
       a.click();
       URL.revokeObjectURL(url);
+      toast("Дані експортовано", "success");
     } catch {
-      alert("Помилка експорту даних");
+      toast("Помилка експорту даних", "error");
     }
   };
 
@@ -82,10 +113,11 @@ export default function SettingsPage() {
           });
           // Also re-fetch to get proper MongoDB IDs
           await hydrate();
-          window.location.reload();
+          toast("Дані імпортовано", "success");
+          setTimeout(() => window.location.reload(), 800);
         }
       } catch {
-        alert("Помилка читання файлу");
+        toast("Помилка читання файлу", "error");
       } finally {
         setImporting(false);
       }
@@ -98,7 +130,7 @@ export default function SettingsPage() {
       await api.clearAllData();
       window.location.reload();
     } catch {
-      alert("Помилка очищення даних");
+      toast("Помилка очищення даних", "error");
     }
   };
 
@@ -116,28 +148,79 @@ export default function SettingsPage() {
       {/* Profile settings */}
       <div className="glass-card rounded-2xl p-6">
         <h2 className="mb-4 text-base font-semibold">Профілі</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Ім&apos;я партнера 1
-            </label>
-            <input
-              type="text"
-              value={person1Name}
-              onChange={(e) => setPerson1Name(e.target.value)}
-              className="input-glass w-full"
-            />
+        <div className="grid gap-6 sm:grid-cols-2">
+          {/* Person 1 */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div
+                className="h-9 w-9 shrink-0 rounded-xl"
+                style={{ backgroundColor: person1Color }}
+              />
+              <input
+                type="text"
+                placeholder="Ім'я партнера 1"
+                value={person1Name}
+                onChange={(e) => setPerson1Name(e.target.value)}
+                className="input-glass flex-1"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+                Колір
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {PRESET_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setPerson1Color(c)}
+                    className={`h-7 w-7 rounded-lg transition-all hover:scale-110 ${
+                      person1Color === c
+                        ? "ring-2 ring-foreground/30 ring-offset-2 ring-offset-surface"
+                        : ""
+                    }`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Ім&apos;я партнера 2
-            </label>
-            <input
-              type="text"
-              value={person2Name}
-              onChange={(e) => setPerson2Name(e.target.value)}
-              className="input-glass w-full"
-            />
+
+          {/* Person 2 */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div
+                className="h-9 w-9 shrink-0 rounded-xl"
+                style={{ backgroundColor: person2Color }}
+              />
+              <input
+                type="text"
+                placeholder="Ім'я партнера 2"
+                value={person2Name}
+                onChange={(e) => setPerson2Name(e.target.value)}
+                className="input-glass flex-1"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+                Колір
+              </label>
+              <div className="flex flex-wrap gap-1.5">
+                {PRESET_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setPerson2Color(c)}
+                    className={`h-7 w-7 rounded-lg transition-all hover:scale-110 ${
+                      person2Color === c
+                        ? "ring-2 ring-foreground/30 ring-offset-2 ring-offset-surface"
+                        : ""
+                    }`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

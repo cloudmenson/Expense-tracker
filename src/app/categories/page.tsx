@@ -5,10 +5,12 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
 import { CategoryForm } from "@/components/category-form";
 import { Modal } from "@/components/ui/modal";
+import { useToast } from "@/components/ui/toast";
 import type { Category } from "@/types/expense";
 
 export default function CategoriesPage() {
   const { categories, expenses, deleteCategory } = useExpenseStore();
+  const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
 
@@ -21,8 +23,9 @@ export default function CategoriesPage() {
 
   const handleDelete = (cat: Category) => {
     if (getCatCount(cat.id) > 0) {
-      alert(
+      toast(
         `Неможливо видалити: ${getCatCount(cat.id)} витрат у цій категорії`,
+        "error",
       );
       return;
     }

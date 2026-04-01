@@ -101,7 +101,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 py-1 text-[10px] font-semibold transition-all ${
+              className={`flex flex-col items-center gap-0.5 py-1 text-[10px] font-semibold touch-manipulation select-none transition-all ${
                 active ? "text-emerald-500" : "text-foreground/35"
               }`}
             >

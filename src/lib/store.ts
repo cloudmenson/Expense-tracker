@@ -18,6 +18,8 @@ const defaultSettings: AppSettings = {
   person2Name: "Партнёр 2",
   monthlyBudget: 5000,
   theme: "system",
+  person1Color: "#22c55e",
+  person2Color: "#3b82f6",
 };
 
 /* ─── Store shape ─── */
@@ -80,7 +82,7 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
       set({
         expenses,
         categories: categories.length > 0 ? categories : DEFAULT_CATEGORIES,
-        settings: settings ?? defaultSettings,
+        settings: { ...defaultSettings, ...(settings ?? {}) },
         _hydrated: true,
         _loading: false,
       });

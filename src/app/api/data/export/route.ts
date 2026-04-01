@@ -49,6 +49,8 @@ export async function GET() {
           person2Name: rawSettings.person2Name,
           monthlyBudget: rawSettings.monthlyBudget,
           theme: rawSettings.theme,
+          person1Color: rawSettings.person1Color ?? "#22c55e",
+          person2Color: rawSettings.person2Color ?? "#3b82f6",
         }
       : null;
 

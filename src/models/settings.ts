@@ -7,6 +7,8 @@ export interface ISettings {
   person2Name: string;
   monthlyBudget: number;
   theme: "light" | "dark" | "system";
+  person1Color?: string;
+  person2Color?: string;
 }
 
 const SettingsSchema = new Schema(
@@ -21,6 +23,8 @@ const SettingsSchema = new Schema(
       enum: ["light", "dark", "system"],
       default: "system",
     },
+    person1Color: { type: String, default: "#22c55e" },
+    person2Color: { type: String, default: "#3b82f6" },
   },
   {
     _id: false,

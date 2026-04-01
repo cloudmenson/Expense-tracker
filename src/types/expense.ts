@@ -64,4 +64,6 @@ export interface AppSettings {
   person2Name: string;
   monthlyBudget: number;
   theme: "light" | "dark" | "system";
+  person1Color?: string;
+  person2Color?: string;
 }

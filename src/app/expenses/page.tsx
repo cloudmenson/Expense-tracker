@@ -216,6 +216,8 @@ export default function ExpensesPage() {
               currency={settings.currency}
               person1Name={settings.person1Name}
               person2Name={settings.person2Name}
+              person1Color={settings.person1Color}
+              person2Color={settings.person2Color}
               onEdit={(e) => {
                 setEditing(e);
                 setShowForm(true);
