@@ -261,8 +261,8 @@ export default function SettingsPage() {
       {/* Theme */}
       <div className="glass-card rounded-2xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Тема оформлення</h2>
-        <div className="grid grid-cols-3 gap-2">
-          {(["light", "dark", "system"] as const).map((t) => (
+        <div className="grid grid-cols-2 gap-2">
+          {(["light", "dark"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTheme(t)}
@@ -272,11 +272,7 @@ export default function SettingsPage() {
                   : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
               }`}
             >
-              {t === "light"
-                ? "☀️ Світла"
-                : t === "dark"
-                  ? "🌙 Темна"
-                  : "💻 Системна"}
+              {t === "light" ? "☀️ Світла" : "🌙 Темна"}
             </button>
           ))}
         </div>

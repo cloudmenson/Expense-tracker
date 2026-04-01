@@ -144,15 +144,23 @@ select.input-glass option {
   color: var(--foreground);
 }
 
-/* Date input fix — prevent native popup overlay issues */
+/* Date input fix — prevent native popup overlay issues & overflow */
 input[type="date"].input-glass {
   position: relative;
   z-index: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
 }
 
 input[type="date"].input-glass::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 0.5;
+}
+
+input[type="date"].input-glass::-webkit-date-and-time-value {
+  text-align: left;
 }
 
 /* ─── Primary button ─── */

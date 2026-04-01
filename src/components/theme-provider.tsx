@@ -8,7 +8,7 @@ import {
   useCallback,
 } from "react";
 
-type Theme = "light" | "dark" | "system";
+type Theme = "light" | "dark";
 
 interface ThemeCtx {
   theme: Theme;
@@ -17,25 +17,19 @@ interface ThemeCtx {
 }
 
 const Ctx = createContext<ThemeCtx>({
-  theme: "system",
+  theme: "light",
   resolved: "light",
   setTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("system");
+  const [theme, setThemeState] = useState<Theme>("light");
   const [resolved, setResolved] = useState<"light" | "dark">("light");
 
   const apply = useCallback((t: Theme) => {
-    const r =
-      t === "system"
-        ? window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light"
-        : t;
-    setResolved(r);
-    document.documentElement.classList.toggle("dark", r === "dark");
-    document.documentElement.style.colorScheme = r;
+    document.documentElement.classList.toggle("dark", t === "dark");
+    document.documentElement.style.colorScheme = t;
+    setResolved(t);
   }, []);
 
   const setTheme = useCallback(
@@ -49,16 +43,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const stored = localStorage.getItem("theme") as Theme | null;
-    const t = stored ?? "system";
+    const t = stored === "light" || stored === "dark" ? stored : "light";
     setThemeState(t);
     apply(t);
-
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => {
-      if (theme === "system") apply("system");
-    };
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

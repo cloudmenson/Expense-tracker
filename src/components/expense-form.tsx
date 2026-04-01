@@ -248,7 +248,7 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
             type="date"
             value={form.date}
             onChange={(e) => set("date", e.target.value)}
-            className="input-glass w-full"
+            className="input-glass w-full min-w-0"
           />
         </div>
         <div>

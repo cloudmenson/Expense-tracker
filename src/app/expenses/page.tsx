@@ -11,6 +11,7 @@ import {
 } from "@/lib/utils";
 import { ExpenseListItem } from "@/components/expense-list-item";
 import { ExpenseForm } from "@/components/expense-form";
+import { ExpenseDetail } from "@/components/expense-detail";
 import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Expense } from "@/types/expense";
@@ -19,6 +20,8 @@ export default function ExpensesPage() {
   const { expenses, categories, settings, deleteExpense } = useExpenseStore();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [viewing, setViewing] = useState<Expense | null>(null);
   const [search, setSearch] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -222,13 +225,14 @@ export default function ExpensesPage() {
                 setEditing(e);
                 setShowForm(true);
               }}
-              onDelete={deleteExpense}
+              onDelete={(e) => setExpenseToDelete(e)}
+              onView={(e) => setViewing(e)}
             />
           ))}
         </div>
       )}
 
-      {/* Modal */}
+      {/* Form modal */}
       <Modal
         open={showForm}
         onClose={() => setShowForm(false)}
@@ -236,6 +240,70 @@ export default function ExpensesPage() {
         size="md"
       >
         <ExpenseForm expense={editing} onDone={() => setShowForm(false)} />
+      </Modal>
+
+      {/* Delete confirmation modal */}
+      <Modal
+        open={!!expenseToDelete}
+        onClose={() => setExpenseToDelete(null)}
+        title="Видалити витрату"
+        size="sm"
+      >
+        <p className="mb-6 text-sm text-foreground/60">
+          Ви впевнені, що хочете видалити{" "}
+          <span className="font-semibold text-foreground">
+            {expenseToDelete?.emoji || "📦"} {expenseToDelete?.title}
+          </span>{" "}
+          на суму{" "}
+          <span className="font-semibold text-foreground">
+            {formatMoney(expenseToDelete?.amount ?? 0, settings.currency)}
+          </span>
+          ?
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => setExpenseToDelete(null)}
+            className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
+          >
+            Скасувати
+          </button>
+          <button
+            onClick={() => {
+              if (expenseToDelete) {
+                deleteExpense(expenseToDelete.id);
+                setExpenseToDelete(null);
+              }
+            }}
+            className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
+          >
+            Видалити
+          </button>
+        </div>
+      </Modal>
+
+      {/* View-only detail modal */}
+      <Modal
+        open={!!viewing}
+        onClose={() => setViewing(null)}
+        title="Деталі витрати"
+        size="sm"
+      >
+        {viewing && (
+          <ExpenseDetail
+            expense={viewing}
+            category={categories.find((c) => c.id === viewing.categoryId)}
+            currency={settings.currency}
+            person1Name={settings.person1Name}
+            person2Name={settings.person2Name}
+            person1Color={settings.person1Color}
+            person2Color={settings.person2Color}
+            onEdit={() => {
+              setViewing(null);
+              setEditing(viewing);
+              setShowForm(true);
+            }}
+          />
+        )}
       </Modal>
     </div>
   );
