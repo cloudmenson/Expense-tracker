@@ -1,46 +1,60 @@
 "use client";
 
 import { useState } from "react";
-import { Save, Download, Upload, Trash2, AlertTriangle } from "lucide-react";
+import {
+  Save,
+  Download,
+  Upload,
+  Trash2,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
 import { useTheme } from "@/components/theme-provider";
 import { Modal } from "@/components/ui/modal";
+import * as api from "@/lib/api-client";
 
 export default function SettingsPage() {
-  const { settings, updateSettings, expenses, categories } = useExpenseStore();
+  const { settings, updateSettings, expenses, categories, _setAll, hydrate } =
+    useExpenseStore();
   const { theme, setTheme } = useTheme();
   const [showClear, setShowClear] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const [person1Name, setPerson1Name] = useState(settings.person1Name);
   const [person2Name, setPerson2Name] = useState(settings.person2Name);
   const [currency, setCurrency] = useState(settings.currency);
   const [budget, setBudget] = useState(settings.monthlyBudget);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setSaving(true);
     updateSettings({
       person1Name,
       person2Name,
       currency,
       monthlyBudget: budget,
     });
+    // Small delay for visual feedback
+    await new Promise((r) => setTimeout(r, 400));
+    setSaving(false);
   };
 
-  const handleExport = () => {
-    const data = {
-      expenses,
-      categories,
-      settings,
-      exportedAt: new Date().toISOString(),
-    };
-    const blob = new Blob([JSON.stringify(data, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "budget-for-two-backup.json";
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleExport = async () => {
+    try {
+      const data = await api.exportAllData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "budget-for-two-backup.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Помилка експорту даних");
+    }
   };
 
   const handleImport = () => {
@@ -50,34 +64,42 @@ export default function SettingsPage() {
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
+      setImporting(true);
       try {
         const text = await file.text();
         const data = JSON.parse(text);
         if (data.expenses && data.categories && data.settings) {
-          // Replace store contents via persisted storage
-          localStorage.setItem(
-            "couple-expense-tracker",
-            JSON.stringify({
-              state: {
-                expenses: data.expenses,
-                categories: data.categories,
-                settings: data.settings,
-              },
-              version: 0,
-            }),
-          );
+          await api.importAllData({
+            expenses: data.expenses,
+            categories: data.categories,
+            settings: data.settings,
+          });
+          // Re-hydrate store from MongoDB
+          _setAll({
+            expenses: data.expenses,
+            categories: data.categories,
+            settings: data.settings,
+          });
+          // Also re-fetch to get proper MongoDB IDs
+          await hydrate();
           window.location.reload();
         }
       } catch {
-        alert("Ошибка чтения файла");
+        alert("Помилка читання файлу");
+      } finally {
+        setImporting(false);
       }
     };
     input.click();
   };
 
-  const handleClearAll = () => {
-    localStorage.removeItem("couple-expense-tracker");
-    window.location.reload();
+  const handleClearAll = async () => {
+    try {
+      await api.clearAllData();
+      window.location.reload();
+    } catch {
+      alert("Помилка очищення даних");
+    }
   };
 
   return (
@@ -183,9 +205,13 @@ export default function SettingsPage() {
       </div>
 
       {/* Save */}
-      <button onClick={handleSave} className="btn-primary">
-        <Save className="h-4 w-4" />
-        Сохранить настройки
+      <button onClick={handleSave} className="btn-primary" disabled={saving}>
+        {saving ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Save className="h-4 w-4" />
+        )}
+        {saving ? "Зберігається…" : "Зберегти налаштування"}
       </button>
 
       {/* Data management */}
