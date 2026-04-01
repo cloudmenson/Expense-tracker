@@ -15,8 +15,8 @@ const SettingsSchema = new Schema(
   {
     _id: { type: String, default: "default" },
     currency: { type: String, default: "$" },
-    person1Name: { type: String, default: "Партнёр 1" },
-    person2Name: { type: String, default: "Партнёр 2" },
+    person1Name: { type: String, default: "Партнер 1" },
+    person2Name: { type: String, default: "Партнер 2" },
     monthlyBudget: { type: Number, default: 5000 },
     theme: {
       type: String,

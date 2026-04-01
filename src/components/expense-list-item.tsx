@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import type { Expense, Category } from "@/types/expense";
 import { formatMoney } from "@/lib/utils";
@@ -27,6 +28,8 @@ export function ExpenseListItem({
   onEdit,
   onDelete,
 }: ExpenseListItemProps) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
   return (
     <div className="glass-card group flex items-center gap-3 rounded-2xl p-4 transition-all hover:scale-[1.01] hover:shadow-md sm:gap-4">
       {/* Emoji */}
@@ -72,18 +75,37 @@ export function ExpenseListItem({
 
       {/* Actions */}
       <div className="flex shrink-0 gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-        <button
-          onClick={() => onEdit(expense)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-foreground/10 hover:text-foreground"
-        >
-          <Pencil className="h-3.5 w-3.5" />
-        </button>
-        <button
-          onClick={() => onDelete(expense.id)}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
+        {confirmDelete ? (
+          <>
+            <button
+              onClick={() => { onDelete(expense.id); setConfirmDelete(false); }}
+              className="flex h-8 items-center rounded-lg bg-rose-500/15 px-2 text-xs font-semibold text-rose-500 transition-colors hover:bg-rose-500/25"
+            >
+              Так
+            </button>
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="flex h-8 items-center rounded-lg bg-foreground/5 px-2 text-xs font-medium text-foreground/40 transition-colors hover:bg-foreground/10"
+            >
+              Ні
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => onEdit(expense)}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-foreground/10 hover:text-foreground"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setConfirmDelete(true)}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

@@ -14,8 +14,8 @@ import * as api from "@/lib/api-client";
 /* ─── Default settings ─── */
 const defaultSettings: AppSettings = {
   currency: "$",
-  person1Name: "Партнёр 1",
-  person2Name: "Партнёр 2",
+  person1Name: "Партнер 1",
+  person2Name: "Партнер 2",
   monthlyBudget: 5000,
   theme: "system",
   person1Color: "#22c55e",

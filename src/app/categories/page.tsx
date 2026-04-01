@@ -13,6 +13,7 @@ export default function CategoriesPage() {
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
   const getCatCount = (catId: string) =>
     expenses.filter((e) => e.categoryId === catId).length;
@@ -29,7 +30,7 @@ export default function CategoriesPage() {
       );
       return;
     }
-    deleteCategory(cat.id);
+    setCategoryToDelete(cat);
   };
 
   return (
@@ -128,6 +129,41 @@ export default function CategoriesPage() {
         size="sm"
       >
         <CategoryForm category={editing} onDone={() => setShowForm(false)} />
+      </Modal>
+
+      {/* Delete confirmation modal */}
+      <Modal
+        open={!!categoryToDelete}
+        onClose={() => setCategoryToDelete(null)}
+        title="Видалити категорію"
+        size="sm"
+      >
+        <p className="mb-6 text-sm text-foreground/60">
+          Ви впевнені, що хочете видалити категорію{" "}
+          <span className="font-semibold text-foreground">
+            {categoryToDelete?.emoji} {categoryToDelete?.name}
+          </span>
+          ?
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => setCategoryToDelete(null)}
+            className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
+          >
+            Скасувати
+          </button>
+          <button
+            onClick={() => {
+              if (categoryToDelete) {
+                deleteCategory(categoryToDelete.id);
+                setCategoryToDelete(null);
+              }
+            }}
+            className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
+          >
+            Видалити
+          </button>
+        </div>
       </Modal>
     </div>
   );

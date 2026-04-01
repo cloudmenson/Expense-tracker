@@ -25,7 +25,7 @@ export function MonthlyBarChart({ data }: MonthlyChartProps) {
   return (
     <div className="glass-card rounded-2xl p-5">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
-        Расходы по месяцам
+        Витрати по місяцях
       </p>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -57,14 +57,14 @@ export function MonthlyBarChart({ data }: MonthlyChartProps) {
               stackId="a"
               fill="#22c55e"
               radius={[0, 0, 0, 0]}
-              name="Партнёр 1"
+              name="Партнер 1"
             />
             <Bar
               dataKey="person2"
               stackId="a"
               fill="#f472b6"
               radius={[4, 4, 0, 0]}
-              name="Партнёр 2"
+              name="Партнер 2"
             />
           </BarChart>
         </ResponsiveContainer>
@@ -84,7 +84,7 @@ export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
   return (
     <div className="glass-card rounded-2xl p-5">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
-        По категориям
+        За категоріями
       </p>
       <div className="flex items-center gap-4">
         <div className="h-48 w-48 shrink-0">
@@ -106,7 +106,7 @@ export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
               </Pie>
               <Tooltip
                 formatter={(val) =>
-                  `${currency} ${Number(val).toLocaleString("ru-RU")}`
+                  `${currency} ${Number(val).toLocaleString("uk-UA")}`
                 }
                 contentStyle={{
                   background: "rgba(255,255,255,0.9)",
@@ -147,7 +147,7 @@ export function SpendingTrendChart({ data }: TrendChartProps) {
   return (
     <div className="glass-card rounded-2xl p-5">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
-        Тренд расходов
+        Тренд витрат
       </p>
       <div className="h-48">
         <ResponsiveContainer width="100%" height="100%">
@@ -205,7 +205,7 @@ export function PersonCompareChart({ data }: PersonCompareProps) {
   return (
     <div className="glass-card rounded-2xl p-5">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
-        Сравнение расходов
+        Порівняння витрат
       </p>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -242,13 +242,13 @@ export function PersonCompareChart({ data }: PersonCompareProps) {
               dataKey="person1"
               fill="#22c55e"
               radius={[0, 4, 4, 0]}
-              name="Партнёр 1"
+              name="Партнер 1"
             />
             <Bar
               dataKey="person2"
               fill="#f472b6"
               radius={[0, 4, 4, 0]}
-              name="Партнёр 2"
+              name="Партнер 2"
             />
           </BarChart>
         </ResponsiveContainer>

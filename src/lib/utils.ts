@@ -6,7 +6,7 @@ import {
   isWithinInterval,
   subMonths,
 } from "date-fns";
-import { ru } from "date-fns/locale";
+import { uk } from "date-fns/locale";
 import type {
   Expense,
   Category,
@@ -21,7 +21,7 @@ export function formatMoney(amount: number, currency = "$"): string {
 
 /* ── Month label ── */
 export function monthLabel(dateStr: string): string {
-  return format(parseISO(dateStr + "-01"), "LLLL yyyy", { locale: ru });
+  return format(parseISO(dateStr + "-01"), "LLLL yyyy", { locale: uk });
 }
 
 /* ── Get month key ── */

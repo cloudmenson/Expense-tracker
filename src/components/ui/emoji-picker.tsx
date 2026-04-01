@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
   {
-    label: "Еда и напитки",
+    label: "Їжа та напої",
     emojis: [
       "🛒",
       "🍎",
@@ -52,7 +52,7 @@ const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
     ],
   },
   {
-    label: "Дом",
+    label: "Дім",
     emojis: [
       "🏠",
       "🛋️",
@@ -71,7 +71,7 @@ const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
     ],
   },
   {
-    label: "Здоровье",
+    label: "Здоров'я",
     emojis: [
       "💊",
       "🏥",
@@ -88,7 +88,7 @@ const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
     ],
   },
   {
-    label: "Развлечения",
+    label: "Розваги",
     emojis: [
       "🎬",
       "🎮",
@@ -126,7 +126,7 @@ const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
     ],
   },
   {
-    label: "Финансы",
+    label: "Фінанси",
     emojis: [
       "💰",
       "💳",
@@ -160,7 +160,7 @@ const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
     ],
   },
   {
-    label: "Лица",
+    label: "Обличчя",
     emojis: [
       "😊",
       "😍",
@@ -179,7 +179,7 @@ const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
     ],
   },
   {
-    label: "Символы",
+    label: "Символи",
     emojis: [
       "⭐",
       "❤️",
