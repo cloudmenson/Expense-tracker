@@ -283,7 +283,11 @@ export default function SettingsPage() {
       </div>
 
       {/* Save */}
-      <button onClick={handleSave} className="btn-primary w-full sm:w-auto" disabled={saving}>
+      <button
+        onClick={handleSave}
+        className="btn-primary w-full sm:w-auto"
+        disabled={saving}
+      >
         {saving ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
@@ -299,7 +303,10 @@ export default function SettingsPage() {
           Всього: {expenses.length} витрат, {categories.length} категорій
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <button onClick={handleExport} className="btn-secondary w-full sm:w-auto">
+          <button
+            onClick={handleExport}
+            className="btn-secondary w-full sm:w-auto"
+          >
             <Download className="h-4 w-4" />
             Експорт JSON
           </button>

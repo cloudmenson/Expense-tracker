@@ -44,7 +44,9 @@ export function ExpenseListItem({
         {/* Details — takes remaining space */}
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline gap-1.5">
-            <p className="truncate text-sm font-semibold sm:text-base">{expense.title}</p>
+            <p className="truncate text-sm font-semibold sm:text-base">
+              {expense.title}
+            </p>
             <span
               className="hidden shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-medium sm:inline"
               style={{
@@ -64,7 +66,8 @@ export function ExpenseListItem({
               }}
             />
             <span className="truncate">
-              {expense.paidBy === "person1" ? person1Name : person2Name} · {expense.date}
+              {expense.paidBy === "person1" ? person1Name : person2Name} ·{" "}
+              {expense.date}
               {expense.note ? ` · ${expense.note}` : ""}
             </span>
           </p>

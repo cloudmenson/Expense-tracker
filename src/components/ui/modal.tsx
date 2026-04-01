@@ -36,7 +36,11 @@ export function Modal({
   if (!open) return null;
 
   const maxW =
-    size === "sm" ? "sm:max-w-md" : size === "lg" ? "sm:max-w-2xl" : "sm:max-w-lg";
+    size === "sm"
+      ? "sm:max-w-md"
+      : size === "lg"
+        ? "sm:max-w-2xl"
+        : "sm:max-w-lg";
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
@@ -50,7 +54,9 @@ export function Modal({
       <div
         ref={ref}
         className={`relative flex w-full ${maxW} flex-col overflow-hidden rounded-t-2xl border border-white/15 bg-surface shadow-2xl backdrop-blur-2xl animate-in slide-in-from-bottom-4 sm:max-h-[90dvh] sm:rounded-2xl dark:border-white/10 dark:bg-surface/95`}
-        style={{ maxHeight: "calc(100dvh - env(safe-area-inset-top, 0px) - 24px)" }}
+        style={{
+          maxHeight: "calc(100dvh - env(safe-area-inset-top, 0px) - 24px)",
+        }}
       >
         {/* Handle — mobile only */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
@@ -77,7 +83,10 @@ export function Modal({
         </div>
 
         {/* Bottom safe area padding on mobile */}
-        <div className="shrink-0 sm:hidden" style={{ height: "env(safe-area-inset-bottom, 0px)" }} />
+        <div
+          className="shrink-0 sm:hidden"
+          style={{ height: "env(safe-area-inset-bottom, 0px)" }}
+        />
       </div>
     </div>
   );

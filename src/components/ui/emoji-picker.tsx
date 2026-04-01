@@ -230,11 +230,15 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
       {open && (
         <>
           {/* Full-screen overlay on mobile, positioned dropdown on desktop */}
-          <div className="fixed inset-0 z-50 sm:relative sm:inset-auto" onClick={() => setOpen(false)}>
+          <div
+            className="fixed inset-0 z-50 sm:relative sm:inset-auto"
+            onClick={() => setOpen(false)}
+          >
             {/* Mobile: centered overlay, Desktop: nothing (click-away only) */}
             <div className="h-full bg-black/30 sm:hidden" />
           </div>
-          <div className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-sm rounded-2xl border border-white/15 bg-surface p-4 shadow-2xl backdrop-blur-2xl sm:absolute sm:inset-auto sm:left-0 sm:top-full sm:mt-2 sm:w-72 sm:p-3 dark:border-white/10 dark:bg-surface/95"
+          <div
+            className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-sm rounded-2xl border border-white/15 bg-surface p-4 shadow-2xl backdrop-blur-2xl sm:absolute sm:inset-auto sm:left-0 sm:top-full sm:mt-2 sm:w-72 sm:p-3 dark:border-white/10 dark:bg-surface/95"
             style={{ maxHeight: "min(60dvh, 400px)" }}
           >
             <input
@@ -245,7 +249,10 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
               className="mb-3 w-full rounded-xl bg-foreground/5 px-3 py-2.5 text-sm outline-none placeholder:text-foreground/30 focus:ring-2 focus:ring-emerald-500/30"
               autoFocus
             />
-            <div className="overflow-y-auto overscroll-contain" style={{ maxHeight: "min(calc(60dvh - 80px), 320px)" }}>
+            <div
+              className="overflow-y-auto overscroll-contain"
+              style={{ maxHeight: "min(calc(60dvh - 80px), 320px)" }}
+            >
               <div className="space-y-3">
                 {filteredGroups.map((group) => (
                   <div key={group.label}>

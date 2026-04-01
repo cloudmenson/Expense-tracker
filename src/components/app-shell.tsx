@@ -13,10 +13,30 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 const NAV_ITEMS = [
   { href: "/", label: "Огляд", mobileLabel: "Огляд", icon: LayoutDashboard },
-  { href: "/expenses", label: "Витрати", mobileLabel: "Витрати", icon: Receipt },
-  { href: "/categories", label: "Категорії", mobileLabel: "Категорії", icon: FolderOpen },
-  { href: "/analytics", label: "Аналітика", mobileLabel: "Аналітика", icon: BarChart3 },
-  { href: "/settings", label: "Налаштування", mobileLabel: "Налашт.", icon: Settings },
+  {
+    href: "/expenses",
+    label: "Витрати",
+    mobileLabel: "Витрати",
+    icon: Receipt,
+  },
+  {
+    href: "/categories",
+    label: "Категорії",
+    mobileLabel: "Категорії",
+    icon: FolderOpen,
+  },
+  {
+    href: "/analytics",
+    label: "Аналітика",
+    mobileLabel: "Аналітика",
+    icon: BarChart3,
+  },
+  {
+    href: "/settings",
+    label: "Налаштування",
+    mobileLabel: "Налашт.",
+    icon: Settings,
+  },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -105,9 +125,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 )}
                 <item.icon
                   className={`h-[22px] w-[22px] ${
-                    active
-                      ? "text-emerald-500"
-                      : "text-foreground/35"
+                    active ? "text-emerald-500" : "text-foreground/35"
                   }`}
                 />
                 <span
