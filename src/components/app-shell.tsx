@@ -10,6 +10,7 @@ import {
   Settings,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { HeartLogo } from "@/components/heart-logo";
 
 const NAV_ITEMS = [
   { href: "/", label: "Огляд", mobileLabel: "Огляд", icon: LayoutDashboard },
@@ -47,9 +48,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* ── Desktop sidebar ── */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r border-white/10 bg-surface/60 backdrop-blur-2xl lg:flex dark:border-white/5">
         <div className="flex h-16 items-center gap-3 px-6">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-emerald-400 to-lime-400 text-lg shadow-lg shadow-emerald-500/25">
-            💚
-          </div>
+          <HeartLogo wrapperClass="h-9 w-9 rounded-xl" svgSize={20} />
           <span className="text-sm font-bold tracking-wide">
             Budget&nbsp;for&nbsp;Two
           </span>
@@ -87,9 +86,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <header className="fixed inset-x-0 top-0 z-40 flex items-end border-b border-white/10 bg-surface/80 px-4 pb-2.5 pt-[max(12px,env(safe-area-inset-top))] backdrop-blur-2xl lg:hidden dark:border-white/5">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-emerald-400 to-lime-400 text-base">
-              💚
-            </div>
+            <HeartLogo wrapperClass="h-8 w-8 rounded-lg" svgSize={18} />
             <span className="text-sm font-bold tracking-tight">
               Budget for Two
             </span>
