@@ -1,4 +1,4 @@
-const CACHE_NAME = "b4t-v1";
+const CACHE_NAME = "b4t-v2";
 const PRECACHE_URLS = [
   "/",
   "/expenses",
