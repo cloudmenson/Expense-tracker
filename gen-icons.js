@@ -41,7 +41,7 @@ function makeSVG(size, maskable = false) {
     <g transform="scale(${heartSize / 120})">
       <path d="M0 30 C0 30 -50 -15 -25 -30 C-10 -40 0 -25 0 -15 C0 -25 10 -40 25 -30 C50 -15 0 30 0 30Z"
             fill="url(#heart-bg)" 
-            filter="drop-shadow(0 ${Math.round(size*0.01)}px ${Math.round(size*0.04)}px rgba(34,197,94,0.5))"/>
+            filter="drop-shadow(0 ${Math.round(size * 0.01)}px ${Math.round(size * 0.04)}px rgba(34,197,94,0.5))"/>
     </g>
   </g>
 </svg>`;
@@ -58,7 +58,10 @@ const configs = [
 
 for (const cfg of configs) {
   const svg = makeSVG(cfg.size, cfg.maskable);
-  const outDir = cfg.name === "apple-touch-icon" ? path.join(__dirname, "public") : ICONS_DIR;
+  const outDir =
+    cfg.name === "apple-touch-icon"
+      ? path.join(__dirname, "public")
+      : ICONS_DIR;
   fs.writeFileSync(path.join(outDir, `${cfg.name}.svg`), svg);
   console.log(`✓ ${cfg.name}.svg (${cfg.size}x${cfg.size})`);
 }
