@@ -40,9 +40,10 @@ export async function GET() {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("GET /api/settings error:", error);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("GET /api/settings error:", msg);
     return NextResponse.json(
-      { error: "Failed to fetch settings" },
+      { error: "Failed to fetch settings", detail: msg },
       { status: 500 },
     );
   }
@@ -77,9 +78,10 @@ export async function PUT(request: Request) {
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("PUT /api/settings error:", error);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("PUT /api/settings error:", msg);
     return NextResponse.json(
-      { error: "Failed to update settings" },
+      { error: "Failed to update settings", detail: msg },
       { status: 500 },
     );
   }
