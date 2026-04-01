@@ -9,8 +9,16 @@ import { ServiceWorkerRegister } from "@/components/sw-register";
 import { SplashScreen } from "@/components/splash-screen";
 
 export function ClientProviders({ children }: { children: React.ReactNode }) {
-  const [splashDone, setSplashDone] = useState(false);
-  const handleSplashFinish = useCallback(() => setSplashDone(true), []);
+  const [splashDone, setSplashDone] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("b4t-splash") === "1";
+    }
+    return false;
+  });
+  const handleSplashFinish = useCallback(() => {
+    setSplashDone(true);
+    sessionStorage.setItem("b4t-splash", "1");
+  }, []);
 
   return (
     <ThemeProvider>
