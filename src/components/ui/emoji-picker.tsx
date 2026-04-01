@@ -247,7 +247,6 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="mb-3 w-full rounded-xl bg-foreground/5 px-3 py-2.5 text-sm outline-none placeholder:text-foreground/30 focus:ring-2 focus:ring-emerald-500/30"
-              autoFocus
             />
             <div
               className="overflow-y-auto overscroll-contain"

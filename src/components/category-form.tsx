@@ -57,7 +57,6 @@ export function CategoryForm({ category, onDone }: CategoryFormProps) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="input-glass flex-1 text-base"
-          autoFocus
         />
       </div>
 

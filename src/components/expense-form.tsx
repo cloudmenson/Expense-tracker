@@ -138,7 +138,6 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
             value={form.title}
             onChange={(e) => set("title", e.target.value)}
             className="input-glass w-full text-base"
-            autoFocus
           />
         </div>
       </div>
