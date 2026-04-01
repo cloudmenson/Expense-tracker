@@ -60,6 +60,20 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   overscroll-behavior-y: none;
   -webkit-overflow-scrolling: touch;
+  background-image: radial-gradient(
+    circle,
+    var(--dot-color) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+}
+
+:root {
+  --dot-color: rgba(16, 40, 16, 0.06);
+}
+
+.dark {
+  --dot-color: rgba(134, 239, 172, 0.06);
 }
 
 a {
