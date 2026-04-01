@@ -53,8 +53,26 @@ export function SplashScreen({ onFinish }: { onFinish: () => void }) {
           {/* Outer ring pulse */}
           <div className="absolute inset-0 animate-[splash-ping_2s_ease-in-out_infinite] rounded-3xl bg-gradient-to-br from-emerald-400 to-lime-400 opacity-20" />
           {/* Logo icon */}
-          <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-400 to-lime-400 text-5xl shadow-2xl shadow-emerald-500/30">
-            💚
+          <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-400 to-lime-400 shadow-2xl shadow-emerald-500/30">
+            <svg width="52" height="52" viewBox="-50 -45 100 80" fill="none">
+              <defs>
+                <linearGradient
+                  id="sh"
+                  x1="0"
+                  y1="-40"
+                  x2="0"
+                  y2="30"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stopColor="#fff" stopOpacity="0.9" />
+                  <stop offset="1" stopColor="#fff" stopOpacity="0.6" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M0 30 C0 30 -50 -15 -25 -30 C-10 -40 0 -25 0 -15 C0 -25 10 -40 25 -30 C50 -15 0 30 0 30Z"
+                fill="url(#sh)"
+              />
+            </svg>
           </div>
         </div>
 
