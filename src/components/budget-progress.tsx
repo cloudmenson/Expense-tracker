@@ -71,7 +71,8 @@ export function BudgetProgress({
 
       {isOver && (
         <p className="mt-2 animate-flip-in text-xs font-medium text-rose-500">
-          ⚠️ Перевищення на {currency} {(displaySpent - budget).toLocaleString("en-US")}
+          ⚠️ Перевищення на {currency}{" "}
+          {(displaySpent - budget).toLocaleString("en-US")}
         </p>
       )}
     </div>

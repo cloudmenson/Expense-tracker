@@ -29,8 +29,9 @@ export function ExpenseListItem({
   onDelete,
   onView,
 }: ExpenseListItemProps) {
-  const borderColor = expense.paidBy === "person1" ? person1Color : person2Color;
-  
+  const borderColor =
+    expense.paidBy === "person1" ? person1Color : person2Color;
+
   // Parse RGB from hex color
   const r = parseInt(borderColor.slice(1, 3), 16);
   const g = parseInt(borderColor.slice(3, 5), 16);

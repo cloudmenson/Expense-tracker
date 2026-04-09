@@ -198,7 +198,8 @@ select.input-glass option {
 }
 
 @keyframes emoji-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1) rotate(0deg);
   }
   50% {
