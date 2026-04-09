@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface StatCardProps {
@@ -64,16 +65,20 @@ export function StatCard({
       </div>
       {trend !== undefined && (
         <div className="mt-3 flex items-center gap-1.5 text-xs font-medium">
-          <span
-            className={`flex items-center gap-0.5 rounded-lg px-2 py-1 ${
+          <div
+            className={`flex items-center gap-1 rounded-lg px-2 py-1 ${
               trend >= 0
                 ? "bg-rose-500/15 text-rose-600 dark:text-rose-300"
                 : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
             }`}
           >
-            <span className="text-lg">{trend >= 0 ? "📈" : "📉"}</span>
-            {Math.abs(trend).toFixed(1)}%
-          </span>
+            {trend >= 0 ? (
+              <TrendingUp className="h-3.5 w-3.5" />
+            ) : (
+              <TrendingDown className="h-3.5 w-3.5" />
+            )}
+            <span>{Math.abs(trend).toFixed(1)}%</span>
+          </div>
           <span className="text-foreground/40">vs прошлий місяц</span>
         </div>
       )}
