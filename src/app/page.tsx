@@ -111,7 +111,7 @@ export default function DashboardPage() {
               label="Всього за місяць"
               value={formatMoney(summary.total, settings.currency)}
               icon={Wallet}
-              color="emerald"
+              color="rose"
               trend={trend}
             />
             <StatCard
@@ -177,11 +177,6 @@ export default function DashboardPage() {
                   person2Name={settings.person2Name}
                   person1Color={settings.person1Color}
                   person2Color={settings.person2Color}
-                  onEdit={(e) => {
-                    setEditing(e);
-                    setShowForm(true);
-                  }}
-                  onDelete={(e) => setExpenseToDelete(e)}
                   onView={(e) => setViewing(e)}
                 />
               ))}
@@ -259,6 +254,10 @@ export default function DashboardPage() {
               setViewing(null);
               setEditing(viewing);
               setShowForm(true);
+            }}
+            onDelete={() => {
+              setExpenseToDelete(viewing);
+              setViewing(null);
             }}
           />
         )}

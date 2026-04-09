@@ -3,6 +3,7 @@ import type {
   ExpenseDraft,
   Category,
   AppSettings,
+  TrashItem,
 } from "@/types/expense";
 
 const BASE = "/api";
@@ -119,4 +120,22 @@ export function importAllData(data: {
 
 export function clearAllData(): Promise<{ ok: boolean }> {
   return fetcher(`${BASE}/data/clear`, { method: "POST" });
+}
+
+/* ── Trash ── */
+
+export function fetchTrash(): Promise<TrashItem[]> {
+  return fetcher(`${BASE}/trash`);
+}
+
+export function restoreFromTrash(id: string): Promise<{ ok: boolean }> {
+  return fetcher(`${BASE}/trash/${id}`, { method: "POST" });
+}
+
+export function deleteFromTrash(id: string): Promise<{ ok: boolean }> {
+  return fetcher(`${BASE}/trash/${id}`, { method: "DELETE" });
+}
+
+export function clearTrash(): Promise<{ ok: boolean }> {
+  return fetcher(`${BASE}/trash`, { method: "DELETE" });
 }

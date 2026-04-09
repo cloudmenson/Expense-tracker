@@ -5,7 +5,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
     id: "groceries",
     name: "Продукти",
     emoji: "🛒",
-    color: "#22c55e",
+    color: "#e11d48",
     isCustom: false,
   },
   {
@@ -89,7 +89,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
     id: "pets",
     name: "Улюбленці",
     emoji: "🐾",
-    color: "#84cc16",
+    color: "#f59e0b",
     isCustom: false,
   },
   {

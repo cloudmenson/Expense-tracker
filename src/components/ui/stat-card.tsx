@@ -35,7 +35,7 @@ export function StatCard({
   }, [value, animateValue]);
   const colorClasses: Record<string, string> = {
     emerald:
-      "from-emerald-500/25 via-emerald-500/15 to-lime-500/15 text-emerald-600 dark:text-emerald-300",
+      "from-rose-500/25 via-rose-500/15 to-pink-500/15 text-rose-600 dark:text-pink-300",
     rose: "from-rose-500/25 via-rose-500/15 to-pink-500/15 text-rose-600 dark:text-rose-300",
     violet:
       "from-violet-500/25 via-violet-500/15 to-purple-500/15 text-violet-600 dark:text-violet-300",
@@ -69,7 +69,7 @@ export function StatCard({
             className={`flex items-center gap-1 rounded-lg px-2 py-1 ${
               trend >= 0
                 ? "bg-rose-500/15 text-rose-600 dark:text-rose-300"
-                : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300"
+                : "bg-teal-500/15 text-teal-600 dark:text-teal-300"
             }`}
           >
             {trend >= 0 ? (

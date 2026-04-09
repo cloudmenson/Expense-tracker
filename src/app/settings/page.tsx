@@ -16,8 +16,8 @@ import { useToast } from "@/components/ui/toast";
 import * as api from "@/lib/api-client";
 
 const PRESET_COLORS = [
-  "#22c55e",
-  "#84cc16",
+  "#e11d48",
+  "#fb923c",
   "#14b8a6",
   "#06b6d4",
   "#3b82f6",
@@ -44,7 +44,7 @@ export default function SettingsPage() {
   const [person1Name, setPerson1Name] = useState(settings.person1Name);
   const [person2Name, setPerson2Name] = useState(settings.person2Name);
   const [person1Color, setPerson1Color] = useState(
-    settings.person1Color ?? "#22c55e",
+    settings.person1Color ?? "#e11d48",
   );
   const [person2Color, setPerson2Color] = useState(
     settings.person2Color ?? "#3b82f6",
@@ -268,7 +268,7 @@ export default function SettingsPage() {
               onClick={() => setTheme(t)}
               className={`rounded-xl px-2 py-3 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 theme === t
-                  ? "bg-emerald-500/15 text-emerald-600 ring-2 ring-emerald-500/30 dark:text-emerald-400"
+                  ? "bg-rose-500/15 text-rose-600 ring-2 ring-rose-500/30 dark:text-pink-400"
                   : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
               }`}
             >

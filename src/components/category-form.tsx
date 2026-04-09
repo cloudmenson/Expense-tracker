@@ -11,8 +11,8 @@ interface CategoryFormProps {
 }
 
 const PRESET_COLORS = [
-  "#22c55e",
-  "#84cc16",
+  "#e11d48",
+  "#fb923c",
   "#14b8a6",
   "#06b6d4",
   "#3b82f6",
@@ -33,7 +33,7 @@ export function CategoryForm({ category, onDone }: CategoryFormProps) {
 
   const [name, setName] = useState(category?.name ?? "");
   const [emoji, setEmoji] = useState(category?.emoji ?? "📦");
-  const [color, setColor] = useState(category?.color ?? "#22c55e");
+  const [color, setColor] = useState(category?.color ?? "#e11d48");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

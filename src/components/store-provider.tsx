@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useExpenseStore } from "@/lib/store";
-import { SplashScreen } from "@/components/splash-screen";
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const hydrate = useExpenseStore((s) => s.hydrate);
@@ -13,9 +12,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     hydrate();
   }, [hydrate]);
 
-  // Show splash screen while loading data from MongoDB
+  // Show nothing (blank) while loading — the decorative splash from ClientProviders
+  // already covers this on first visit; subsequent loads just stay blank briefly.
   if (!hydrated || loading) {
-    return <SplashScreen onFinish={() => {}} />;
+    return null;
   }
 
   return <>{children}</>;

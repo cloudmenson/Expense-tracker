@@ -7,6 +7,7 @@ import type {
   ExpenseDraft,
   Category,
   AppSettings,
+  TrashItem,
 } from "@/types/expense";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
 import * as api from "@/lib/api-client";
@@ -18,7 +19,7 @@ const defaultSettings: AppSettings = {
   person2Name: "Партнер 2",
   monthlyBudget: 5000,
   theme: "system",
-  person1Color: "#22c55e",
+  person1Color: "#e11d48",
   person2Color: "#3b82f6",
 };
 
@@ -27,6 +28,7 @@ interface ExpenseStore {
   expenses: Expense[];
   categories: Category[];
   settings: AppSettings;
+  trashItems: TrashItem[];
 
   /** Whether the store has been hydrated from MongoDB */
   _hydrated: boolean;
@@ -52,6 +54,12 @@ interface ExpenseStore {
   // Settings
   updateSettings: (s: Partial<AppSettings>) => void;
 
+  // Trash
+  fetchTrash: () => Promise<void>;
+  restoreFromTrash: (id: string) => Promise<void>;
+  deleteFromTrash: (id: string) => Promise<void>;
+  clearTrash: () => Promise<void>;
+
   /** Re-set all local data (used after import/clear) */
   _setAll: (data: {
     expenses: Expense[];
@@ -72,6 +80,7 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
   expenses: [],
   categories: DEFAULT_CATEGORIES,
   settings: defaultSettings,
+  trashItems: [],
   _hydrated: false,
   _loading: false,
 
@@ -255,5 +264,63 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
       categories: data.categories,
       settings: data.settings,
     });
+  },
+
+  /* ── Trash ── */
+  fetchTrash: async () => {
+    try {
+      const items = await api.fetchTrash();
+      set({ trashItems: items });
+    } catch (err) {
+      console.error("Failed to fetch trash:", err);
+    }
+  },
+
+  restoreFromTrash: async (id) => {
+    const item = get().trashItems.find((t) => t.id === id);
+    if (!item) return;
+
+    // Optimistic: remove from trash
+    set((s) => ({ trashItems: s.trashItems.filter((t) => t.id !== id) }));
+
+    try {
+      await api.restoreFromTrash(id);
+      // Re-fetch so restored item appears in expenses/categories
+      const [expenses, categories] = await Promise.all([
+        api.fetchExpenses(),
+        api.fetchCategories(),
+      ]);
+      set({ expenses, categories });
+    } catch (err) {
+      console.error("Failed to restore from trash:", err);
+      // Rollback
+      set((s) => ({ trashItems: [...s.trashItems, item] }));
+    }
+  },
+
+  deleteFromTrash: async (id) => {
+    const item = get().trashItems.find((t) => t.id === id);
+    set((s) => ({ trashItems: s.trashItems.filter((t) => t.id !== id) }));
+
+    try {
+      await api.deleteFromTrash(id);
+    } catch (err) {
+      console.error("Failed to permanently delete from trash:", err);
+      if (item) {
+        set((s) => ({ trashItems: [...s.trashItems, item] }));
+      }
+    }
+  },
+
+  clearTrash: async () => {
+    const prev = get().trashItems;
+    set({ trashItems: [] });
+
+    try {
+      await api.clearTrash();
+    } catch (err) {
+      console.error("Failed to clear trash:", err);
+      set({ trashItems: prev });
+    }
   },
 }));

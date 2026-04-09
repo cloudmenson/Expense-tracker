@@ -13,7 +13,7 @@ export function HeartLogo({
 }) {
   return (
     <div
-      className={`flex items-center justify-center bg-linear-to-br from-emerald-400 to-lime-400 shadow-lg shadow-emerald-500/25 ${wrapperClass}`}
+      className={`flex items-center justify-center bg-linear-to-br from-rose-500 to-pink-400 shadow-lg shadow-rose-500/25 ${wrapperClass}`}
     >
       <svg
         width={svgSize}

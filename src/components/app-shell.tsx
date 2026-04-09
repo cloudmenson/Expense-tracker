@@ -8,6 +8,7 @@ import {
   FolderOpen,
   BarChart3,
   Settings,
+  Trash2,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { HeartLogo } from "@/components/heart-logo";
@@ -38,6 +39,12 @@ const NAV_ITEMS = [
     mobileLabel: "Налашт.",
     icon: Settings,
   },
+  {
+    href: "/trash",
+    label: "Кошик",
+    mobileLabel: "Кошик",
+    icon: Trash2,
+  },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -65,12 +72,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                   active
-                    ? "bg-linear-to-r from-emerald-500/15 to-lime-500/10 text-emerald-600 dark:text-emerald-400"
+                    ? "bg-linear-to-r from-rose-500/15 to-pink-500/10 text-rose-600 dark:text-pink-400"
                     : "text-foreground/60 hover:bg-white/60 hover:text-foreground dark:hover:bg-white/5"
                 }`}
               >
                 <item.icon
-                  className={`h-[18px] w-[18px] transition-colors ${active ? "text-emerald-500" : "text-foreground/40 group-hover:text-foreground/60"}`}
+                  className={`h-[18px] w-[18px] transition-colors ${active ? "text-rose-600 dark:text-pink-400" : "text-foreground/40 group-hover:text-foreground/60"}`}
                 />
                 {item.label}
               </Link>
@@ -118,16 +125,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               >
                 {/* Active pill */}
                 {active && (
-                  <span className="absolute inset-x-2 top-0 h-[3px] rounded-b-full bg-emerald-500" />
+                  <span className="absolute inset-x-2 top-0 h-[3px] rounded-b-full bg-rose-500 dark:bg-pink-400" />
                 )}
                 <item.icon
                   className={`h-[22px] w-[22px] ${
-                    active ? "text-emerald-500" : "text-foreground/35"
+                    active
+                      ? "text-rose-600 dark:text-pink-400"
+                      : "text-foreground/35"
                   }`}
                 />
                 <span
                   className={`text-[10px] font-semibold leading-none ${
-                    active ? "text-emerald-500" : "text-foreground/35"
+                    active
+                      ? "text-rose-600 dark:text-pink-400"
+                      : "text-foreground/35"
                   }`}
                 >
                   {item.mobileLabel}

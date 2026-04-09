@@ -2,34 +2,34 @@
 
 /* ─── Light theme (default) ─── */
 :root {
-  --background: #f0f5f0;
-  --foreground: #0f1a0f;
-  --muted: #5a6b5a;
+  --background: #faf9f9;
+  --foreground: #18101a;
+  --muted: #9d6b7c;
   --surface: #ffffff;
-  --surface-strong: #0f1a0f;
-  --border: rgba(16, 40, 16, 0.08);
-  --brand: #22c55e;
-  --brand-soft: rgba(34, 197, 94, 0.12);
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-border: rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px rgba(34, 197, 94, 0.08);
-  --dot-color: rgba(16, 40, 16, 0.06);
+  --surface-strong: #18101a;
+  --border: rgba(24, 16, 26, 0.07);
+  --brand: #e11d48;
+  --brand-soft: rgba(225, 29, 72, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-shadow: 0 8px 32px rgba(225, 29, 72, 0.06);
+  --dot-color: rgba(24, 16, 26, 0.05);
 }
 
 /* ─── Dark theme ─── */
 .dark {
-  --background: #080c08;
-  --foreground: #e8f0e8;
-  --muted: #86efac;
-  --surface: #0f170f;
-  --surface-strong: #e8f0e8;
-  --border: rgba(134, 239, 172, 0.12);
-  --brand: #4ade80;
-  --brand-soft: rgba(74, 222, 128, 0.15);
-  --glass-bg: rgba(15, 23, 15, 0.75);
-  --glass-border: rgba(74, 222, 128, 0.15);
-  --glass-shadow: 0 8px 32px rgba(74, 222, 128, 0.15);
-  --dot-color: rgba(134, 239, 172, 0.08);
+  --background: #12090f;
+  --foreground: #e8d8e0;
+  --muted: #a8728a;
+  --surface: #1e1118;
+  --surface-strong: #e8d8e0;
+  --border: rgba(244, 114, 182, 0.1);
+  --brand: #f472b6;
+  --brand-soft: rgba(244, 114, 182, 0.12);
+  --glass-bg: rgba(30, 17, 24, 0.78);
+  --glass-border: rgba(244, 114, 182, 0.08);
+  --glass-shadow: 0 8px 32px rgba(244, 114, 182, 0.06);
+  --dot-color: rgba(244, 114, 182, 0.04);
 }
 
 @theme inline {
@@ -139,7 +139,7 @@ a {
 select.input-glass {
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23e11d48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 16px;
@@ -251,9 +251,9 @@ input[type="date"].input-glass::-webkit-date-and-time-value {
   font-size: 14px;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #22c55e 0%, #84cc16 100%);
+  background: linear-gradient(135deg, #e11d48 0%, #f472b6 100%);
   box-shadow:
-    0 4px 14px rgba(34, 197, 94, 0.3),
+    0 4px 14px rgba(225, 29, 72, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transition: all 0.2s;
   cursor: pointer;
@@ -263,7 +263,7 @@ input[type="date"].input-glass::-webkit-date-and-time-value {
 .btn-primary:hover {
   transform: translateY(-1px);
   box-shadow:
-    0 6px 20px rgba(34, 197, 94, 0.4),
+    0 6px 20px rgba(225, 29, 72, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
@@ -323,8 +323,22 @@ input[type="date"].input-glass::-webkit-date-and-time-value {
     opacity: 0.2;
   }
   50% {
-    transform: scale(1.25);
+    transform: scale(1.3);
     opacity: 0;
+  }
+}
+
+/* Splash screen loading dots */
+@keyframes splash-dots {
+  0%,
+  80%,
+  100% {
+    transform: scale(1);
+    opacity: 0.25;
+  }
+  40% {
+    transform: scale(1.5);
+    opacity: 1;
   }
 }
 
@@ -362,7 +376,7 @@ input[type="date"].input-glass::-webkit-date-and-time-value {
 .ambient-bg::before {
   width: 500px;
   height: 500px;
-  background: linear-gradient(135deg, #22c55e, #84cc16);
+  background: linear-gradient(135deg, #e11d48, #f472b6);
   top: -100px;
   right: -100px;
 }
@@ -370,15 +384,15 @@ input[type="date"].input-glass::-webkit-date-and-time-value {
 .ambient-bg::after {
   width: 400px;
   height: 400px;
-  background: linear-gradient(135deg, #f472b6, #a78bfa);
+  background: linear-gradient(135deg, #f472b6, #fb923c);
   bottom: -50px;
   left: -50px;
 }
 
 .dark .ambient-bg::before {
-  opacity: 0.12;
+  opacity: 0.1;
 }
 
 .dark .ambient-bg::after {
-  opacity: 0.08;
+  opacity: 0.07;
 }

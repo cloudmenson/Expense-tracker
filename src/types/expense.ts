@@ -67,3 +67,12 @@ export interface AppSettings {
   person1Color?: string;
   person2Color?: string;
 }
+
+/* ─── Trash ─── */
+export interface TrashItem {
+  id: string;
+  type: "expense" | "category";
+  originalId: string;
+  data: Expense | Category;
+  deletedAt: string;
+}

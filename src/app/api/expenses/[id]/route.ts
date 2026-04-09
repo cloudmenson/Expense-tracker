@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { ExpenseModel } from "@/models/expense";
+import { TrashModel } from "@/models/trash";
 
 /* PUT /api/expenses/[id] — update an expense */
 export async function PUT(
@@ -51,7 +52,7 @@ export async function PUT(
   }
 }
 
-/* DELETE /api/expenses/[id] — delete an expense */
+/* DELETE /api/expenses/[id] — move expense to trash */
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -60,11 +61,32 @@ export async function DELETE(
     const { id } = await params;
     await connectDB();
 
-    const expense = await ExpenseModel.findByIdAndDelete(id);
+    const expense = await ExpenseModel.findById(id).lean();
 
     if (!expense) {
       return NextResponse.json({ error: "Expense not found" }, { status: 404 });
     }
+
+    // Move to trash before deleting
+    await TrashModel.create({
+      type: "expense",
+      originalId: String(expense._id),
+      data: {
+        title: expense.title,
+        amount: expense.amount,
+        categoryId: expense.categoryId,
+        paidBy: expense.paidBy,
+        date: expense.date,
+        note: expense.note ?? "",
+        emoji: expense.emoji ?? "",
+        items: expense.items ?? [],
+        createdAt: expense.createdAt,
+        updatedAt: expense.updatedAt,
+      },
+      deletedAt: new Date(),
+    });
+
+    await ExpenseModel.findByIdAndDelete(id);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

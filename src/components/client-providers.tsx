@@ -11,13 +11,13 @@ import { SplashScreen } from "@/components/splash-screen";
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   const [splashDone, setSplashDone] = useState(() => {
     if (typeof window !== "undefined") {
-      return sessionStorage.getItem("b4t-splash") === "1";
+      return localStorage.getItem("b4t-splash") === "1";
     }
     return false;
   });
   const handleSplashFinish = useCallback(() => {
     setSplashDone(true);
-    sessionStorage.setItem("b4t-splash", "1");
+    localStorage.setItem("b4t-splash", "1");
   }, []);
 
   return (

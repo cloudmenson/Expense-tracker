@@ -224,11 +224,6 @@ export default function ExpensesPage() {
               person2Name={settings.person2Name}
               person1Color={settings.person1Color}
               person2Color={settings.person2Color}
-              onEdit={(e) => {
-                setEditing(e);
-                setShowForm(true);
-              }}
-              onDelete={(e) => setExpenseToDelete(e)}
               onView={(e) => setViewing(e)}
             />
           ))}
@@ -304,6 +299,10 @@ export default function ExpensesPage() {
               setViewing(null);
               setEditing(viewing);
               setShowForm(true);
+            }}
+            onDelete={() => {
+              setExpenseToDelete(viewing);
+              setViewing(null);
             }}
           />
         )}

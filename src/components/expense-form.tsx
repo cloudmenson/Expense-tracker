@@ -154,7 +154,7 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
         <div className="space-y-3">
           <label className="block text-xs font-semibold uppercase tracking-wider text-foreground/40">
             Товари ({items.length}) · Разом:{" "}
-            <span className="text-emerald-500">
+            <span className="text-rose-600 dark:text-pink-400">
               {settings.currency} {listTotal.toLocaleString("en-US")}
             </span>
           </label>
@@ -193,7 +193,7 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
           <button
             type="button"
             onClick={addItem}
-            className="flex items-center gap-2 text-sm font-medium text-emerald-500 transition-colors hover:text-emerald-400"
+            className="flex items-center gap-2 text-sm font-medium text-rose-600 transition-colors hover:text-rose-500 dark:text-pink-400 dark:hover:text-pink-300"
           >
             <Plus className="h-4 w-4" />
             Додати товар
@@ -231,7 +231,7 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
               onClick={() => set("categoryId", cat.id)}
               className={`group relative flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
                 form.categoryId === cat.id
-                  ? "bg-emerald-500/20 ring-2 ring-emerald-500/40"
+                  ? "bg-rose-500/20 ring-2 ring-rose-500/40"
                   : "bg-foreground/5 hover:bg-foreground/10"
               }`}
             >
@@ -271,7 +271,7 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
                 onClick={() => set("paidBy", p)}
                 className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                   form.paidBy === p
-                    ? "bg-emerald-500/15 text-emerald-600 ring-2 ring-emerald-500/40 dark:text-emerald-400"
+                    ? "bg-rose-500/15 text-rose-600 ring-2 ring-rose-500/40 dark:text-pink-400"
                     : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
                 }`}
               >

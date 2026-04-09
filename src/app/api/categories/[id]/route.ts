@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { CategoryModel } from "@/models/category";
+import { TrashModel } from "@/models/trash";
 
 /* PUT /api/categories/[id] — update a category */
 export async function PUT(
@@ -42,7 +43,7 @@ export async function PUT(
   }
 }
 
-/* DELETE /api/categories/[id] — delete a category */
+/* DELETE /api/categories/[id] — move category to trash */
 export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -51,7 +52,7 @@ export async function DELETE(
     const { id } = await params;
     await connectDB();
 
-    const category = await CategoryModel.findByIdAndDelete(id);
+    const category = await CategoryModel.findById(id).lean();
 
     if (!category) {
       return NextResponse.json(
@@ -59,6 +60,21 @@ export async function DELETE(
         { status: 404 },
       );
     }
+
+    // Move to trash before deleting
+    await TrashModel.create({
+      type: "category",
+      originalId: String(category._id),
+      data: {
+        name: category.name,
+        emoji: category.emoji,
+        color: category.color,
+        isCustom: category.isCustom,
+      },
+      deletedAt: new Date(),
+    });
+
+    await CategoryModel.findByIdAndDelete(id);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

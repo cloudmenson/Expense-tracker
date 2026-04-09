@@ -49,7 +49,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             key={t.id}
             className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl ${
               t.type === "success"
-                ? "bg-emerald-500 text-white"
+                ? "bg-rose-600 text-white"
                 : t.type === "error"
                   ? "bg-rose-500 text-white"
                   : "bg-foreground text-background"

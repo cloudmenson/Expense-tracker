@@ -1,6 +1,5 @@
 "use client";
 
-import { Pencil, Trash2 } from "lucide-react";
 import type { Expense, Category } from "@/types/expense";
 import { formatMoney } from "@/lib/utils";
 
@@ -12,8 +11,6 @@ interface ExpenseListItemProps {
   person2Name: string;
   person1Color?: string;
   person2Color?: string;
-  onEdit: (e: Expense) => void;
-  onDelete: (e: Expense) => void;
   onView?: (e: Expense) => void;
 }
 
@@ -23,10 +20,8 @@ export function ExpenseListItem({
   currency,
   person1Name,
   person2Name,
-  person1Color = "#22c55e",
+  person1Color = "#e11d48",
   person2Color = "#3b82f6",
-  onEdit,
-  onDelete,
   onView,
 }: ExpenseListItemProps) {
   const borderColor =
@@ -96,22 +91,6 @@ export function ExpenseListItem({
         <p className="shrink-0 text-sm font-bold tabular-nums sm:text-base">
           {formatMoney(expense.amount, currency)}
         </p>
-
-        {/* Actions — always visible on mobile, hover on desktop */}
-        <div className="flex shrink-0 gap-0.5 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
-          <button
-            onClick={() => onEdit(expense)}
-            className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-foreground/10 hover:text-foreground active:bg-foreground/10"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => onDelete(expense)}
-            className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-rose-500/10 hover:text-rose-500 active:bg-rose-500/10 active:text-rose-500"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        </div>
       </div>
     </div>
   );

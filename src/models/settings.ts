@@ -23,7 +23,7 @@ const SettingsSchema = new Schema(
       enum: ["light", "dark", "system"],
       default: "system",
     },
-    person1Color: { type: String, default: "#22c55e" },
+    person1Color: { type: String, default: "#e11d48" },
     person2Color: { type: String, default: "#3b82f6" },
   },
   {

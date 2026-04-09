@@ -48,7 +48,7 @@ export function BudgetProgress({
               ? "bg-rose-500/20 text-rose-600 dark:text-rose-300"
               : pct > 80
                 ? "bg-amber-500/20 text-amber-600 dark:text-amber-300"
-                : "bg-emerald-500/20 text-emerald-600 dark:text-emerald-300"
+                : "bg-rose-500/15 text-rose-600 dark:text-pink-300"
           }`}
         >
           {pct.toFixed(0)}%
@@ -63,7 +63,7 @@ export function BudgetProgress({
               ? "bg-linear-to-r from-rose-500 to-red-400"
               : pct > 80
                 ? "bg-linear-to-r from-amber-500 to-orange-400"
-                : "bg-linear-to-r from-emerald-500 to-lime-400"
+                : "bg-linear-to-r from-rose-500 to-pink-400"
           }`}
           style={{ width: `${pct}%` }}
         />

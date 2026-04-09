@@ -36,7 +36,7 @@ export async function GET() {
       person2Name: settings.person2Name,
       monthlyBudget: settings.monthlyBudget,
       theme: settings.theme,
-      person1Color: settings.person1Color ?? "#22c55e",
+      person1Color: settings.person1Color ?? "#e11d48",
       person2Color: settings.person2Color ?? "#3b82f6",
     };
 
@@ -76,7 +76,7 @@ export async function PUT(request: Request) {
       person2Name: settings.person2Name,
       monthlyBudget: settings.monthlyBudget,
       theme: settings.theme,
-      person1Color: settings.person1Color ?? "#22c55e",
+      person1Color: settings.person1Color ?? "#e11d48",
       person2Color: settings.person2Color ?? "#3b82f6",
     };
 

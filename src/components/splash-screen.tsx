@@ -3,96 +3,129 @@
 import { useEffect, useState } from "react";
 import { HeartLogo } from "@/components/heart-logo";
 
+type Phase = "enter" | "visible" | "exit";
+
 export function SplashScreen({ onFinish }: { onFinish: () => void }) {
-  const [progress, setProgress] = useState(0);
-  const [fadeOut, setFadeOut] = useState(false);
+  const [phase, setPhase] = useState<Phase>("enter");
 
   useEffect(() => {
-    // Quick 500ms splash, then auto-fade
-    const duration = 500;
-    const interval = 30;
-    const step = 100 / (duration / interval);
-    let current = 0;
-
-    const timer = setInterval(() => {
-      current += step;
-      if (current >= 100) {
-        current = 100;
-        clearInterval(timer);
-        // Start fade-out
-        setTimeout(() => setFadeOut(true), 100);
-        // Remove splash after fade animation
-        setTimeout(() => onFinish(), 500);
-      }
-      setProgress(current);
-    }, interval);
-
-    return () => clearInterval(timer);
+    // enter: component mounts invisible
+    // visible: fade/slide in after 80ms
+    const t1 = setTimeout(() => setPhase("visible"), 80);
+    // exit: start fade-out after 1.6s
+    const t2 = setTimeout(() => setPhase("exit"), 1600);
+    // unmount after exit animation
+    const t3 = setTimeout(() => onFinish(), 2100);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, [onFinish]);
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center transition-opacity duration-500 ${
-        fadeOut ? "opacity-0" : "opacity-100"
+      className={`fixed inset-0 z-9999 flex flex-col items-center justify-center transition-opacity duration-500 ${
+        phase === "exit" ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       style={{ background: "var(--background)" }}
     >
-      {/* Ambient glow */}
+      {/* Background glows */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
-          className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20 blur-[120px]"
+          className={`absolute left-1/2 top-1/2 h-175 w-175 -translate-x-1/2 -translate-y-1/2 rounded-full blur-[160px] transition-all duration-1000 ${
+            phase === "enter"
+              ? "opacity-0 scale-75"
+              : "opacity-[0.18] scale-100"
+          }`}
           style={{
             background:
-              "radial-gradient(circle, #22c55e 0%, #84cc16 40%, transparent 70%)",
+              "radial-gradient(circle, #e11d48 0%, #f472b6 45%, transparent 70%)",
           }}
+        />
+        <div
+          className={`absolute right-[20%] top-[20%] h-62.5 w-62.5 rounded-full blur-[100px] transition-all duration-1000 delay-200 ${
+            phase === "enter" ? "opacity-0" : "opacity-10"
+          }`}
+          style={{ background: "#f472b6" }}
+        />
+        <div
+          className={`absolute bottom-[20%] left-[15%] h-50 w-50 rounded-full blur-[80px] transition-all duration-1000 delay-300 ${
+            phase === "enter" ? "opacity-0" : "opacity-8"
+          }`}
+          style={{ background: "#fb923c" }}
         />
       </div>
 
-      {/* Content */}
-      <div className="relative flex flex-col items-center gap-6">
-        {/* Logo with pulse animation */}
+      {/* Main content */}
+      <div
+        className={`relative flex flex-col items-center gap-7 transition-all duration-700 ease-out ${
+          phase === "enter"
+            ? "opacity-0 translate-y-5"
+            : "opacity-100 translate-y-0"
+        }`}
+      >
+        {/* Logo */}
         <div className="relative">
-          {/* Outer ring pulse */}
-          <div className="absolute inset-0 animate-[splash-ping_2s_ease-in-out_infinite] rounded-3xl bg-gradient-to-br from-emerald-400 to-lime-400 opacity-20" />
-          {/* Logo icon */}
+          {/* Soft outer glow ring */}
+          <div
+            className="absolute rounded-3xl"
+            style={{
+              inset: "-14px",
+              background:
+                "radial-gradient(circle, rgba(225,29,72,0.18) 0%, transparent 70%)",
+              animation:
+                phase === "visible"
+                  ? "splash-ping 3s ease-in-out infinite"
+                  : "none",
+            }}
+          />
           <HeartLogo
-            wrapperClass="relative h-24 w-24 rounded-3xl shadow-2xl shadow-emerald-500/30"
-            svgSize={52}
+            wrapperClass="relative h-[88px] w-[88px] rounded-3xl shadow-2xl shadow-rose-600/25"
+            svgSize={46}
           />
         </div>
 
-        {/* App name */}
+        {/* Title */}
         <div className="flex flex-col items-center gap-2">
           <h1
-            className="text-2xl font-bold tracking-wide"
+            className="text-[26px] font-bold tracking-tight"
             style={{ color: "var(--foreground)" }}
           >
-            Budget for Two
+            Budget{" "}
+            <span
+              style={{
+                color: "var(--brand)",
+                fontStyle: "italic",
+              }}
+            >
+              for Two
+            </span>
           </h1>
           <p
-            className="text-sm font-medium tracking-wider"
-            style={{ color: "var(--muted)" }}
+            className="text-[11px] font-semibold tracking-[0.2em] uppercase"
+            style={{ color: "var(--muted)", opacity: 0.7 }}
           >
             Ваш спільний бюджет
           </p>
         </div>
 
-        {/* Progress bar */}
-        <div className="mt-4 w-56">
-          <div
-            className="h-1 overflow-hidden rounded-full"
-            style={{ background: "var(--border)" }}
-          >
-            <div
-              className="h-full rounded-full transition-all duration-100 ease-linear"
+        {/* Animated dots */}
+        <div className="flex items-center gap-2">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="block h-1.25 w-1.25 rounded-full"
               style={{
-                width: `${progress}%`,
-                background:
-                  "linear-gradient(90deg, #22c55e 0%, #84cc16 50%, #4ade80 100%)",
-                boxShadow: "0 0 12px rgba(34, 197, 94, 0.5)",
+                background: "var(--brand)",
+                animation:
+                  phase === "visible"
+                    ? `splash-dots 1.4s ease-in-out ${i * 0.18}s infinite`
+                    : "none",
+                opacity: 0.25,
               }}
             />
-          </div>
+          ))}
         </div>
       </div>
     </div>

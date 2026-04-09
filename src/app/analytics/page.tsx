@@ -166,7 +166,7 @@ export default function AnalyticsPage() {
               onClick={() => setPeriod(p)}
               className={`rounded-xl px-4 py-2 text-sm font-medium transition-all ${
                 activePeriod === p
-                  ? "bg-emerald-500/15 text-emerald-600 ring-2 ring-emerald-500/30 dark:text-emerald-400"
+                  ? "bg-rose-500/15 text-rose-600 ring-2 ring-rose-500/30 dark:text-pink-400"
                   : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
               }`}
             >
@@ -182,7 +182,7 @@ export default function AnalyticsPage() {
           label="Всього витрат"
           value={formatMoney(totalAll, settings.currency)}
           icon={Wallet}
-          color="emerald"
+          color="rose"
         />
         <StatCard
           label="Середнє/міс"

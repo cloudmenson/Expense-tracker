@@ -16,6 +16,16 @@ import {
 } from "recharts";
 import type { Category } from "@/types/expense";
 
+const tooltipStyle = {
+  background: "var(--surface)",
+  backdropFilter: "blur(16px)",
+  border: "1px solid var(--border)",
+  borderRadius: "12px",
+  fontSize: "12px",
+  color: "var(--foreground)",
+  boxShadow: "var(--glass-shadow)",
+};
+
 /* ─── Monthly bar chart ─── */
 interface MonthlyChartProps {
   data: { month: string; total: number; person1: number; person2: number }[];
@@ -55,7 +65,7 @@ export function MonthlyBarChart({ data }: MonthlyChartProps) {
             <Bar
               dataKey="person1"
               stackId="a"
-              fill="#22c55e"
+              fill="#e11d48"
               radius={[0, 0, 0, 0]}
               name="Партнер 1"
             />
@@ -108,13 +118,7 @@ export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
                 formatter={(val) =>
                   `${currency} ${Number(val).toLocaleString("uk-UA")}`
                 }
-                contentStyle={{
-                  background: "rgba(255,255,255,0.9)",
-                  backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(0,0,0,0.08)",
-                  borderRadius: "12px",
-                  fontSize: "12px",
-                }}
+                contentStyle={tooltipStyle}
               />
             </PieChart>
           </ResponsiveContainer>
@@ -154,8 +158,8 @@ export function SpendingTrendChart({ data }: TrendChartProps) {
           <AreaChart data={data}>
             <defs>
               <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                <stop offset="5%" stopColor="#e11d48" stopOpacity={0.25} />
+                <stop offset="95%" stopColor="#e11d48" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
@@ -171,19 +175,11 @@ export function SpendingTrendChart({ data }: TrendChartProps) {
               axisLine={false}
               width={45}
             />
-            <Tooltip
-              contentStyle={{
-                background: "rgba(255,255,255,0.9)",
-                backdropFilter: "blur(16px)",
-                border: "1px solid rgba(0,0,0,0.08)",
-                borderRadius: "12px",
-                fontSize: "12px",
-              }}
-            />
+            <Tooltip contentStyle={tooltipStyle} />
             <Area
               type="monotone"
               dataKey="amount"
-              stroke="#22c55e"
+              stroke="#e11d48"
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorAmt)"
@@ -229,18 +225,10 @@ export function PersonCompareChart({ data }: PersonCompareProps) {
               axisLine={false}
               width={80}
             />
-            <Tooltip
-              contentStyle={{
-                background: "rgba(255,255,255,0.9)",
-                backdropFilter: "blur(16px)",
-                border: "1px solid rgba(0,0,0,0.08)",
-                borderRadius: "12px",
-                fontSize: "12px",
-              }}
-            />
+            <Tooltip contentStyle={tooltipStyle} />
             <Bar
               dataKey="person1"
-              fill="#22c55e"
+              fill="#e11d48"
               radius={[0, 4, 4, 0]}
               name="Партнер 1"
             />

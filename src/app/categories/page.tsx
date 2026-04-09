@@ -115,7 +115,7 @@ export default function CategoriesPage() {
                 <div className="flex items-center gap-2">
                   <p className="truncate font-semibold">{cat.name}</p>
                   {cat.isCustom && (
-                    <span className="animate-flip-in rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-600 dark:text-emerald-300">
+                    <span className="animate-flip-in rounded-md bg-rose-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-rose-600 dark:text-pink-300">
                       Своя
                     </span>
                   )}
