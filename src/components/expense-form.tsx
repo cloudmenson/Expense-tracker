@@ -1,15 +1,18 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Plus, Trash2, ShoppingCart, ShoppingBag } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
 import { EmojiPicker } from "@/components/ui/emoji-picker";
+import { Modal } from "@/components/ui/modal";
+import { CategoryForm } from "@/components/category-form";
 import { useToast } from "@/components/ui/toast";
 import { todayISO } from "@/lib/utils";
 import type { ExpenseDraft, Expense, ExpenseItem } from "@/types/expense";
 
 interface ExpenseFormProps {
   expense?: Expense | null;
+  defaultCategoryId?: string;
   onDone: () => void;
 }
 
@@ -41,14 +44,19 @@ function buildInitial(
   };
 }
 
-export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
+export function ExpenseForm({
+  expense,
+  defaultCategoryId,
+  onDone,
+}: ExpenseFormProps) {
   const { categories, settings, addExpense, updateExpense } = useExpenseStore();
   const { toast } = useToast();
 
   const initialData = useMemo(
-    () => buildInitial(expense, categories[0]?.id ?? "other"),
+    () =>
+      buildInitial(expense, defaultCategoryId ?? categories[0]?.id ?? "other"),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [expense?.id],
+    [expense?.id, defaultCategoryId],
   );
 
   const [form, setForm] = useState<ExpenseDraft>(initialData);
@@ -99,6 +107,27 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
   };
 
   const selectedCat = categories.find((c) => c.id === form.categoryId);
+
+  // Long-press on category button → open category editor
+  const [editingCat, setEditingCat] = useState<
+    (typeof categories)[number] | null
+  >(null);
+  const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longFired = useRef(false);
+
+  const onCatPressStart = (cat: (typeof categories)[number]) => {
+    longFired.current = false;
+    pressTimer.current = setTimeout(() => {
+      longFired.current = true;
+      setEditingCat(cat);
+    }, 500);
+  };
+  const onCatPressEnd = () => {
+    if (pressTimer.current) {
+      clearTimeout(pressTimer.current);
+      pressTimer.current = null;
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -228,7 +257,13 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
             <button
               key={cat.id}
               type="button"
-              onClick={() => set("categoryId", cat.id)}
+              onClick={() => {
+                if (!longFired.current) set("categoryId", cat.id);
+              }}
+              onPointerDown={() => onCatPressStart(cat)}
+              onPointerUp={onCatPressEnd}
+              onPointerLeave={onCatPressEnd}
+              onPointerCancel={onCatPressEnd}
               className={`group relative flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
                 form.categoryId === cat.id
                   ? "bg-rose-500/20 ring-2 ring-rose-500/40"
@@ -300,6 +335,19 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
       <button type="submit" className="btn-primary w-full">
         {expense ? "Зберегти зміни" : "Додати витрату"}
       </button>
+
+      {/* Long-press: category editor */}
+      <Modal
+        open={!!editingCat}
+        onClose={() => setEditingCat(null)}
+        title="Редагувати категорію"
+        size="sm"
+      >
+        <CategoryForm
+          category={editingCat}
+          onDone={() => setEditingCat(null)}
+        />
+      </Modal>
     </form>
   );
 }

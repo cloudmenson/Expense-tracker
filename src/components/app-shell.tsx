@@ -1,15 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard,
-  Receipt,
-  FolderOpen,
-  BarChart3,
-  Settings,
-  Trash2,
-} from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useRef } from "react";
+import { LayoutDashboard, Receipt, Settings, Trash2 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { HeartLogo } from "@/components/heart-logo";
 
@@ -20,18 +14,6 @@ const NAV_ITEMS = [
     label: "Витрати",
     mobileLabel: "Витрати",
     icon: Receipt,
-  },
-  {
-    href: "/categories",
-    label: "Категорії",
-    mobileLabel: "Категорії",
-    icon: FolderOpen,
-  },
-  {
-    href: "/analytics",
-    label: "Аналітика",
-    mobileLabel: "Аналітика",
-    icon: BarChart3,
   },
   {
     href: "/settings",
@@ -49,11 +31,32 @@ const NAV_ITEMS = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    // Only horizontal swipes (more horizontal than vertical, min 60px)
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.8) return;
+    const hrefs = NAV_ITEMS.map((i) => i.href);
+    const current = hrefs.findIndex((h) =>
+      h === "/" ? pathname === "/" : pathname.startsWith(h),
+    );
+    if (dx < 0 && current < hrefs.length - 1) router.push(hrefs[current + 1]);
+    if (dx > 0 && current > 0) router.push(hrefs[current - 1]);
+  };
 
   return (
     <>
       {/* ── Desktop sidebar ── */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r border-white/10 bg-surface/60 backdrop-blur-2xl lg:flex dark:border-white/5">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-65 flex-col border-r border-white/10 bg-surface/60 backdrop-blur-2xl lg:flex dark:border-white/5">
         <div className="flex h-16 items-center gap-3 px-6">
           <HeartLogo wrapperClass="h-9 w-9 rounded-xl" svgSize={20} />
           <span className="text-sm font-bold tracking-wide">
@@ -77,7 +80,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 }`}
               >
                 <item.icon
-                  className={`h-[18px] w-[18px] transition-colors ${active ? "text-rose-600 dark:text-pink-400" : "text-foreground/40 group-hover:text-foreground/60"}`}
+                  className={`h-4.5 w-4.5 transition-colors ${active ? "text-rose-600 dark:text-pink-400" : "text-foreground/40 group-hover:text-foreground/60"}`}
                 />
                 {item.label}
               </Link>
@@ -103,7 +106,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* ── Content ── */}
-      <main className="flex-1 pt-[calc(52px+max(12px,env(safe-area-inset-top)))] pb-[calc(56px+env(safe-area-inset-bottom))] lg:pl-[260px] lg:pt-0 lg:pb-0">
+      <main
+        className="flex-1 pt-[calc(52px+max(12px,env(safe-area-inset-top)))] pb-[calc(56px+env(safe-area-inset-bottom))] lg:pl-65 lg:pt-0 lg:pb-0"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
           {children}
         </div>
@@ -121,28 +128,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="group relative flex flex-1 touch-manipulation select-none flex-col items-center justify-center gap-0.5 active:opacity-70"
+                className="group relative flex flex-1 touch-manipulation select-none items-center justify-center active:opacity-70"
               >
                 {/* Active pill */}
                 {active && (
-                  <span className="absolute inset-x-2 top-0 h-[3px] rounded-b-full bg-rose-500 dark:bg-pink-400" />
+                  <span className="absolute inset-x-2 top-0 h-0.75 rounded-b-full bg-rose-500 dark:bg-pink-400" />
                 )}
                 <item.icon
-                  className={`h-[22px] w-[22px] ${
+                  className={`h-6 w-6 ${
                     active
                       ? "text-rose-600 dark:text-pink-400"
                       : "text-foreground/35"
                   }`}
                 />
-                <span
-                  className={`text-[10px] font-semibold leading-none ${
-                    active
-                      ? "text-rose-600 dark:text-pink-400"
-                      : "text-foreground/35"
-                  }`}
-                >
-                  {item.mobileLabel}
-                </span>
               </Link>
             );
           })}
