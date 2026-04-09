@@ -25,7 +25,37 @@ export default function AnalyticsPage() {
   const { expenses, categories, settings } = useExpenseStore();
   const [period, setPeriod] = useState(6);
 
-  const months = useMemo(() => getLastMonths(period), [period]);
+  // Calculate available month counts from actual expenses
+  const availablePeriods = useMemo(() => {
+    if (expenses.length === 0) return [3, 6, 12];
+
+    const months = new Set(expenses.map((e) => e.date.slice(0, 7)));
+    const monthCount = months.size;
+
+    // Dynamic options based on available data
+    if (monthCount === 1) {
+      return [1]; // Only current/recent month
+    } else if (monthCount <= 3) {
+      return [1, 3]; // Current month and last 3
+    } else if (monthCount <= 6) {
+      return [3, 6]; // Last 3 and 6 months
+    } else {
+      return [3, 6, 12]; // All options
+    }
+  }, [expenses]);
+
+  // Auto-select valid period
+  const activePeriod = useMemo(() => {
+    if (availablePeriods.includes(period)) {
+      return period;
+    }
+    // If current period not available, pick the highest available
+    return availablePeriods.length > 0
+      ? availablePeriods[availablePeriods.length - 1]
+      : 6;
+  }, [period, availablePeriods]);
+
+  const months = useMemo(() => getLastMonths(activePeriod), [activePeriod]);
   const monthKey = currentMonthKey();
 
   // Monthly chart
@@ -130,12 +160,12 @@ export default function AnalyticsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          {[3, 6, 12].map((p) => (
+          {availablePeriods.map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={`rounded-xl px-4 py-2 text-sm font-medium transition-all ${
-                period === p
+                activePeriod === p
                   ? "bg-emerald-500/15 text-emerald-600 ring-2 ring-emerald-500/30 dark:text-emerald-400"
                   : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
               }`}
