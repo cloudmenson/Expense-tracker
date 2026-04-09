@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 interface BudgetProgressProps {
   spent: number;
   budget: number;
@@ -11,18 +13,29 @@ export function BudgetProgress({
   budget,
   currency,
 }: BudgetProgressProps) {
-  const pct = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
-  const isOver = spent > budget;
+  const [displaySpent, setDisplaySpent] = useState(spent);
+  const hasMountedRef = useRef(false);
+
+  useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
+    setDisplaySpent(spent);
+  }, [spent]);
+
+  const pct = budget > 0 ? Math.min((displaySpent / budget) * 100, 100) : 0;
+  const isOver = displaySpent > budget;
 
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="glass-card rounded-2xl p-5 backdrop-blur-xl">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
             Бюджет на місяць
           </p>
-          <p className="mt-1 text-2xl font-bold tracking-tight">
-            {currency} {spent.toLocaleString("en-US")}
+          <p className="animate-count-up mt-1 text-2xl font-bold tracking-tight">
+            {currency} {Math.round(displaySpent).toLocaleString("en-US")}
             <span className="text-sm font-normal text-foreground/40">
               {" "}
               / {currency} {budget.toLocaleString("en-US")}
@@ -30,12 +43,12 @@ export function BudgetProgress({
           </p>
         </div>
         <div
-          className={`rounded-full px-3 py-1 text-xs font-semibold ${
+          className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
             isOver
-              ? "bg-rose-500/15 text-rose-600 dark:text-rose-400"
+              ? "bg-rose-500/20 text-rose-600 dark:text-rose-300"
               : pct > 80
-                ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
-                : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                ? "bg-amber-500/20 text-amber-600 dark:text-amber-300"
+                : "bg-emerald-500/20 text-emerald-600 dark:text-emerald-300"
           }`}
         >
           {pct.toFixed(0)}%
@@ -57,8 +70,8 @@ export function BudgetProgress({
       </div>
 
       {isOver && (
-        <p className="mt-2 text-xs font-medium text-rose-500">
-          Перевищення на {currency} {(spent - budget).toLocaleString("en-US")}
+        <p className="mt-2 animate-flip-in text-xs font-medium text-rose-500">
+          ⚠️ Перевищення на {currency} {(displaySpent - budget).toLocaleString("en-US")}
         </p>
       )}
     </div>

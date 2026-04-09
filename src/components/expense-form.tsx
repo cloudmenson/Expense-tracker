@@ -229,13 +229,15 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
               key={cat.id}
               type="button"
               onClick={() => set("categoryId", cat.id)}
-              className={`flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-105 ${
+              className={`group relative flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
                 form.categoryId === cat.id
-                  ? "bg-emerald-500/15 ring-2 ring-emerald-500/40"
+                  ? "bg-emerald-500/20 ring-2 ring-emerald-500/40"
                   : "bg-foreground/5 hover:bg-foreground/10"
               }`}
             >
-              <span className="text-xl">{cat.emoji}</span>
+              <span className="text-xl transition-transform group-hover:animate-emoji-bounce">
+                {cat.emoji}
+              </span>
               <span className="text-[10px] font-medium leading-tight text-foreground/60">
                 {cat.name}
               </span>

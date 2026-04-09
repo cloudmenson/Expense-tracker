@@ -100,12 +100,12 @@ export default function CategoriesPage() {
           return (
             <div
               key={cat.id}
-              className="glass-card group relative flex items-center gap-4 rounded-2xl p-4 transition-all hover:scale-[1.01] hover:shadow-md"
+              className="glass-card group relative flex items-center gap-4 rounded-2xl p-4 transition-all hover:scale-[1.02] hover:shadow-lg"
             >
               {/* Emoji */}
               <div
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl"
-                style={{ backgroundColor: cat.color + "18" }}
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl transition-transform group-hover:animate-emoji-bounce"
+                style={{ backgroundColor: cat.color + "20" }}
               >
                 {cat.emoji}
               </div>
@@ -115,7 +115,7 @@ export default function CategoriesPage() {
                 <div className="flex items-center gap-2">
                   <p className="truncate font-semibold">{cat.name}</p>
                   {cat.isCustom && (
-                    <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                    <span className="animate-flip-in rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-600 dark:text-emerald-300">
                       Своя
                     </span>
                   )}
@@ -127,7 +127,7 @@ export default function CategoriesPage() {
 
               {/* Color indicator */}
               <div
-                className="h-6 w-1.5 shrink-0 rounded-full"
+                className="h-6 w-1.5 shrink-0 rounded-full transition-all group-hover:w-2"
                 style={{ backgroundColor: cat.color }}
               />
 

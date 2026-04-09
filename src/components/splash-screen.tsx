@@ -8,7 +8,8 @@ export function SplashScreen({ onFinish }: { onFinish: () => void }) {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const duration = 3000;
+    // Quick 500ms splash, then auto-fade
+    const duration = 500;
     const interval = 30;
     const step = 100 / (duration / interval);
     let current = 0;
@@ -19,9 +20,9 @@ export function SplashScreen({ onFinish }: { onFinish: () => void }) {
         current = 100;
         clearInterval(timer);
         // Start fade-out
-        setTimeout(() => setFadeOut(true), 200);
+        setTimeout(() => setFadeOut(true), 100);
         // Remove splash after fade animation
-        setTimeout(() => onFinish(), 700);
+        setTimeout(() => onFinish(), 500);
       }
       setProgress(current);
     }, interval);

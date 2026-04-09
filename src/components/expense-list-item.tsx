@@ -29,8 +29,21 @@ export function ExpenseListItem({
   onDelete,
   onView,
 }: ExpenseListItemProps) {
+  const borderColor = expense.paidBy === "person1" ? person1Color : person2Color;
+  
+  // Parse RGB from hex color
+  const r = parseInt(borderColor.slice(1, 3), 16);
+  const g = parseInt(borderColor.slice(3, 5), 16);
+  const b = parseInt(borderColor.slice(5, 7), 16);
+
   return (
-    <div className="glass-card group rounded-2xl p-3 transition-all hover:shadow-md sm:p-4">
+    <div
+      className="glass-card group rounded-2xl p-3 transition-all hover:scale-[1.01] hover:shadow-md sm:p-4"
+      style={{
+        borderLeft: `3px solid ${borderColor}`,
+        boxShadow: `0 8px 32px rgba(${r}, ${g}, ${b}, 0.1)`,
+      }}
+    >
       <div className="flex items-center gap-3">
         {/* Clickable area — opens detail on mobile */}
         <div

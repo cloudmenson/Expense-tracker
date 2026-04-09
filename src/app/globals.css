@@ -20,16 +20,16 @@
 .dark {
   --background: #080c08;
   --foreground: #e8f0e8;
-  --muted: #7a917a;
+  --muted: #86efac;
   --surface: #0f170f;
   --surface-strong: #e8f0e8;
-  --border: rgba(134, 239, 172, 0.08);
+  --border: rgba(134, 239, 172, 0.12);
   --brand: #4ade80;
-  --brand-soft: rgba(74, 222, 128, 0.12);
-  --glass-bg: rgba(15, 23, 15, 0.6);
-  --glass-border: rgba(74, 222, 128, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  --dot-color: rgba(134, 239, 172, 0.06);
+  --brand-soft: rgba(74, 222, 128, 0.15);
+  --glass-bg: rgba(15, 23, 15, 0.75);
+  --glass-border: rgba(74, 222, 128, 0.15);
+  --glass-shadow: 0 8px 32px rgba(74, 222, 128, 0.15);
+  --dot-color: rgba(134, 239, 172, 0.08);
 }
 
 @theme inline {
@@ -150,6 +150,73 @@ select.input-glass {
 select.input-glass option {
   background: var(--surface);
   color: var(--foreground);
+}
+
+/* ─── Animations ─── */
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes flip-in {
+  from {
+    opacity: 0;
+    transform: rotateY(90deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotateY(0);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+@keyframes emoji-bounce {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.15) rotate(10deg);
+  }
+}
+
+.animate-count-up {
+  animation: count-up 0.6s ease-out;
+}
+
+.animate-flip-in {
+  animation: flip-in 0.5s ease-out;
+  perspective: 1000px;
+}
+
+.animate-emoji-bounce {
+  animation: emoji-bounce 0.4s ease-in-out;
 }
 
 /* Date input fix — prevent native popup overlay issues & overflow */
