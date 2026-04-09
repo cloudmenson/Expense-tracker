@@ -21,8 +21,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f0f5f0" },
-    { media: "(prefers-color-scheme: dark)", color: "#080c08" },
+    { media: "(prefers-color-scheme: light)", color: "#faf9f9" },
+    { media: "(prefers-color-scheme: dark)", color: "#12090f" },
   ],
 };
 
@@ -61,8 +61,14 @@ export const metadata: Metadata = {
     description: siteConfig.description,
   },
   icons: {
-    icon: "/icons/icon-192.png",
+    icon: [
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
     apple: "/apple-touch-icon.png",
+    shortcut: "/favicon.ico",
   },
 };
 
