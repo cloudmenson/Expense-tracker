@@ -11,6 +11,7 @@ interface ExpenseListItemProps {
   person2Name: string;
   person1Color?: string;
   person2Color?: string;
+  hideCategoryBadge?: boolean;
   onView?: (e: Expense) => void;
 }
 
@@ -22,6 +23,7 @@ export function ExpenseListItem({
   person2Name,
   person1Color = "#e11d48",
   person2Color = "#3b82f6",
+  hideCategoryBadge = false,
   onView,
 }: ExpenseListItemProps) {
   const borderColor =
@@ -34,10 +36,10 @@ export function ExpenseListItem({
 
   return (
     <div
-      className="glass-card group rounded-2xl p-3 transition-all hover:scale-[1.01] hover:shadow-md sm:p-4"
+      className="glass-card group rounded-2xl p-4 transition-all hover:scale-[1.01] hover:shadow-md"
       style={{
         borderLeft: `3px solid ${borderColor}`,
-        boxShadow: `0 8px 32px rgba(${r}, ${g}, ${b}, 0.1)`,
+        boxShadow: `0 4px 20px rgba(${r}, ${g}, ${b}, 0.08)`,
       }}
     >
       <div className="flex items-center gap-3">
@@ -60,15 +62,17 @@ export function ExpenseListItem({
               <p className="truncate text-sm font-semibold sm:text-base">
                 {expense.title}
               </p>
-              <span
-                className="hidden shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-medium sm:inline"
-                style={{
-                  backgroundColor: (category?.color ?? "#94a3b8") + "20",
-                  color: category?.color ?? "#94a3b8",
-                }}
-              >
-                {category?.name ?? "Інше"}
-              </span>
+              {!hideCategoryBadge && (
+                <span
+                  className="hidden shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-medium sm:inline"
+                  style={{
+                    backgroundColor: (category?.color ?? "#94a3b8") + "20",
+                    color: category?.color ?? "#94a3b8",
+                  }}
+                >
+                  {category?.name ?? "Інше"}
+                </span>
+              )}
             </div>
             <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-foreground/40 sm:text-xs">
               <span

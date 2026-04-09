@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -8,11 +8,12 @@ import {
   Plus,
   Search,
   Receipt,
-  ArrowUpDown,
+  CalendarDays,
   SlidersHorizontal,
+  X,
 } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
-import { formatMoney, filterByMonth, monthLabel } from "@/lib/utils";
+import { formatMoney } from "@/lib/utils";
 import { ExpenseListItem } from "@/components/expense-list-item";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
@@ -33,30 +34,33 @@ export default function CategoryExpensesPage() {
   const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
   const [viewing, setViewing] = useState<Expense | null>(null);
   const [search, setSearch] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("all");
   const [selectedPerson, setSelectedPerson] = useState<
     "all" | "person1" | "person2"
   >("all");
   const [sortBy, setSortBy] = useState<SortKey>("date-desc");
   const [showFilters, setShowFilters] = useState(false);
 
-  // All expenses for this category
+  // Date range filter
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
   const catExpenses = useMemo(
     () => expenses.filter((e) => e.categoryId === id),
     [expenses, id],
   );
 
-  const monthsWithExpenses = useMemo(() => {
-    const monthSet = new Set(catExpenses.map((e) => e.date.slice(0, 7)));
-    return Array.from(monthSet).sort().reverse();
-  }, [catExpenses]);
-
   const filtered = useMemo(() => {
     let result = [...catExpenses];
 
-    if (selectedMonth !== "all") result = filterByMonth(result, selectedMonth);
+    // Date range
+    if (dateFrom) result = result.filter((e) => e.date >= dateFrom);
+    if (dateTo) result = result.filter((e) => e.date <= dateTo);
+
+    // Person
     if (selectedPerson !== "all")
       result = result.filter((e) => e.paidBy === selectedPerson);
+
+    // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -66,6 +70,7 @@ export default function CategoryExpensesPage() {
       );
     }
 
+    // Sort
     result.sort((a, b) => {
       switch (sortBy) {
         case "date-desc":
@@ -80,29 +85,44 @@ export default function CategoryExpensesPage() {
     });
 
     return result;
-  }, [catExpenses, selectedMonth, selectedPerson, search, sortBy]);
+  }, [catExpenses, dateFrom, dateTo, selectedPerson, search, sortBy]);
 
   const total = filtered.reduce((s, e) => s + e.amount, 0);
 
+  const hasDateFilter = dateFrom || dateTo;
   const activeFilterCount = [
-    selectedMonth !== "all",
+    hasDateFilter,
     selectedPerson !== "all",
-    search.trim() !== "",
     sortBy !== "date-desc",
   ].filter(Boolean).length;
 
+  const clearAllFilters = useCallback(() => {
+    setSelectedPerson("all");
+    setSortBy("date-desc");
+    setSearch("");
+    setDateFrom("");
+    setDateTo("");
+  }, []);
+
+  const p1 = settings.person1Name || "Person 1";
+  const p2 = settings.person2Name || "Person 2";
+  const p1Initial = p1.charAt(0).toUpperCase();
+  const p2Initial = p2.charAt(0).toUpperCase();
+  const p1Color = settings.person1Color || "#e11d48";
+  const p2Color = settings.person2Color || "#3b82f6";
+
   return (
-    <div className="space-y-5">
-      {/* Back + header */}
+    <div className="space-y-4">
+      {/* ── Back + header ── */}
       <div className="flex items-start gap-3">
         <Link
           href="/expenses"
-          className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground/60 transition-colors hover:bg-foreground/10 hover:text-foreground"
+          className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground/60 transition-colors hover:bg-foreground/10 hover:text-foreground"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             {cat && (
               <div
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg"
@@ -115,13 +135,16 @@ export default function CategoryExpensesPage() {
                 {cat.emoji}
               </div>
             )}
-            <h1 className="truncate text-2xl font-bold tracking-tight">
-              {cat?.name ?? "Категорія"}
-            </h1>
+            <div>
+              <h1 className="truncate text-xl font-bold tracking-tight sm:text-2xl">
+                {cat?.name ?? "Категорія"}
+              </h1>
+              <p className="text-xs text-foreground/45">
+                {filtered.length} записів ·{" "}
+                {formatMoney(total, settings.currency)}
+              </p>
+            </div>
           </div>
-          <p className="mt-0.5 text-sm text-foreground/50">
-            {filtered.length} записів · {formatMoney(total, settings.currency)}
-          </p>
         </div>
         <button
           onClick={() => {
@@ -131,147 +154,179 @@ export default function CategoryExpensesPage() {
           className="btn-primary mt-0.5 shrink-0"
         >
           <Plus className="h-4 w-4" />
-          Додати
+          <span className="hidden sm:inline">Додати</span>
         </button>
       </div>
 
-      {/* Month pills */}
-      {monthsWithExpenses.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto pb-0.5">
+      {/* ── Toolbar ── */}
+      <div className="space-y-3">
+        {/* Search + filter toggle */}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/30" />
+            <input
+              type="text"
+              placeholder="Пошук..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input-glass w-full pl-9 text-sm"
+            />
+          </div>
           <button
-            onClick={() => setSelectedMonth("all")}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-              selectedMonth === "all"
-                ? "bg-rose-500 text-white shadow-sm shadow-rose-500/30"
-                : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
+            onClick={() => setShowFilters((v) => !v)}
+            className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all ${
+              showFilters || activeFilterCount > 0
+                ? "bg-rose-500/15 text-rose-600 dark:text-pink-400"
+                : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+            }`}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {activeFilterCount > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Person filter pills — always visible */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSelectedPerson("all")}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+              selectedPerson === "all"
+                ? "bg-foreground text-background shadow-sm"
+                : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
             }`}
           >
             Всі
           </button>
-          {monthsWithExpenses.map((m) => (
-            <button
-              key={m}
-              onClick={() => setSelectedMonth(m)}
-              className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                selectedMonth === m
-                  ? "bg-rose-500 text-white shadow-sm shadow-rose-500/30"
-                  : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
-              }`}
-            >
-              {monthLabel(m)}
-            </button>
-          ))}
-        </div>
-      )}
 
-      {/* Search + filters row */}
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/30" />
-          <input
-            type="text"
-            placeholder="Пошук..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="input-glass w-full pl-9"
-          />
-        </div>
-        <button
-          onClick={() => setShowFilters((v) => !v)}
-          className={`relative flex h-10 items-center gap-1.5 rounded-xl px-3 text-sm font-medium transition-all ${
-            showFilters || activeFilterCount > 0
-              ? "bg-rose-500/15 text-rose-600 ring-1 ring-rose-500/30 dark:text-pink-400"
-              : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
-          }`}
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          {activeFilterCount > 0 && (
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
-              {activeFilterCount}
+          <button
+            onClick={() => setSelectedPerson("person1")}
+            className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+              selectedPerson === "person1"
+                ? "shadow-sm ring-1 ring-foreground/10"
+                : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+            }`}
+            style={
+              selectedPerson === "person1"
+                ? { backgroundColor: `${p1Color}18`, color: p1Color }
+                : undefined
+            }
+          >
+            <span
+              className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
+              style={{ backgroundColor: p1Color }}
+            >
+              {p1Initial}
             </span>
-          )}
-        </button>
+            {p1}
+          </button>
+
+          <button
+            onClick={() => setSelectedPerson("person2")}
+            className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+              selectedPerson === "person2"
+                ? "shadow-sm ring-1 ring-foreground/10"
+                : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+            }`}
+            style={
+              selectedPerson === "person2"
+                ? { backgroundColor: `${p2Color}18`, color: p2Color }
+                : undefined
+            }
+          >
+            <span
+              className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
+              style={{ backgroundColor: p2Color }}
+            >
+              {p2Initial}
+            </span>
+            {p2}
+          </button>
+        </div>
       </div>
 
-      {/* Expandable filter panel */}
+      {/* ── Expandable filter panel ── */}
       {showFilters && (
-        <div className="glass-card grid grid-cols-2 gap-3 rounded-2xl p-4">
-          {/* Person */}
+        <div className="glass-card space-y-4 rounded-2xl p-4">
+          {/* Date range */}
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Хто платив
+            <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-foreground/40">
+              <CalendarDays className="h-3.5 w-3.5" />
+              Період
             </label>
-            <div className="flex gap-1.5">
-              {(
-                [
-                  { val: "all", label: "Всі" },
-                  { val: "person1", label: settings.person1Name },
-                  { val: "person2", label: settings.person2Name },
-                ] as const
-              ).map(({ val, label }) => (
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="input-glass flex-1 text-sm"
+              />
+              <span className="text-xs text-foreground/30">—</span>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="input-glass flex-1 text-sm"
+              />
+              {hasDateFilter && (
                 <button
-                  key={val}
-                  onClick={() => setSelectedPerson(val)}
-                  className={`flex-1 rounded-xl px-2 py-2 text-xs font-medium transition-all ${
-                    selectedPerson === val
-                      ? "bg-rose-500/15 text-rose-600 ring-1 ring-rose-500/30 dark:text-pink-400"
-                      : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
-                  }`}
+                  onClick={() => {
+                    setDateFrom("");
+                    setDateTo("");
+                  }}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-foreground/10 hover:text-foreground"
                 >
-                  {label}
+                  <X className="h-3.5 w-3.5" />
                 </button>
-              ))}
+              )}
             </div>
           </div>
 
           {/* Sort */}
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Сортування
             </label>
-            <div className="flex flex-col gap-1">
+            <div className="grid grid-cols-2 gap-1.5">
               {(
                 [
-                  { val: "date-desc", label: "Нові спочатку" },
-                  { val: "date-asc", label: "Старі спочатку" },
-                  { val: "amount-desc", label: "Дорогі спочатку" },
-                  { val: "amount-asc", label: "Дешеві спочатку" },
-                ] as { val: SortKey; label: string }[]
+                  { val: "date-desc" as SortKey, label: "Нові ↓" },
+                  { val: "date-asc" as SortKey, label: "Старі ↑" },
+                  { val: "amount-desc" as SortKey, label: "Дорогі ↓" },
+                  { val: "amount-asc" as SortKey, label: "Дешеві ↑" },
+                ] as const
               ).map(({ val, label }) => (
                 <button
                   key={val}
                   onClick={() => setSortBy(val)}
-                  className={`flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-medium transition-all ${
+                  className={`rounded-xl px-3 py-2 text-xs font-medium transition-all ${
                     sortBy === val
-                      ? "bg-rose-500/15 text-rose-600 ring-1 ring-rose-500/30 dark:text-pink-400"
-                      : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
+                      ? "bg-foreground text-background"
+                      : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
                   }`}
                 >
-                  <ArrowUpDown className="h-3 w-3 shrink-0" />
                   {label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Reset */}
+          {/* Reset all */}
           {activeFilterCount > 0 && (
             <button
-              onClick={() => {
-                setSelectedPerson("all");
-                setSortBy("date-desc");
-                setSearch("");
-                setSelectedMonth("all");
-              }}
-              className="col-span-2 rounded-xl bg-foreground/5 py-2 text-sm font-medium text-foreground/50 transition-colors hover:bg-foreground/10 hover:text-foreground"
+              onClick={clearAllFilters}
+              className="w-full rounded-xl bg-foreground/5 py-2 text-xs font-medium text-foreground/40 transition-colors hover:bg-foreground/10 hover:text-foreground"
             >
-              Скинути всі фільтри
+              Скинути фільтри
             </button>
           )}
         </div>
       )}
 
-      {/* Expenses list */}
+      {/* ── Expenses list ── */}
       {filtered.length === 0 ? (
         <EmptyState
           icon={Receipt}
@@ -283,15 +338,12 @@ export default function CategoryExpensesPage() {
           }
           action={
             catExpenses.length === 0
-              ? {
-                  label: "Додати витрату",
-                  onClick: () => setShowForm(true),
-                }
+              ? { label: "Додати витрату", onClick: () => setShowForm(true) }
               : undefined
           }
         />
       ) : (
-        <div className="glass-card overflow-hidden rounded-2xl">
+        <div className="space-y-2.5">
           {filtered.map((exp) => (
             <ExpenseListItem
               key={exp.id}
@@ -302,13 +354,14 @@ export default function CategoryExpensesPage() {
               person2Name={settings.person2Name}
               person1Color={settings.person1Color}
               person2Color={settings.person2Color}
+              hideCategoryBadge
               onView={(e) => setViewing(e)}
             />
           ))}
         </div>
       )}
 
-      {/* Add / edit form modal */}
+      {/* ── Add / edit form modal ── */}
       <Modal
         open={showForm}
         onClose={() => {
@@ -328,7 +381,7 @@ export default function CategoryExpensesPage() {
         />
       </Modal>
 
-      {/* Delete confirmation modal */}
+      {/* ── Delete confirmation modal ── */}
       <Modal
         open={!!expenseToDelete}
         onClose={() => setExpenseToDelete(null)}
@@ -367,7 +420,7 @@ export default function CategoryExpensesPage() {
         </div>
       </Modal>
 
-      {/* View-only detail modal */}
+      {/* ── View-only detail modal ── */}
       <Modal
         open={!!viewing}
         onClose={() => setViewing(null)}
