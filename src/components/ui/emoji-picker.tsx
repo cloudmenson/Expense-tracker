@@ -229,17 +229,16 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
 
       {open && (
         <>
-          {/* Full-screen overlay on mobile, positioned dropdown on desktop */}
-          <div
-            className="fixed inset-0 z-50 sm:relative sm:inset-auto"
-            onClick={() => setOpen(false)}
-          >
-            {/* Mobile: centered overlay, Desktop: nothing (click-away only) */}
-            <div className="h-full bg-black/30 sm:hidden" />
+          {/* Full-screen overlay — always clickable to close */}
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)}>
+            {/* Mobile: dark backdrop, Desktop: transparent */}
+            <div className="h-full bg-black/30 sm:bg-transparent" />
           </div>
+          {/* Picker dropdown */}
           <div
             className="fixed left-1/2 top-1/2 z-50 w-[calc(100vw-24px)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/15 bg-surface p-4 shadow-2xl backdrop-blur-2xl sm:absolute sm:left-0 sm:top-full sm:mt-2 sm:w-72 sm:translate-x-0 sm:translate-y-0 sm:p-3 dark:border-white/10 dark:bg-surface/95"
             style={{ maxHeight: "min(70dvh, 440px)" }}
+            onClick={(e) => e.stopPropagation()}
           >
             <input
               type="text"

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { EmojiPicker } from "@/components/ui/emoji-picker";
 import { useExpenseStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import type { Category } from "@/types/expense";
 
 interface CategoryFormProps {
@@ -51,12 +53,12 @@ export function CategoryForm({ category, onDone }: CategoryFormProps) {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="flex gap-3">
         <EmojiPicker value={emoji} onChange={setEmoji} />
-        <input
+        <Input
           type="text"
           placeholder="Назва категорії"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="input-glass flex-1 text-base"
+          className="flex-1 text-base"
         />
       </div>
 
@@ -81,9 +83,9 @@ export function CategoryForm({ category, onDone }: CategoryFormProps) {
         </div>
       </div>
 
-      <button type="submit" className="btn-primary w-full">
+      <Button type="submit" className="w-full">
         {category ? "Зберегти" : "Створити категорію"}
-      </button>
+      </Button>
     </form>
   );
 }

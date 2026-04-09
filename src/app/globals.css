@@ -220,25 +220,6 @@ select.input-glass option {
   animation: emoji-bounce 0.4s ease-in-out;
 }
 
-/* Date input fix — prevent native popup overlay issues & overflow */
-input[type="date"].input-glass {
-  position: relative;
-  z-index: 1;
-  -webkit-appearance: none;
-  appearance: none;
-  min-width: 0;
-  max-width: 100%;
-}
-
-input[type="date"].input-glass::-webkit-calendar-picker-indicator {
-  cursor: pointer;
-  opacity: 0.5;
-}
-
-input[type="date"].input-glass::-webkit-date-and-time-value {
-  text-align: left;
-}
-
 /* ─── Primary button ─── */
 @utility btn-primary {
   display: inline-flex;
@@ -353,6 +334,172 @@ input[type="date"].input-glass::-webkit-date-and-time-value {
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
+}
+
+/* ─── react-day-picker v9 theme ─── */
+.rdp-root {
+  --rdp-accent-color: #e11d48;
+  --rdp-accent-background-color: rgba(225, 29, 72, 0.12);
+  --rdp-day-height: 40px;
+  --rdp-day-width: 40px;
+  --rdp-day_button-height: 36px;
+  --rdp-day_button-width: 36px;
+  --rdp-range_middle-background-color: rgba(225, 29, 72, 0.09);
+  --rdp-range_middle-color: inherit;
+  --rdp-outside-opacity: 0.35;
+  font-size: 14px;
+  padding: 16px;
+  color: var(--foreground);
+}
+
+/* Month caption row */
+.rdp-month_caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.rdp-caption_label {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+  text-transform: capitalize;
+}
+
+/* Nav buttons */
+.rdp-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+}
+
+.rdp-button_previous,
+.rdp-button_next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--glass-bg);
+  color: var(--foreground);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.rdp-button_previous:hover,
+.rdp-button_next:hover {
+  background: var(--brand-soft);
+  color: #e11d48;
+  border-color: rgba(225, 29, 72, 0.2);
+}
+
+/* Weekday row */
+.rdp-weekdays {
+  margin-bottom: 4px;
+}
+
+.rdp-weekday {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--foreground);
+  opacity: 0.35;
+  width: 40px;
+  text-align: center;
+  padding-bottom: 6px;
+}
+
+/* Day cells */
+.rdp-day_button {
+  width: var(--rdp-day_button-width);
+  height: var(--rdp-day_button-height);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    transform 0.1s;
+  color: var(--foreground);
+  border: none;
+  background: transparent;
+}
+
+.rdp-day_button:hover:not([disabled]) {
+  background: var(--brand-soft);
+  color: #e11d48;
+  transform: scale(1.08);
+}
+
+/* Today */
+.rdp-today:not(.rdp-selected) .rdp-day_button {
+  color: #e11d48;
+  font-weight: 700;
+}
+
+/* Selected single */
+.rdp-selected .rdp-day_button {
+  background: #e11d48 !important;
+  color: white !important;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(225, 29, 72, 0.35);
+}
+
+/* Range middle */
+.rdp-range_middle .rdp-day_button {
+  background: var(--rdp-range_middle-background-color) !important;
+  color: var(--foreground) !important;
+  border-radius: 0;
+}
+
+/* Range start / end */
+.rdp-range_start .rdp-day_button,
+.rdp-range_end .rdp-day_button {
+  background: #e11d48 !important;
+  color: white !important;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(225, 29, 72, 0.35);
+}
+
+/* Dark mode adjustments */
+.dark .rdp-root {
+  --rdp-accent-color: #f472b6;
+  --rdp-accent-background-color: rgba(244, 114, 182, 0.12);
+  --rdp-range_middle-background-color: rgba(244, 114, 182, 0.09);
+}
+
+.dark .rdp-today:not(.rdp-selected) .rdp-day_button {
+  color: #f472b6;
+}
+
+.dark .rdp-day_button:hover:not([disabled]) {
+  background: rgba(244, 114, 182, 0.12);
+  color: #f472b6;
+}
+
+.dark .rdp-selected .rdp-day_button,
+.dark .rdp-range_start .rdp-day_button,
+.dark .rdp-range_end .rdp-day_button {
+  background: #f472b6 !important;
+  color: #1a0a14 !important;
+  box-shadow: 0 3px 10px rgba(244, 114, 182, 0.35);
+}
+
+.dark .rdp-button_previous:hover,
+.dark .rdp-button_next:hover {
+  color: #f472b6;
+  border-color: rgba(244, 114, 182, 0.2);
 }
 
 /* ─── Ambient background blobs ─── */

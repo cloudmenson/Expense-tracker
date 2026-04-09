@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef } from "react";
-import { LayoutDashboard, Receipt, Settings, Trash2 } from "lucide-react";
+import { LayoutDashboard, Receipt, Settings, Cat } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { HeartLogo } from "@/components/heart-logo";
 
@@ -25,7 +25,7 @@ const NAV_ITEMS = [
     href: "/trash",
     label: "Кошик",
     mobileLabel: "Кошик",
-    icon: Trash2,
+    icon: Cat,
   },
 ];
 

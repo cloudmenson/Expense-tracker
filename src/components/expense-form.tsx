@@ -1,12 +1,25 @@
 "use client";
 
 import { useState, useMemo, useRef } from "react";
-import { Plus, Trash2, ShoppingCart, ShoppingBag } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  ShoppingCart,
+  ShoppingBag,
+  CalendarDays,
+} from "lucide-react";
+import { DayPicker } from "react-day-picker";
+import { format, parseISO } from "date-fns";
+import { uk } from "date-fns/locale";
+import "react-day-picker/style.css";
 import { useExpenseStore } from "@/lib/store";
 import { EmojiPicker } from "@/components/ui/emoji-picker";
 import { Modal } from "@/components/ui/modal";
 import { CategoryForm } from "@/components/category-form";
 import { useToast } from "@/components/ui/toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { todayISO } from "@/lib/utils";
 import type { ExpenseDraft, Expense, ExpenseItem } from "@/types/expense";
 
@@ -66,6 +79,7 @@ export function ExpenseForm({
   const [items, setItems] = useState<ExpenseItem[]>(() =>
     initialData.items?.length ? initialData.items : [{ name: "", price: 0 }],
   );
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const set = <K extends keyof ExpenseDraft>(key: K, val: ExpenseDraft[K]) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -97,11 +111,13 @@ export function ExpenseForm({
       if (!form.title.trim() || valid.length === 0) return;
       const total = valid.reduce((s, i) => s + i.price, 0);
       const draft: ExpenseDraft = { ...form, amount: total, items: valid };
-      expense ? updateExpense(expense.id, draft) : addExpense(draft);
+      if (expense) updateExpense(expense.id, draft);
+      else addExpense(draft);
     } else {
       if (!form.title.trim() || form.amount <= 0) return;
       const draft: ExpenseDraft = { ...form, items: [] };
-      expense ? updateExpense(expense.id, draft) : addExpense(draft);
+      if (expense) updateExpense(expense.id, draft);
+      else addExpense(draft);
     }
     onDone();
   };
@@ -168,12 +184,12 @@ export function ExpenseForm({
           onChange={(e) => set("emoji", e)}
         />
         <div className="flex-1">
-          <input
+          <Input
             type="text"
             placeholder={isList ? "Назва магазину / події" : "Назва витрати"}
             value={form.title}
             onChange={(e) => set("title", e.target.value)}
-            className="input-glass w-full text-base"
+            className="text-base"
           />
         </div>
       </div>
@@ -190,14 +206,14 @@ export function ExpenseForm({
           <div className="space-y-2">
             {items.map((item, i) => (
               <div key={i} className="flex gap-2">
-                <input
+                <Input
                   type="text"
                   placeholder="Назва товару"
                   value={item.name}
                   onChange={(e) => updateItem(i, "name", e.target.value)}
-                  className="input-glass flex-1 text-sm"
+                  className="flex-1 text-sm"
                 />
-                <input
+                <Input
                   type="number"
                   inputMode="decimal"
                   placeholder="0"
@@ -205,7 +221,7 @@ export function ExpenseForm({
                   onChange={(e) =>
                     updateItem(i, "price", parseFloat(e.target.value) || 0)
                   }
-                  className="input-glass w-24 text-sm"
+                  className="w-24 text-sm"
                   min={0}
                   step={0.01}
                 />
@@ -234,13 +250,13 @@ export function ExpenseForm({
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
             Сума ({settings.currency})
           </label>
-          <input
+          <Input
             type="number"
             inputMode="decimal"
             placeholder="0"
             value={form.amount || ""}
             onChange={(e) => set("amount", parseFloat(e.target.value) || 0)}
-            className="input-glass w-full text-2xl font-semibold"
+            className="text-2xl font-semibold"
             min={0}
             step={0.01}
           />
@@ -283,16 +299,49 @@ export function ExpenseForm({
 
       {/* Date + Paid by */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div>
+        <div className="relative">
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
             Дата
           </label>
-          <input
-            type="date"
-            value={form.date}
-            onChange={(e) => set("date", e.target.value)}
-            className="input-glass w-full min-w-0"
-          />
+          <button
+            type="button"
+            onClick={() => setShowDatePicker((v) => !v)}
+            className="input-glass flex w-full items-center gap-2 text-left"
+          >
+            <CalendarDays className="h-4 w-4 shrink-0 text-foreground/40" />
+            <span className="flex-1 text-sm">
+              {format(parseISO(form.date), "d MMMM yyyy", { locale: uk })}
+            </span>
+          </button>
+
+          {showDatePicker && (
+            <>
+              {/* Overlay — no blur, just dim */}
+              <div
+                className="fixed inset-0 z-60 bg-black/40"
+                onClick={() => setShowDatePicker(false)}
+              />
+              {/* Picker panel — centered on screen */}
+              <div
+                className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-surface shadow-2xl dark:border-white/10"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <DayPicker
+                  mode="single"
+                  selected={parseISO(form.date)}
+                  onSelect={(date) => {
+                    if (date) {
+                      set("date", format(date, "yyyy-MM-dd"));
+                      setShowDatePicker(false);
+                    }
+                  }}
+                  locale={uk}
+                  weekStartsOn={1}
+                  defaultMonth={parseISO(form.date)}
+                />
+              </div>
+            </>
+          )}
         </div>
         <div>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
@@ -322,19 +371,18 @@ export function ExpenseForm({
         <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
           Нотатка
         </label>
-        <textarea
+        <Textarea
           placeholder="Необов'язковий коментар..."
           value={form.note}
           onChange={(e) => set("note", e.target.value)}
           rows={2}
-          className="input-glass w-full resize-none"
         />
       </div>
 
       {/* Submit */}
-      <button type="submit" className="btn-primary w-full">
+      <Button type="submit" className="w-full">
         {expense ? "Зберегти зміни" : "Додати витрату"}
-      </button>
+      </Button>
 
       {/* Long-press: category editor */}
       <Modal

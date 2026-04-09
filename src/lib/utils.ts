@@ -1,3 +1,5 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import {
   format,
   parseISO,
@@ -6,6 +8,11 @@ import {
   isWithinInterval,
   subMonths,
 } from "date-fns";
+
+/* ── Merge Tailwind classes without conflicts ── */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 import { uk } from "date-fns/locale";
 import type {
   Expense,

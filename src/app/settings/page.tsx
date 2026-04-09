@@ -13,6 +13,15 @@ import { useExpenseStore } from "@/lib/store";
 import { useTheme } from "@/components/theme-provider";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import * as api from "@/lib/api-client";
 
 const PRESET_COLORS = [
@@ -30,6 +39,20 @@ const PRESET_COLORS = [
   "#eab308",
   "#ef4444",
   "#64748b",
+  "#10b981",
+  "#059669",
+  "#0d9488",
+  "#0891b2",
+  "#0ea5e9",
+  "#2563eb",
+  "#1d4ed8",
+  "#4f46e5",
+  "#4c1d95",
+  "#7c3aed",
+  "#6d28d9",
+  "#d946ef",
+  "#c2185b",
+  "#880e4f",
 ];
 
 export default function SettingsPage() {
@@ -156,12 +179,12 @@ export default function SettingsPage() {
                 className="h-9 w-9 shrink-0 rounded-xl"
                 style={{ backgroundColor: person1Color }}
               />
-              <input
+              <Input
                 type="text"
                 placeholder="Ім'я партнера 1"
                 value={person1Name}
                 onChange={(e) => setPerson1Name(e.target.value)}
-                className="input-glass flex-1"
+                className="flex-1"
               />
             </div>
             <div>
@@ -193,12 +216,12 @@ export default function SettingsPage() {
                 className="h-9 w-9 shrink-0 rounded-xl"
                 style={{ backgroundColor: person2Color }}
               />
-              <input
+              <Input
                 type="text"
                 placeholder="Ім'я партнера 2"
                 value={person2Name}
                 onChange={(e) => setPerson2Name(e.target.value)}
-                className="input-glass flex-1"
+                className="flex-1"
               />
             </div>
             <div>
@@ -233,25 +256,25 @@ export default function SettingsPage() {
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Валюта
             </label>
-            <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
-              className="input-glass w-full"
-            >
-              <option value="$">$ Долар</option>
-              <option value="€">€ Євро</option>
-              <option value="₴">₴ Гривня</option>
-            </select>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="$">$ Долар</SelectItem>
+                <SelectItem value="€">€ Євро</SelectItem>
+                <SelectItem value="₴">₴ Гривня</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Місячний бюджет
             </label>
-            <input
+            <Input
               type="number"
               value={budget}
               onChange={(e) => setBudget(parseInt(e.target.value) || 0)}
-              className="input-glass w-full"
               min={0}
             />
           </div>
@@ -279,9 +302,9 @@ export default function SettingsPage() {
       </div>
 
       {/* Save */}
-      <button
+      <Button
         onClick={handleSave}
-        className="btn-primary w-full sm:w-auto"
+        className="w-full sm:w-auto"
         disabled={saving}
       >
         {saving ? (
@@ -290,7 +313,7 @@ export default function SettingsPage() {
           <Save className="h-4 w-4" />
         )}
         {saving ? "Зберігається…" : "Зберегти налаштування"}
-      </button>
+      </Button>
 
       {/* Data management */}
       <div className="glass-card rounded-2xl p-4 sm:p-6">
@@ -299,28 +322,31 @@ export default function SettingsPage() {
           Всього: {expenses.length} витрат, {categories.length} категорій
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-          <button
+          <Button
+            variant="secondary"
             onClick={handleExport}
-            className="btn-secondary w-full sm:w-auto"
+            className="w-full sm:w-auto"
           >
             <Download className="h-4 w-4" />
             Експорт JSON
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="secondary"
             onClick={handleImport}
-            className="btn-secondary w-full sm:w-auto"
+            className="w-full sm:w-auto"
             disabled={importing}
           >
             <Upload className="h-4 w-4" />
             Імпорт JSON
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="danger"
             onClick={() => setShowClear(true)}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/5 px-5 py-2.5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-500/10 sm:w-auto dark:text-rose-400"
+            className="w-full sm:w-auto"
           >
             <Trash2 className="h-4 w-4" />
             Очистити все
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -340,12 +366,13 @@ export default function SettingsPage() {
             </p>
           </div>
           <div className="flex gap-3">
-            <button
+            <Button
+              variant="secondary"
               onClick={() => setShowClear(false)}
-              className="btn-secondary flex-1"
+              className="flex-1"
             >
               Скасувати
-            </button>
+            </Button>
             <button
               onClick={handleClearAll}
               className="flex-1 rounded-xl bg-rose-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-rose-600"

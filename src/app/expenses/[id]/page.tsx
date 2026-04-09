@@ -12,6 +12,11 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
+import { DayPicker } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
+import { uk } from "date-fns/locale";
+import { format } from "date-fns";
+import "react-day-picker/style.css";
 import { useExpenseStore } from "@/lib/store";
 import { formatMoney } from "@/lib/utils";
 import { ExpenseListItem } from "@/components/expense-list-item";
@@ -22,6 +27,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import type { Expense } from "@/types/expense";
 
 type SortKey = "date-desc" | "date-asc" | "amount-desc" | "amount-asc";
+
+const fmtISO = (d: Date) => format(d, "yyyy-MM-dd");
 
 export default function CategoryExpensesPage() {
   const { id } = useParams<{ id: string }>();
@@ -39,10 +46,8 @@ export default function CategoryExpensesPage() {
   >("all");
   const [sortBy, setSortBy] = useState<SortKey>("date-desc");
   const [showFilters, setShowFilters] = useState(false);
-
-  // Date range filter
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   const catExpenses = useMemo(
     () => expenses.filter((e) => e.categoryId === id),
@@ -52,15 +57,14 @@ export default function CategoryExpensesPage() {
   const filtered = useMemo(() => {
     let result = [...catExpenses];
 
-    // Date range
-    if (dateFrom) result = result.filter((e) => e.date >= dateFrom);
-    if (dateTo) result = result.filter((e) => e.date <= dateTo);
+    if (dateRange?.from)
+      result = result.filter((e) => e.date >= fmtISO(dateRange.from!));
+    if (dateRange?.to)
+      result = result.filter((e) => e.date <= fmtISO(dateRange.to!));
 
-    // Person
     if (selectedPerson !== "all")
       result = result.filter((e) => e.paidBy === selectedPerson);
 
-    // Search
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -70,7 +74,6 @@ export default function CategoryExpensesPage() {
       );
     }
 
-    // Sort
     result.sort((a, b) => {
       switch (sortBy) {
         case "date-desc":
@@ -85,11 +88,11 @@ export default function CategoryExpensesPage() {
     });
 
     return result;
-  }, [catExpenses, dateFrom, dateTo, selectedPerson, search, sortBy]);
+  }, [catExpenses, dateRange, selectedPerson, search, sortBy]);
 
   const total = filtered.reduce((s, e) => s + e.amount, 0);
 
-  const hasDateFilter = dateFrom || dateTo;
+  const hasDateFilter = !!(dateRange?.from || dateRange?.to);
   const activeFilterCount = [
     hasDateFilter,
     selectedPerson !== "all",
@@ -100,8 +103,8 @@ export default function CategoryExpensesPage() {
     setSelectedPerson("all");
     setSortBy("date-desc");
     setSearch("");
-    setDateFrom("");
-    setDateTo("");
+    setDateRange(undefined);
+    setShowCalendar(false);
   }, []);
 
   const p1 = settings.person1Name || "Person 1";
@@ -110,6 +113,12 @@ export default function CategoryExpensesPage() {
   const p2Initial = p2.charAt(0).toUpperCase();
   const p1Color = settings.person1Color || "#e11d48";
   const p2Color = settings.person2Color || "#3b82f6";
+
+  const dateLabel = dateRange?.from
+    ? dateRange.to
+      ? `${format(dateRange.from, "d MMM", { locale: uk })} — ${format(dateRange.to, "d MMM", { locale: uk })}`
+      : format(dateRange.from, "d MMM yyyy", { locale: uk })
+    : null;
 
   return (
     <div className="space-y-4">
@@ -159,130 +168,162 @@ export default function CategoryExpensesPage() {
       </div>
 
       {/* ── Toolbar ── */}
-      <div className="space-y-3">
-        {/* Search + filter toggle */}
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/30" />
-            <input
-              type="text"
-              placeholder="Пошук..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="input-glass w-full pl-9 text-sm"
-            />
-          </div>
-          <button
-            onClick={() => setShowFilters((v) => !v)}
-            className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all ${
-              showFilters || activeFilterCount > 0
-                ? "bg-rose-500/15 text-rose-600 dark:text-pink-400"
-                : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
-            }`}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            {activeFilterCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/30" />
+          <input
+            type="text"
+            placeholder="Пошук..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="input-glass w-full pl-9 text-sm"
+          />
         </div>
-
-        {/* Person filter pills — always visible */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setSelectedPerson("all")}
-            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
-              selectedPerson === "all"
-                ? "bg-foreground text-background shadow-sm"
-                : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
-            }`}
-          >
-            Всі
-          </button>
-
-          <button
-            onClick={() => setSelectedPerson("person1")}
-            className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
-              selectedPerson === "person1"
-                ? "shadow-sm ring-1 ring-foreground/10"
-                : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
-            }`}
-            style={
-              selectedPerson === "person1"
-                ? { backgroundColor: `${p1Color}18`, color: p1Color }
-                : undefined
-            }
-          >
-            <span
-              className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
-              style={{ backgroundColor: p1Color }}
-            >
-              {p1Initial}
+        <button
+          onClick={() => setShowFilters((v) => !v)}
+          className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all ${
+            showFilters || activeFilterCount > 0
+              ? "bg-rose-500/15 text-rose-600 dark:text-pink-400"
+              : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+          }`}
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          {activeFilterCount > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
+              {activeFilterCount}
             </span>
-            {p1}
-          </button>
-
-          <button
-            onClick={() => setSelectedPerson("person2")}
-            className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
-              selectedPerson === "person2"
-                ? "shadow-sm ring-1 ring-foreground/10"
-                : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
-            }`}
-            style={
-              selectedPerson === "person2"
-                ? { backgroundColor: `${p2Color}18`, color: p2Color }
-                : undefined
-            }
-          >
-            <span
-              className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
-              style={{ backgroundColor: p2Color }}
-            >
-              {p2Initial}
-            </span>
-            {p2}
-          </button>
-        </div>
+          )}
+        </button>
       </div>
 
       {/* ── Expandable filter panel ── */}
       {showFilters && (
         <div className="glass-card space-y-4 rounded-2xl p-4">
+          {/* Person filter */}
+          <div>
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+              Хто платив
+            </label>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedPerson("all")}
+                className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+                  selectedPerson === "all"
+                    ? "bg-foreground text-background shadow-sm"
+                    : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                }`}
+              >
+                Всі
+              </button>
+
+              <button
+                onClick={() => setSelectedPerson("person1")}
+                className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                  selectedPerson === "person1"
+                    ? "shadow-sm ring-1 ring-foreground/10"
+                    : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                }`}
+                style={
+                  selectedPerson === "person1"
+                    ? { backgroundColor: `${p1Color}18`, color: p1Color }
+                    : undefined
+                }
+              >
+                <span
+                  className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                  style={{ backgroundColor: p1Color }}
+                >
+                  {p1Initial}
+                </span>
+                {p1}
+              </button>
+
+              <button
+                onClick={() => setSelectedPerson("person2")}
+                className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                  selectedPerson === "person2"
+                    ? "shadow-sm ring-1 ring-foreground/10"
+                    : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                }`}
+                style={
+                  selectedPerson === "person2"
+                    ? { backgroundColor: `${p2Color}18`, color: p2Color }
+                    : undefined
+                }
+              >
+                <span
+                  className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                  style={{ backgroundColor: p2Color }}
+                >
+                  {p2Initial}
+                </span>
+                {p2}
+              </button>
+            </div>
+          </div>
+
           {/* Date range */}
           <div>
-            <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              <CalendarDays className="h-3.5 w-3.5" />
+            <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Період
             </label>
             <div className="flex items-center gap-2">
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="input-glass flex-1 text-sm"
-              />
-              <span className="text-xs text-foreground/30">—</span>
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="input-glass flex-1 text-sm"
-              />
+              <button
+                onClick={() => setShowCalendar((v) => !v)}
+                className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                  hasDateFilter
+                    ? "shadow-sm ring-1 ring-foreground/10"
+                    : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                }`}
+                style={
+                  hasDateFilter
+                    ? { backgroundColor: "#e11d4818", color: "#e11d48" }
+                    : undefined
+                }
+              >
+                <span
+                  className="flex h-5 w-5 items-center justify-center rounded-full text-white"
+                  style={{ backgroundColor: "#e11d48" }}
+                >
+                  <CalendarDays className="h-3 w-3" />
+                </span>
+                {dateLabel ?? "Обрати дати"}
+              </button>
               {hasDateFilter && (
                 <button
                   onClick={() => {
-                    setDateFrom("");
-                    setDateTo("");
+                    setDateRange(undefined);
+                    setShowCalendar(false);
                   }}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-foreground/40 transition-colors hover:bg-foreground/10 hover:text-foreground"
+                  className="flex h-7 w-7 items-center justify-center rounded-full bg-foreground/5 text-foreground/40 transition-colors hover:bg-foreground/10"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
               )}
             </div>
+
+            {showCalendar && (
+              <>
+                {/* Overlay — no blur */}
+                <div
+                  className="fixed inset-0 z-60 bg-black/40"
+                  onClick={() => setShowCalendar(false)}
+                />
+                {/* Picker panel — centered */}
+                <div
+                  className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-surface shadow-2xl dark:border-white/10"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <DayPicker
+                    mode="range"
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    locale={uk}
+                    weekStartsOn={1}
+                  />
+                </div>
+              </>
+            )}
           </div>
 
           {/* Sort */}
@@ -314,7 +355,6 @@ export default function CategoryExpensesPage() {
             </div>
           </div>
 
-          {/* Reset all */}
           {activeFilterCount > 0 && (
             <button
               onClick={clearAllFilters}
