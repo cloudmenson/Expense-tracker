@@ -24,12 +24,14 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       {!splashDone && <SplashScreen onFinish={handleSplashFinish} />}
 
-      <StoreProvider>
-        <ToastProvider>
-          <AppShell>{children}</AppShell>
-          <ServiceWorkerRegister />
-        </ToastProvider>
-      </StoreProvider>
+      <div className={!splashDone ? "invisible" : undefined}>
+        <StoreProvider>
+          <ToastProvider>
+            <AppShell>{children}</AppShell>
+            <ServiceWorkerRegister />
+          </ToastProvider>
+        </StoreProvider>
+      </div>
     </ThemeProvider>
   );
 }
