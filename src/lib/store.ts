@@ -60,6 +60,14 @@ interface ExpenseStore {
   }) => void;
 }
 
+type StrictPayer = "person1" | "person2";
+type ExpenseDraftWithPayer = Omit<ExpenseDraft, "paidBy"> & {
+  paidBy: StrictPayer;
+};
+type ExpenseDraftPatch = Partial<Omit<ExpenseDraft, "paidBy">> & {
+  paidBy?: StrictPayer;
+};
+
 export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
   expenses: [],
   categories: DEFAULT_CATEGORIES,
@@ -95,11 +103,22 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
 
   /* ── Expenses (optimistic + API) ── */
   addExpense: (draft) => {
+    if (draft.paidBy !== "person1" && draft.paidBy !== "person2") {
+      // Safety guard: UI should prevent this, but keep store type-safe.
+      console.warn("Skipped expense creation: payer is not selected");
+      return;
+    }
+
+    const safeDraft: ExpenseDraftWithPayer = {
+      ...draft,
+      paidBy: draft.paidBy,
+    };
+
     const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const now = new Date().toISOString();
     const tempExpense: Expense = {
       id: tempId,
-      ...draft,
+      ...safeDraft,
       createdAt: now,
       updatedAt: now,
     };
@@ -109,7 +128,7 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
 
     // Persist to MongoDB
     api
-      .createExpense(draft)
+      .createExpense(safeDraft)
       .then((saved) => {
         set((s) => ({
           expenses: s.expenses.map((e) => (e.id === tempId ? saved : e)),
@@ -125,17 +144,23 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
   },
 
   updateExpense: (id, draft) => {
+    const { paidBy, ...rest } = draft;
+    const safeDraft: ExpenseDraftPatch = {
+      ...rest,
+      ...(paidBy === "person1" || paidBy === "person2" ? { paidBy } : {}),
+    };
+
     // Optimistic update
     const prev = get().expenses.find((e) => e.id === id);
     set((s) => ({
       expenses: s.expenses.map((e) =>
         e.id === id
-          ? { ...e, ...draft, updatedAt: new Date().toISOString() }
+          ? { ...e, ...safeDraft, updatedAt: new Date().toISOString() }
           : e,
       ),
     }));
 
-    api.updateExpense(id, draft).catch((err) => {
+    api.updateExpense(id, safeDraft).catch((err) => {
       console.error("Failed to update expense:", err);
       // Rollback
       if (prev) {
