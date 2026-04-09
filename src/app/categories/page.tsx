@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Plus, Pencil, Trash2, Filter } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
 import { CategoryForm } from "@/components/category-form";
 import { Modal } from "@/components/ui/modal";
@@ -16,6 +16,15 @@ export default function CategoriesPage() {
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
     null,
   );
+  const [catFilter, setCatFilter] = useState<"used" | "all">("used");
+
+  const filteredCategories = useMemo(() => {
+    if (catFilter === "all") return categories;
+
+    const usedCatIds = new Set(expenses.map((e) => e.categoryId));
+
+    return categories.filter((c) => usedCatIds.has(c.id));
+  }, [categories, expenses, catFilter]);
 
   const getCatCount = (catId: string) =>
     expenses.filter((e) => e.categoryId === catId).length;
@@ -44,7 +53,7 @@ export default function CategoriesPage() {
             Категорії
           </h1>
           <p className="mt-1 text-sm text-foreground/50">
-            {categories.length} категорій
+            {filteredCategories.length} з {categories.length} категорій
           </p>
         </div>
         <button
@@ -59,9 +68,33 @@ export default function CategoriesPage() {
         </button>
       </div>
 
+      {/* Filter toggle */}
+      <div className="flex gap-1 rounded-xl bg-foreground/5 p-1">
+        <button
+          onClick={() => setCatFilter("used")}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+            catFilter === "used"
+              ? "bg-surface text-foreground shadow-sm"
+              : "text-foreground/50 hover:text-foreground"
+          }`}
+        >
+          <Filter className="h-4 w-4" />З витратами
+        </button>
+        <button
+          onClick={() => setCatFilter("all")}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+            catFilter === "all"
+              ? "bg-surface text-foreground shadow-sm"
+              : "text-foreground/50 hover:text-foreground"
+          }`}
+        >
+          Усі
+        </button>
+      </div>
+
       {/* Grid */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {categories.map((cat) => {
+        {filteredCategories.map((cat) => {
           const count = getCatCount(cat.id);
           const total = getCatTotal(cat.id);
           return (

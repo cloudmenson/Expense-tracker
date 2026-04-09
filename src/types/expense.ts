@@ -33,7 +33,7 @@ export interface ExpenseDraft {
   title: string;
   amount: number;
   categoryId: string;
-  paidBy: "person1" | "person2";
+  paidBy: "person1" | "person2" | "";
   date: string;
   note?: string;
   emoji?: string;

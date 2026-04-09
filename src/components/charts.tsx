@@ -86,7 +86,7 @@ export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
       <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
         За категоріями
       </p>
-      <div className="flex flex-col items-center gap-4 sm:flex-row">
+      <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
         <div className="h-48 w-48 shrink-0">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -119,16 +119,16 @@ export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div className="min-w-0 flex-1 space-y-2">
-          {data.slice(0, 6).map((d) => (
+        <div className="min-w-0 flex-1 -mr-1 max-h-48 space-y-1.5 overflow-y-auto pr-1">
+          {data.map((d) => (
             <div key={d.name} className="flex items-center gap-2 text-xs">
               <div
                 className="h-2.5 w-2.5 shrink-0 rounded-full"
                 style={{ backgroundColor: d.color }}
               />
               <span className="truncate text-foreground/60">{d.name}</span>
-              <span className="ml-auto font-semibold tabular-nums">
-                {total > 0 ? ((d.value / total) * 100).toFixed(0) : 0}%
+              <span className="ml-auto shrink-0 font-semibold tabular-nums">
+                {total > 0 ? ((d.value / total) * 100).toFixed(1) : 0}%
               </span>
             </div>
           ))}

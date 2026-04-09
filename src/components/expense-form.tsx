@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { Plus, Trash2, ShoppingCart, ShoppingBag } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
 import { EmojiPicker } from "@/components/ui/emoji-picker";
+import { useToast } from "@/components/ui/toast";
 import { todayISO } from "@/lib/utils";
 import type { ExpenseDraft, Expense, ExpenseItem } from "@/types/expense";
 
@@ -32,7 +33,7 @@ function buildInitial(
     title: "",
     amount: 0,
     categoryId: fallbackCatId,
-    paidBy: "person1",
+    paidBy: "",
     date: todayISO(),
     note: "",
     emoji: "",
@@ -42,6 +43,7 @@ function buildInitial(
 
 export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
   const { categories, settings, addExpense, updateExpense } = useExpenseStore();
+  const { toast } = useToast();
 
   const initialData = useMemo(
     () => buildInitial(expense, categories[0]?.id ?? "other"),
@@ -76,6 +78,11 @@ export function ExpenseForm({ expense, onDone }: ExpenseFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!form.paidBy) {
+      toast("Оберіть хто платив", "error");
+      return;
+    }
 
     if (isList) {
       const valid = items.filter((i) => i.name.trim() && i.price > 0);

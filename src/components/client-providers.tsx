@@ -7,7 +7,6 @@ import { StoreProvider } from "@/components/store-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { ServiceWorkerRegister } from "@/components/sw-register";
 import { SplashScreen } from "@/components/splash-screen";
-import { FallingPetals } from "@/components/falling-petals";
 
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   const [splashDone, setSplashDone] = useState(() => {
@@ -25,7 +24,6 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       {!splashDone && <SplashScreen onFinish={handleSplashFinish} />}
 
-      <FallingPetals />
       <StoreProvider>
         <ToastProvider>
           <AppShell>{children}</AppShell>

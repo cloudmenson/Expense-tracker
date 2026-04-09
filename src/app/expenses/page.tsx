@@ -3,12 +3,7 @@
 import { useState, useMemo } from "react";
 import { Plus, Search, Filter, Receipt, Download } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
-import {
-  formatMoney,
-  filterByMonth,
-  currentMonthKey,
-  getLastMonths,
-} from "@/lib/utils";
+import { formatMoney, filterByMonth, monthLabel } from "@/lib/utils";
 import { ExpenseListItem } from "@/components/expense-list-item";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
@@ -28,7 +23,15 @@ export default function ExpensesPage() {
   const [selectedPerson, setSelectedPerson] = useState("all");
   const [sortBy, setSortBy] = useState<"date" | "amount">("date");
 
-  const months = useMemo(() => getLastMonths(12), []);
+  const monthsWithExpenses = useMemo(() => {
+    const monthSet = new Set(expenses.map((e) => e.date.slice(0, 7)));
+    return Array.from(monthSet).sort();
+  }, [expenses]);
+
+  const categoriesWithExpenses = useMemo(() => {
+    const usedCatIds = new Set(expenses.map((e) => e.categoryId));
+    return categories.filter((c) => usedCatIds.has(c.id));
+  }, [expenses, categories]);
 
   const filtered = useMemo(() => {
     let result = [...expenses];
@@ -152,9 +155,9 @@ export default function ExpensesPage() {
             className="input-glass text-sm"
           >
             <option value="all">Всі місяці</option>
-            {months.map((m) => (
+            {monthsWithExpenses.map((m) => (
               <option key={m} value={m}>
-                {m}
+                {monthLabel(m)}
               </option>
             ))}
           </select>
@@ -165,7 +168,7 @@ export default function ExpensesPage() {
             className="input-glass text-sm"
           >
             <option value="all">Всі категорії</option>
-            {categories.map((c) => (
+            {categoriesWithExpenses.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.emoji} {c.name}
               </option>
