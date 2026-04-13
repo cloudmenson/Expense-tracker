@@ -5,6 +5,7 @@ import { Trash2, RotateCcw, X, AlertTriangle } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
 import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useToast } from "@/components/ui/toast";
 import { formatMoney } from "@/lib/utils";
 import type { TrashItem } from "@/types/expense";
 import type { Expense, Category } from "@/types/expense";
@@ -24,6 +25,7 @@ export default function TrashPage() {
     clearTrash,
     settings,
   } = useExpenseStore();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [confirmClear, setConfirmClear] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<TrashItem | null>(null);
@@ -113,7 +115,15 @@ export default function TrashPage() {
                 {/* Actions */}
                 <div className="flex shrink-0 gap-1">
                   <button
-                    onClick={() => restoreFromTrash(item.id)}
+                    onClick={async () => {
+                      const result = await restoreFromTrash(item.id);
+                      toast(
+                        result.ok
+                          ? "Елемент відновлено"
+                          : (result.error ?? "Не вдалося відновити елемент"),
+                        result.ok ? "success" : "error",
+                      );
+                    }}
                     className="flex h-9 w-9 items-center justify-center rounded-xl text-brand transition-colors hover:bg-brand/10"
                     title="Відновити"
                   >
@@ -158,9 +168,15 @@ export default function TrashPage() {
             Скасувати
           </button>
           <button
-            onClick={() => {
-              clearTrash();
-              setConfirmClear(false);
+            onClick={async () => {
+              const result = await clearTrash();
+              toast(
+                result.ok
+                  ? "Кошик очищено"
+                  : (result.error ?? "Не вдалося очистити кошик"),
+                result.ok ? "success" : "error",
+              );
+              if (result.ok) setConfirmClear(false);
             }}
             className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
           >
@@ -192,9 +208,16 @@ export default function TrashPage() {
             Скасувати
           </button>
           <button
-            onClick={() => {
-              if (confirmDelete) deleteFromTrash(confirmDelete.id);
-              setConfirmDelete(null);
+            onClick={async () => {
+              if (!confirmDelete) return;
+              const result = await deleteFromTrash(confirmDelete.id);
+              toast(
+                result.ok
+                  ? "Елемент видалено назавжди"
+                  : (result.error ?? "Не вдалося видалити елемент"),
+                result.ok ? "success" : "error",
+              );
+              if (result.ok) setConfirmDelete(null);
             }}
             className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
           >

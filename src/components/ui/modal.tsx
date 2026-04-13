@@ -11,6 +11,10 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   size?: "sm" | "md" | "lg";
+  closeOnOverlay?: boolean;
+  closeOnEscape?: boolean;
+  tall?: boolean;
+  allowOverflow?: boolean;
 }
 
 export function Modal({
@@ -19,6 +23,10 @@ export function Modal({
   title,
   children,
   size = "md",
+  closeOnOverlay = true,
+  closeOnEscape = true,
+  tall = false,
+  allowOverflow = false,
 }: ModalProps) {
   const maxW =
     size === "sm"
@@ -28,30 +36,58 @@ export function Modal({
         : "sm:max-w-lg";
 
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={(o) => !o && onClose()}>
+    <DialogPrimitive.Root
+      open={open}
+      onOpenChange={(nextOpen) => {
+        if (nextOpen) return;
+        if (closeOnOverlay || closeOnEscape) {
+          onClose();
+        }
+      }}
+    >
       <DialogPrimitive.Portal>
         {/* Backdrop */}
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0" />
 
         {/* Panel — bottom sheet on mobile, centered card on sm+ */}
         <DialogPrimitive.Content
-          onEscapeKeyDown={onClose}
+          onEscapeKeyDown={(event) => {
+            if (!closeOnEscape) {
+              event.preventDefault();
+              return;
+            }
+            onClose();
+          }}
+          onPointerDownOutside={(event) => {
+            if (!closeOnOverlay) {
+              event.preventDefault();
+            }
+          }}
+          onInteractOutside={(event) => {
+            if (!closeOnOverlay) {
+              event.preventDefault();
+            }
+          }}
           className={cn(
-            "fixed z-50 flex w-full flex-col overflow-hidden",
+            "fixed z-50 flex w-full flex-col",
             "border border-white/15 bg-surface shadow-2xl backdrop-blur-2xl",
             "dark:border-white/10 dark:bg-surface/95",
             // Mobile: bottom sheet
             "bottom-0 left-0 right-0 rounded-t-2xl",
             // Desktop: centered card
             "sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2",
-            "sm:max-h-[90dvh] sm:rounded-2xl",
+            tall ? "sm:max-h-[96dvh]" : "sm:max-h-[90dvh]",
+            allowOverflow ? "overflow-visible" : "overflow-hidden",
+            "sm:rounded-2xl",
             maxW,
             "data-[state=open]:slide-in-from-bottom-4",
             "sm:data-[state=open]:zoom-in-95",
             "data-[state=closed]:fade-out-0",
           )}
           style={{
-            maxHeight: "calc(100dvh - env(safe-area-inset-top, 0px) - 24px)",
+            maxHeight: tall
+              ? "calc(100dvh - env(safe-area-inset-top, 0px) - 8px)"
+              : "calc(100dvh - env(safe-area-inset-top, 0px) - 24px)",
           }}
         >
           {/* Handle — mobile only */}
@@ -77,7 +113,14 @@ export function Modal({
           <div className="mx-5 border-t border-foreground/5 sm:mx-6" />
 
           {/* Scrollable content */}
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4 sm:px-6 sm:py-5">
+          <div
+            className={cn(
+              "min-h-0 flex-1 px-5 py-4 sm:px-6 sm:py-5",
+              allowOverflow
+                ? "overflow-visible"
+                : "overflow-y-auto overscroll-contain",
+            )}
+          >
             {children}
           </div>
 

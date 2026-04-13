@@ -1,17 +1,58 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { Plus, Receipt, ChevronRight } from "lucide-react";
+import {
+  Plus,
+  Receipt,
+  ChevronRight,
+  Search,
+  SlidersHorizontal,
+  CalendarDays,
+  X,
+} from "lucide-react";
+import { DayPicker } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
+import { format } from "date-fns";
+import { uk } from "date-fns/locale";
+import "react-day-picker/style.css";
 import { useExpenseStore } from "@/lib/store";
 import { formatMoney } from "@/lib/utils";
 import { ExpenseForm } from "@/components/expense-form";
+import { ExpenseDetail } from "@/components/expense-detail";
+import { ExpenseListItem } from "@/components/expense-list-item";
+import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useToast } from "@/components/ui/toast";
+import type { Expense } from "@/types/expense";
+
+type PageTab = "categories" | "all";
+type SortKey = "date-desc" | "date-asc" | "amount-desc" | "amount-asc";
+
+const fmtISO = (d: Date) => format(d, "yyyy-MM-dd");
 
 export default function ExpensesPage() {
-  const { expenses, categories, settings } = useExpenseStore();
+  const { expenses, categories, settings, deleteExpense } = useExpenseStore();
+  const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
+  const [activeTab, setActiveTab] = useState<PageTab>("categories");
+  const [editing, setEditing] = useState<Expense | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [viewing, setViewing] = useState<Expense | null>(null);
+  const [search, setSearch] = useState("");
+  const [selectedPerson, setSelectedPerson] = useState<
+    "all" | "person1" | "person2"
+  >("all");
+  const [sortBy, setSortBy] = useState<SortKey>("date-desc");
+  const [showFilters, setShowFilters] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+  const categoryMap = useMemo(
+    () => Object.fromEntries(categories.map((cat) => [cat.id, cat])),
+    [categories],
+  );
 
   const grouped = useMemo(() => {
     return categories
@@ -29,6 +70,93 @@ export default function ExpensesPage() {
 
   const total = expenses.reduce((s, e) => s + e.amount, 0);
 
+  const filteredExpenses = useMemo(() => {
+    let result = [...expenses];
+
+    if (dateRange?.from)
+      result = result.filter((e) => e.date >= fmtISO(dateRange.from!));
+    if (dateRange?.to)
+      result = result.filter((e) => e.date <= fmtISO(dateRange.to!));
+
+    if (selectedPerson !== "all") {
+      result = result.filter((e) => e.paidBy === selectedPerson);
+    }
+
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      result = result.filter((e) => {
+        const category = categoryMap[e.categoryId];
+        const personName =
+          e.paidBy === "person1" ? settings.person1Name : settings.person2Name;
+        const formattedDate = format(new Date(e.date), "d MMMM yyyy", {
+          locale: uk,
+        }).toLowerCase();
+
+        return (
+          e.title.toLowerCase().includes(q) ||
+          e.note?.toLowerCase().includes(q) ||
+          e.date.includes(q) ||
+          formattedDate.includes(q) ||
+          category?.name.toLowerCase().includes(q) ||
+          personName.toLowerCase().includes(q)
+        );
+      });
+    }
+
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case "date-desc":
+          return b.date.localeCompare(a.date);
+        case "date-asc":
+          return a.date.localeCompare(b.date);
+        case "amount-desc":
+          return b.amount - a.amount;
+        case "amount-asc":
+          return a.amount - b.amount;
+      }
+    });
+
+    return result;
+  }, [
+    categoryMap,
+    dateRange,
+    expenses,
+    search,
+    selectedPerson,
+    settings.person1Name,
+    settings.person2Name,
+    sortBy,
+  ]);
+
+  const filteredTotal = filteredExpenses.reduce((s, e) => s + e.amount, 0);
+  const hasDateFilter = !!(dateRange?.from || dateRange?.to);
+  const activeFilterCount = [
+    hasDateFilter,
+    selectedPerson !== "all",
+    sortBy !== "date-desc",
+  ].filter(Boolean).length;
+
+  const clearAllFilters = useCallback(() => {
+    setSelectedPerson("all");
+    setSortBy("date-desc");
+    setSearch("");
+    setDateRange(undefined);
+    setShowCalendar(false);
+  }, []);
+
+  const p1 = settings.person1Name || "Person 1";
+  const p2 = settings.person2Name || "Person 2";
+  const p1Initial = p1.charAt(0).toUpperCase();
+  const p2Initial = p2.charAt(0).toUpperCase();
+  const p1Color = settings.person1Color || "#e11d48";
+  const p2Color = settings.person2Color || "#3b82f6";
+
+  const dateLabel = dateRange?.from
+    ? dateRange.to
+      ? `${format(dateRange.from, "d MMM", { locale: uk })} — ${format(dateRange.to, "d MMM", { locale: uk })}`
+      : format(dateRange.from, "d MMM yyyy", { locale: uk })
+    : null;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -42,7 +170,10 @@ export default function ExpensesPage() {
           </p>
         </div>
         <button
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setEditing(null);
+            setShowForm(true);
+          }}
           className="btn-primary self-start"
         >
           <Plus className="h-4 w-4" />
@@ -50,67 +181,421 @@ export default function ExpensesPage() {
         </button>
       </div>
 
-      {/* Category cards */}
-      {grouped.length === 0 ? (
-        <EmptyState
-          icon={Receipt}
-          title="Немає витрат"
-          description="Додайте першу витрату"
-          action={
-            expenses.length === 0
-              ? { label: "Додати витрату", onClick: () => setShowForm(true) }
-              : undefined
-          }
-        />
-      ) : (
-        <div className="space-y-2">
-          {grouped.map(({ cat, count, total }) => {
-            const countLabel =
-              count === 1
-                ? "1 чек"
-                : count < 5
-                  ? `${count} чеки`
-                  : `${count} чеків`;
-            return (
-              <Link
-                key={cat.id}
-                href={`/expenses/${cat.id}`}
-                className="glass-card flex items-center gap-3 rounded-2xl px-4 py-3.5 transition-colors hover:bg-foreground/5 active:bg-foreground/8"
-              >
-                <div
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl"
-                  style={{
-                    backgroundColor: cat.color
-                      ? `${cat.color}22`
-                      : "rgba(0,0,0,0.05)",
-                  }}
+      <div className="inline-flex w-full gap-1 rounded-2xl bg-foreground/5 p-1 sm:w-auto">
+        <button
+          type="button"
+          onClick={() => setActiveTab("categories")}
+          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-all sm:flex-none ${
+            activeTab === "categories"
+              ? "bg-linear-[135deg,#e11d48_0%,#f472b6_100%] text-white shadow-sm"
+              : "text-foreground/50 hover:text-foreground"
+          }`}
+        >
+          Категорії
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("all")}
+          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-all sm:flex-none ${
+            activeTab === "all"
+              ? "bg-linear-[135deg,#e11d48_0%,#f472b6_100%] text-white shadow-sm"
+              : "text-foreground/50 hover:text-foreground"
+          }`}
+        >
+          Все
+        </button>
+      </div>
+
+      {activeTab === "categories" ? (
+        grouped.length === 0 ? (
+          <EmptyState
+            icon={Receipt}
+            title="Немає витрат"
+            description="Додайте першу витрату"
+            action={
+              expenses.length === 0
+                ? { label: "Додати витрату", onClick: () => setShowForm(true) }
+                : undefined
+            }
+          />
+        ) : (
+          <div className="space-y-2">
+            {grouped.map(({ cat, count, total }) => {
+              const countLabel =
+                count === 1
+                  ? "1 чек"
+                  : count < 5
+                    ? `${count} чеки`
+                    : `${count} чеків`;
+              return (
+                <Link
+                  key={cat.id}
+                  href={`/expenses/${cat.id}`}
+                  className="glass-card flex items-center gap-3 rounded-2xl px-4 py-3.5 transition-colors hover:bg-foreground/5 active:bg-foreground/8"
                 >
-                  {cat.emoji}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold text-foreground">
-                    {cat.name}
-                  </p>
-                  <p className="text-xs text-foreground/40">{countLabel}</p>
-                </div>
-                <span className="shrink-0 font-bold text-foreground">
-                  {formatMoney(total, settings.currency)}
+                  <div
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl"
+                    style={{
+                      backgroundColor: cat.color
+                        ? `${cat.color}22`
+                        : "rgba(0,0,0,0.05)",
+                    }}
+                  >
+                    {cat.emoji}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold text-foreground">
+                      {cat.name}
+                    </p>
+                    <p className="text-xs text-foreground/40">{countLabel}</p>
+                  </div>
+                  <span className="shrink-0 font-bold text-foreground">
+                    {formatMoney(total, settings.currency)}
+                  </span>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-foreground/25" />
+                </Link>
+              );
+            })}
+          </div>
+        )
+      ) : (
+        <>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/30" />
+              <Input
+                type="text"
+                placeholder="Пошук по даті, назві, нотатці..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9 text-sm"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowFilters((v) => !v)}
+              className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all ${
+                showFilters || activeFilterCount > 0
+                  ? "bg-rose-500/15 text-rose-600 dark:text-pink-400"
+                  : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+              }`}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              {activeFilterCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
+                  {activeFilterCount}
                 </span>
-                <ChevronRight className="h-4 w-4 shrink-0 text-foreground/25" />
-              </Link>
-            );
-          })}
-        </div>
+              )}
+            </button>
+          </div>
+
+          {showFilters && (
+            <div className="glass-card space-y-4 rounded-2xl p-4">
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+                  Хто платив
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPerson("all")}
+                    className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+                      selectedPerson === "all"
+                        ? "bg-foreground text-background shadow-sm"
+                        : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                    }`}
+                  >
+                    Всі
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPerson("person1")}
+                    className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                      selectedPerson === "person1"
+                        ? "shadow-sm ring-1 ring-foreground/10"
+                        : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                    }`}
+                    style={
+                      selectedPerson === "person1"
+                        ? { backgroundColor: `${p1Color}18`, color: p1Color }
+                        : undefined
+                    }
+                  >
+                    <span
+                      className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                      style={{ backgroundColor: p1Color }}
+                    >
+                      {p1Initial}
+                    </span>
+                    {p1}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPerson("person2")}
+                    className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                      selectedPerson === "person2"
+                        ? "shadow-sm ring-1 ring-foreground/10"
+                        : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                    }`}
+                    style={
+                      selectedPerson === "person2"
+                        ? { backgroundColor: `${p2Color}18`, color: p2Color }
+                        : undefined
+                    }
+                  >
+                    <span
+                      className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                      style={{ backgroundColor: p2Color }}
+                    >
+                      {p2Initial}
+                    </span>
+                    {p2}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+                  Період
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowCalendar((v) => !v)}
+                    className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                      hasDateFilter
+                        ? "shadow-sm ring-1 ring-foreground/10"
+                        : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                    }`}
+                    style={
+                      hasDateFilter
+                        ? { backgroundColor: "#e11d4818", color: "#e11d48" }
+                        : undefined
+                    }
+                  >
+                    <span
+                      className="flex h-5 w-5 items-center justify-center rounded-full text-white"
+                      style={{ backgroundColor: "#e11d48" }}
+                    >
+                      <CalendarDays className="h-3 w-3" />
+                    </span>
+                    {dateLabel ?? "Обрати дати"}
+                  </button>
+                  {hasDateFilter && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDateRange(undefined);
+                        setShowCalendar(false);
+                      }}
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-foreground/5 text-foreground/40 transition-colors hover:bg-foreground/10"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {showCalendar && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-60 bg-black/40"
+                      onClick={() => setShowCalendar(false)}
+                    />
+                    <div
+                      className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-surface shadow-2xl dark:border-white/10"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <DayPicker
+                        mode="range"
+                        selected={dateRange}
+                        onSelect={setDateRange}
+                        locale={uk}
+                        weekStartsOn={1}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+                  Сортування
+                </label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {(
+                    [
+                      { val: "date-desc" as SortKey, label: "Нові ↓" },
+                      { val: "date-asc" as SortKey, label: "Старі ↑" },
+                      { val: "amount-desc" as SortKey, label: "Дорогі ↓" },
+                      { val: "amount-asc" as SortKey, label: "Дешеві ↑" },
+                    ] as const
+                  ).map(({ val, label }) => (
+                    <button
+                      key={val}
+                      type="button"
+                      onClick={() => setSortBy(val)}
+                      className={`rounded-xl px-3 py-2 text-xs font-medium transition-all ${
+                        sortBy === val
+                          ? "bg-foreground text-background"
+                          : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {activeFilterCount > 0 && (
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="w-full rounded-xl bg-foreground/5 py-2 text-xs font-medium text-foreground/40 transition-colors hover:bg-foreground/10 hover:text-foreground"
+                >
+                  Скинути фільтри
+                </button>
+              )}
+            </div>
+          )}
+
+          {filteredExpenses.length === 0 ? (
+            <EmptyState
+              icon={Receipt}
+              title="Нічого не знайдено"
+              description={
+                expenses.length === 0
+                  ? "Додайте першу витрату"
+                  : "Спробуйте змінити пошук або фільтри"
+              }
+              action={
+                expenses.length === 0
+                  ? {
+                      label: "Додати витрату",
+                      onClick: () => setShowForm(true),
+                    }
+                  : undefined
+              }
+            />
+          ) : (
+            <div className="space-y-2.5">
+              <p className="text-xs text-foreground/45">
+                {filteredExpenses.length} записів ·{" "}
+                {formatMoney(filteredTotal, settings.currency)}
+              </p>
+              {filteredExpenses.map((expense) => (
+                <ExpenseListItem
+                  key={expense.id}
+                  expense={expense}
+                  category={categoryMap[expense.categoryId]}
+                  currency={settings.currency}
+                  person1Name={settings.person1Name}
+                  person2Name={settings.person2Name}
+                  person1Color={settings.person1Color}
+                  person2Color={settings.person2Color}
+                  onView={(e) => setViewing(e)}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Add form modal */}
       <Modal
         open={showForm}
-        onClose={() => setShowForm(false)}
-        title="Нова витрата"
+        onClose={() => {
+          setShowForm(false);
+          setEditing(null);
+        }}
+        title={editing ? "Редагувати витрату" : "Нова витрата"}
         size="md"
+        closeOnOverlay={false}
+        closeOnEscape={false}
+        tall
+        allowOverflow
       >
-        <ExpenseForm onDone={() => setShowForm(false)} />
+        <ExpenseForm
+          expense={editing}
+          onDone={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
+        />
+      </Modal>
+
+      <Modal
+        open={!!expenseToDelete}
+        onClose={() => setExpenseToDelete(null)}
+        title="Видалити витрату"
+        size="sm"
+      >
+        <p className="mb-6 text-sm text-foreground/60">
+          Ви впевнені, що хочете видалити{" "}
+          <span className="font-semibold text-foreground">
+            {expenseToDelete?.emoji || "📦"} {expenseToDelete?.title}
+          </span>{" "}
+          на суму{" "}
+          <span className="font-semibold text-foreground">
+            {formatMoney(expenseToDelete?.amount ?? 0, settings.currency)}
+          </span>
+          ?
+        </p>
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => setExpenseToDelete(null)}
+            className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
+          >
+            Скасувати
+          </button>
+          <button
+            type="button"
+            onClick={async () => {
+              if (!expenseToDelete) return;
+              const result = await deleteExpense(expenseToDelete.id);
+              toast(
+                result.ok
+                  ? "Витрату видалено"
+                  : (result.error ?? "Не вдалося видалити витрату"),
+                result.ok ? "success" : "error",
+              );
+              if (result.ok) setExpenseToDelete(null);
+            }}
+            className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
+          >
+            Видалити
+          </button>
+        </div>
+      </Modal>
+
+      <Modal
+        open={!!viewing}
+        onClose={() => setViewing(null)}
+        title="Деталі витрати"
+        size="sm"
+      >
+        {viewing && (
+          <ExpenseDetail
+            expense={viewing}
+            category={categoryMap[viewing.categoryId]}
+            currency={settings.currency}
+            person1Name={settings.person1Name}
+            person2Name={settings.person2Name}
+            person1Color={settings.person1Color}
+            person2Color={settings.person2Color}
+            onEdit={() => {
+              setViewing(null);
+              setEditing(viewing);
+              setShowForm(true);
+            }}
+            onDelete={() => {
+              setExpenseToDelete(viewing);
+              setViewing(null);
+            }}
+          />
+        )}
       </Modal>
     </div>
   );

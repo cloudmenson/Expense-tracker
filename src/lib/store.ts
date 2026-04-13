@@ -39,26 +39,31 @@ interface ExpenseStore {
   hydrate: () => Promise<void>;
 
   // Expenses
-  addExpense: (draft: ExpenseDraft) => void;
-  updateExpense: (id: string, draft: Partial<ExpenseDraft>) => void;
-  deleteExpense: (id: string) => void;
+  addExpense: (draft: ExpenseDraft) => Promise<{ ok: boolean; error?: string }>;
+  updateExpense: (
+    id: string,
+    draft: Partial<ExpenseDraft>,
+  ) => Promise<{ ok: boolean; error?: string }>;
+  deleteExpense: (id: string) => Promise<{ ok: boolean; error?: string }>;
 
   // Categories
-  addCategory: (cat: Omit<Category, "id" | "isCustom">) => void;
+  addCategory: (
+    cat: Omit<Category, "id" | "isCustom">,
+  ) => Promise<{ ok: boolean; error?: string }>;
   updateCategory: (
     id: string,
     data: Partial<Omit<Category, "id" | "isCustom">>,
-  ) => void;
-  deleteCategory: (id: string) => void;
+  ) => Promise<{ ok: boolean; error?: string }>;
+  deleteCategory: (id: string) => Promise<{ ok: boolean; error?: string }>;
 
   // Settings
   updateSettings: (s: Partial<AppSettings>) => void;
 
   // Trash
   fetchTrash: () => Promise<void>;
-  restoreFromTrash: (id: string) => Promise<void>;
-  deleteFromTrash: (id: string) => Promise<void>;
-  clearTrash: () => Promise<void>;
+  restoreFromTrash: (id: string) => Promise<{ ok: boolean; error?: string }>;
+  deleteFromTrash: (id: string) => Promise<{ ok: boolean; error?: string }>;
+  clearTrash: () => Promise<{ ok: boolean; error?: string }>;
 
   /** Re-set all local data (used after import/clear) */
   _setAll: (data: {
@@ -111,11 +116,11 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
   },
 
   /* ── Expenses (optimistic + API) ── */
-  addExpense: (draft) => {
+  addExpense: async (draft) => {
     if (draft.paidBy !== "person1" && draft.paidBy !== "person2") {
       // Safety guard: UI should prevent this, but keep store type-safe.
       console.warn("Skipped expense creation: payer is not selected");
-      return;
+      return { ok: false, error: "Не вибрано, хто платив" };
     }
 
     const safeDraft: ExpenseDraftWithPayer = {
@@ -136,23 +141,22 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
     set((s) => ({ expenses: [tempExpense, ...s.expenses] }));
 
     // Persist to MongoDB
-    api
-      .createExpense(safeDraft)
-      .then((saved) => {
-        set((s) => ({
-          expenses: s.expenses.map((e) => (e.id === tempId ? saved : e)),
-        }));
-      })
-      .catch((err) => {
-        console.error("Failed to save expense:", err);
-        // Rollback
-        set((s) => ({
-          expenses: s.expenses.filter((e) => e.id !== tempId),
-        }));
-      });
+    try {
+      const saved = await api.createExpense(safeDraft);
+      set((s) => ({
+        expenses: s.expenses.map((e) => (e.id === tempId ? saved : e)),
+      }));
+      return { ok: true };
+    } catch (err) {
+      console.error("Failed to save expense:", err);
+      set((s) => ({
+        expenses: s.expenses.filter((e) => e.id !== tempId),
+      }));
+      return { ok: false, error: "Не вдалося створити витрату" };
+    }
   },
 
-  updateExpense: (id, draft) => {
+  updateExpense: async (id, draft) => {
     const { paidBy, ...rest } = draft;
     const safeDraft: ExpenseDraftPatch = {
       ...rest,
@@ -169,52 +173,59 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
       ),
     }));
 
-    api.updateExpense(id, safeDraft).catch((err) => {
+    try {
+      await api.updateExpense(id, safeDraft);
+      return { ok: true };
+    } catch (err) {
       console.error("Failed to update expense:", err);
-      // Rollback
       if (prev) {
         set((s) => ({
           expenses: s.expenses.map((e) => (e.id === id ? prev : e)),
         }));
       }
-    });
+      return { ok: false, error: "Не вдалося оновити витрату" };
+    }
   },
 
-  deleteExpense: (id) => {
+  deleteExpense: async (id) => {
     const prev = get().expenses.find((e) => e.id === id);
     set((s) => ({ expenses: s.expenses.filter((e) => e.id !== id) }));
 
-    api.deleteExpense(id).catch((err) => {
+    try {
+      await api.deleteExpense(id);
+      return { ok: true };
+    } catch (err) {
       console.error("Failed to delete expense:", err);
       if (prev) {
         set((s) => ({ expenses: [prev, ...s.expenses] }));
       }
-    });
+      return { ok: false, error: "Не вдалося видалити витрату" };
+    }
   },
 
   /* ── Categories (optimistic + API) ── */
-  addCategory: (cat) => {
+  addCategory: async (cat) => {
     const tempId = `custom-${Date.now()}`;
     const newCat: Category = { ...cat, id: tempId, isCustom: true };
 
     set((s) => ({ categories: [...s.categories, newCat] }));
 
-    api
-      .createCategory({ ...cat, id: tempId })
-      .then((saved) => {
-        set((s) => ({
-          categories: s.categories.map((c) => (c.id === tempId ? saved : c)),
-        }));
-      })
-      .catch((err) => {
-        console.error("Failed to save category:", err);
-        set((s) => ({
-          categories: s.categories.filter((c) => c.id !== tempId),
-        }));
-      });
+    try {
+      const saved = await api.createCategory({ ...cat, id: tempId });
+      set((s) => ({
+        categories: s.categories.map((c) => (c.id === tempId ? saved : c)),
+      }));
+      return { ok: true };
+    } catch (err) {
+      console.error("Failed to save category:", err);
+      set((s) => ({
+        categories: s.categories.filter((c) => c.id !== tempId),
+      }));
+      return { ok: false, error: "Не вдалося створити категорію" };
+    }
   },
 
-  updateCategory: (id, data) => {
+  updateCategory: async (id, data) => {
     const prev = get().categories.find((c) => c.id === id);
     set((s) => ({
       categories: s.categories.map((c) =>
@@ -222,28 +233,36 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
       ),
     }));
 
-    api.updateCategory(id, data).catch((err) => {
+    try {
+      await api.updateCategory(id, data);
+      return { ok: true };
+    } catch (err) {
       console.error("Failed to update category:", err);
       if (prev) {
         set((s) => ({
           categories: s.categories.map((c) => (c.id === id ? prev : c)),
         }));
       }
-    });
+      return { ok: false, error: "Не вдалося оновити категорію" };
+    }
   },
 
-  deleteCategory: (id) => {
+  deleteCategory: async (id) => {
     const prev = get().categories.find((c) => c.id === id);
     set((s) => ({
       categories: s.categories.filter((c) => c.id !== id),
     }));
 
-    api.deleteCategory(id).catch((err) => {
+    try {
+      await api.deleteCategory(id);
+      return { ok: true };
+    } catch (err) {
       console.error("Failed to delete category:", err);
       if (prev) {
         set((s) => ({ categories: [...s.categories, prev] }));
       }
-    });
+      return { ok: false, error: "Не вдалося видалити категорію" };
+    }
   },
 
   /* ── Settings (optimistic + API) ── */
@@ -278,7 +297,7 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
 
   restoreFromTrash: async (id) => {
     const item = get().trashItems.find((t) => t.id === id);
-    if (!item) return;
+    if (!item) return { ok: false, error: "Елемент не знайдено" };
 
     // Optimistic: remove from trash
     set((s) => ({ trashItems: s.trashItems.filter((t) => t.id !== id) }));
@@ -291,10 +310,11 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
         api.fetchCategories(),
       ]);
       set({ expenses, categories });
+      return { ok: true };
     } catch (err) {
       console.error("Failed to restore from trash:", err);
-      // Rollback
       set((s) => ({ trashItems: [...s.trashItems, item] }));
+      return { ok: false, error: "Не вдалося відновити елемент" };
     }
   },
 
@@ -304,11 +324,13 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
 
     try {
       await api.deleteFromTrash(id);
+      return { ok: true };
     } catch (err) {
       console.error("Failed to permanently delete from trash:", err);
       if (item) {
         set((s) => ({ trashItems: [...s.trashItems, item] }));
       }
+      return { ok: false, error: "Не вдалося видалити елемент назавжди" };
     }
   },
 
@@ -318,9 +340,11 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
 
     try {
       await api.clearTrash();
+      return { ok: true };
     } catch (err) {
       console.error("Failed to clear trash:", err);
       set({ trashItems: prev });
+      return { ok: false, error: "Не вдалося очистити кошик" };
     }
   },
 }));

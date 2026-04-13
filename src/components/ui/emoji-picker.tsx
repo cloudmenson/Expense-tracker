@@ -266,7 +266,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
                             onChange(emoji);
                             setOpen(false);
                           }}
-                          className={`flex h-9 w-9 items-center justify-center rounded-lg text-lg transition-all hover:scale-110 hover:bg-foreground/10 active:scale-95 sm:h-8 sm:w-8 ${
+                          className={`flex h-9 w-9 items-center justify-center rounded-lg text-lg transition-all hover:bg-foreground/10 sm:h-8 sm:w-8 ${
                             value === emoji
                               ? "bg-rose-500/20 ring-2 ring-rose-500/40"
                               : ""

@@ -42,16 +42,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="fixed bottom-[calc(68px+env(safe-area-inset-bottom))] left-4 right-4 z-[100] flex flex-col items-stretch gap-2 lg:bottom-6 lg:left-auto lg:right-6 lg:w-80"
+        className="fixed bottom-[calc(68px+env(safe-area-inset-bottom))] left-4 right-4 z-100 flex flex-col items-stretch gap-2 lg:bottom-6 lg:left-auto lg:right-6 lg:w-80"
       >
         {toasts.map((t) => (
           <div
             key={t.id}
             className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl ${
               t.type === "success"
-                ? "bg-rose-600 text-white"
+                ? "bg-emerald-600 text-white"
                 : t.type === "error"
-                  ? "bg-rose-500 text-white"
+                  ? "bg-red-500 text-white"
                   : "bg-foreground text-background"
             }`}
           >

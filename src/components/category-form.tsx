@@ -5,6 +5,7 @@ import { EmojiPicker } from "@/components/ui/emoji-picker";
 import { useExpenseStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/toast";
 import type { Category } from "@/types/expense";
 
 interface CategoryFormProps {
@@ -32,20 +33,27 @@ const PRESET_COLORS = [
 
 export function CategoryForm({ category, onDone }: CategoryFormProps) {
   const { addCategory, updateCategory } = useExpenseStore();
+  const { toast } = useToast();
 
   const [name, setName] = useState(category?.name ?? "");
   const [emoji, setEmoji] = useState(category?.emoji ?? "📦");
   const [color, setColor] = useState(category?.color ?? "#e11d48");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    if (category) {
-      updateCategory(category.id, { name, emoji, color });
-    } else {
-      addCategory({ name, emoji, color });
+    const result = category
+      ? await updateCategory(category.id, { name, emoji, color })
+      : await addCategory({ name, emoji, color });
+
+    if (!result.ok) {
+      toast(result.error ?? "Помилка збереження категорії", "error");
+      return;
     }
+
+    toast(category ? "Категорію оновлено" : "Категорію створено", "success");
+
     onDone();
   };
 

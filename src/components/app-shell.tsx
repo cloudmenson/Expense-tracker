@@ -35,6 +35,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
 
+  if (pathname === "/unlock") {
+    return <>{children}</>;
+  }
+
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;

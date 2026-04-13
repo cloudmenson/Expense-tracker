@@ -98,7 +98,7 @@ export function ExpenseForm({
       p.map((item, i) => (i === idx ? { ...item, [field]: val } : item)),
     );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.paidBy) {
@@ -111,14 +111,28 @@ export function ExpenseForm({
       if (!form.title.trim() || valid.length === 0) return;
       const total = valid.reduce((s, i) => s + i.price, 0);
       const draft: ExpenseDraft = { ...form, amount: total, items: valid };
-      if (expense) updateExpense(expense.id, draft);
-      else addExpense(draft);
+      const result = expense
+        ? await updateExpense(expense.id, draft)
+        : await addExpense(draft);
+
+      if (!result.ok) {
+        toast(result.error ?? "Помилка збереження витрати", "error");
+        return;
+      }
     } else {
       if (!form.title.trim() || form.amount <= 0) return;
       const draft: ExpenseDraft = { ...form, items: [] };
-      if (expense) updateExpense(expense.id, draft);
-      else addExpense(draft);
+      const result = expense
+        ? await updateExpense(expense.id, draft)
+        : await addExpense(draft);
+
+      if (!result.ok) {
+        toast(result.error ?? "Помилка збереження витрати", "error");
+        return;
+      }
     }
+
+    toast(expense ? "Витрату оновлено" : "Витрату створено", "success");
     onDone();
   };
 
@@ -128,6 +142,7 @@ export function ExpenseForm({
   const [editingCat, setEditingCat] = useState<
     (typeof categories)[number] | null
   >(null);
+  const [showCreateCategory, setShowCreateCategory] = useState(false);
   const pressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const longFired = useRef(false);
 
@@ -146,243 +161,257 @@ export function ExpenseForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Mode toggle */}
-      {!expense && (
-        <div className="flex gap-1 rounded-xl bg-foreground/5 p-1">
-          <button
-            type="button"
-            onClick={() => setIsList(false)}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
-              !isList
-                ? "bg-surface text-foreground shadow-sm"
-                : "text-foreground/50 hover:text-foreground"
-            }`}
-          >
-            <ShoppingBag className="h-4 w-4" />
-            Один товар
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsList(true)}
-            className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
-              isList
-                ? "bg-surface text-foreground shadow-sm"
-                : "text-foreground/50 hover:text-foreground"
-            }`}
-          >
-            <ShoppingCart className="h-4 w-4" />
-            Список покупок
-          </button>
-        </div>
-      )}
-
-      {/* Emoji + Title */}
-      <div className="flex gap-3">
-        <EmojiPicker
-          value={form.emoji || selectedCat?.emoji}
-          onChange={(e) => set("emoji", e)}
-        />
-        <div className="flex-1">
-          <Input
-            type="text"
-            placeholder={isList ? "Назва магазину / події" : "Назва витрати"}
-            value={form.title}
-            onChange={(e) => set("title", e.target.value)}
-            className="text-base"
-          />
-        </div>
-      </div>
-
-      {/* LIST MODE: items */}
-      {isList ? (
-        <div className="space-y-3">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-            Товари ({items.length}) · Разом:{" "}
-            <span className="text-rose-600 dark:text-pink-400">
-              {settings.currency} {listTotal.toLocaleString("en-US")}
-            </span>
-          </label>
-          <div className="space-y-2">
-            {items.map((item, i) => (
-              <div key={i} className="flex gap-2">
-                <Input
-                  type="text"
-                  placeholder="Назва товару"
-                  value={item.name}
-                  onChange={(e) => updateItem(i, "name", e.target.value)}
-                  className="flex-1 text-sm"
-                />
-                <Input
-                  type="number"
-                  inputMode="decimal"
-                  placeholder="0"
-                  value={item.price || ""}
-                  onChange={(e) =>
-                    updateItem(i, "price", parseFloat(e.target.value) || 0)
-                  }
-                  className="w-24 text-sm"
-                  min={0}
-                  step={0.01}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeItem(i)}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={addItem}
-            className="flex items-center gap-2 text-sm font-medium text-rose-600 transition-colors hover:text-rose-500 dark:text-pink-400 dark:hover:text-pink-300"
-          >
-            <Plus className="h-4 w-4" />
-            Додати товар
-          </button>
-        </div>
-      ) : (
-        /* SIMPLE MODE: amount */
-        <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-            Сума ({settings.currency})
-          </label>
-          <Input
-            type="number"
-            inputMode="decimal"
-            placeholder="0"
-            value={form.amount || ""}
-            onChange={(e) => set("amount", parseFloat(e.target.value) || 0)}
-            className="text-2xl font-semibold"
-            min={0}
-            step={0.01}
-          />
-        </div>
-      )}
-
-      {/* Category */}
-      <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-          Категорія
-        </label>
-        <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6 sm:gap-2">
-          {categories.map((cat) => (
+    <>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Mode toggle */}
+        {!expense && (
+          <div className="flex gap-1 rounded-xl bg-foreground/5 p-1">
             <button
-              key={cat.id}
               type="button"
-              onClick={() => {
-                if (!longFired.current) set("categoryId", cat.id);
-              }}
-              onPointerDown={() => onCatPressStart(cat)}
-              onPointerUp={onCatPressEnd}
-              onPointerLeave={onCatPressEnd}
-              onPointerCancel={onCatPressEnd}
-              className={`group relative flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
-                form.categoryId === cat.id
-                  ? "bg-rose-500/20 ring-2 ring-rose-500/40"
-                  : "bg-foreground/5 hover:bg-foreground/10"
+              onClick={() => setIsList(false)}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                !isList
+                  ? "bg-surface text-foreground shadow-sm"
+                  : "text-foreground/50 hover:text-foreground"
               }`}
             >
-              <span className="text-xl transition-transform group-hover:animate-emoji-bounce">
-                {cat.emoji}
-              </span>
-              <span className="text-[10px] font-medium leading-tight text-foreground/60">
-                {cat.name}
-              </span>
+              <ShoppingBag className="h-4 w-4" />
+              Один товар
             </button>
-          ))}
-        </div>
-      </div>
+            <button
+              type="button"
+              onClick={() => setIsList(true)}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                isList
+                  ? "bg-surface text-foreground shadow-sm"
+                  : "text-foreground/50 hover:text-foreground"
+              }`}
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Список покупок
+            </button>
+          </div>
+        )}
 
-      {/* Date + Paid by */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="relative">
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-            Дата
-          </label>
-          <button
-            type="button"
-            onClick={() => setShowDatePicker((v) => !v)}
-            className="input-glass flex w-full items-center gap-2 text-left"
-          >
-            <CalendarDays className="h-4 w-4 shrink-0 text-foreground/40" />
-            <span className="flex-1 text-sm">
-              {format(parseISO(form.date), "d MMMM yyyy", { locale: uk })}
-            </span>
-          </button>
-
-          {showDatePicker && (
-            <>
-              {/* Overlay — no blur, just dim */}
-              <div
-                className="fixed inset-0 z-60 bg-black/40"
-                onClick={() => setShowDatePicker(false)}
-              />
-              {/* Picker panel — centered on screen */}
-              <div
-                className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-surface shadow-2xl dark:border-white/10"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <DayPicker
-                  mode="single"
-                  selected={parseISO(form.date)}
-                  onSelect={(date) => {
-                    if (date) {
-                      set("date", format(date, "yyyy-MM-dd"));
-                      setShowDatePicker(false);
-                    }
-                  }}
-                  locale={uk}
-                  weekStartsOn={1}
-                  defaultMonth={parseISO(form.date)}
-                />
-              </div>
-            </>
-          )}
-        </div>
-        <div>
-          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-            Хто платив
-          </label>
-          <div className="flex gap-2">
-            {(["person1", "person2"] as const).map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => set("paidBy", p)}
-                className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
-                  form.paidBy === p
-                    ? "bg-rose-500/15 text-rose-600 ring-2 ring-rose-500/40 dark:text-pink-400"
-                    : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
-                }`}
-              >
-                {p === "person1" ? settings.person1Name : settings.person2Name}
-              </button>
-            ))}
+        {/* Emoji + Title */}
+        <div className="flex gap-3">
+          <EmojiPicker
+            value={form.emoji || selectedCat?.emoji}
+            onChange={(e) => set("emoji", e)}
+          />
+          <div className="flex-1">
+            <Input
+              type="text"
+              placeholder={isList ? "Назва магазину / події" : "Назва витрати"}
+              value={form.title}
+              onChange={(e) => set("title", e.target.value)}
+              className="text-base"
+            />
           </div>
         </div>
-      </div>
 
-      {/* Note */}
-      <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-          Нотатка
-        </label>
-        <Textarea
-          placeholder="Необов'язковий коментар..."
-          value={form.note}
-          onChange={(e) => set("note", e.target.value)}
-          rows={2}
-        />
-      </div>
+        {/* LIST MODE: items */}
+        {isList ? (
+          <div className="space-y-3">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+              Товари ({items.length}) · Разом:{" "}
+              <span className="text-rose-600 dark:text-pink-400">
+                {settings.currency} {listTotal.toLocaleString("en-US")}
+              </span>
+            </label>
+            <div className="space-y-2">
+              {items.map((item, i) => (
+                <div key={i} className="flex gap-2">
+                  <Input
+                    type="text"
+                    placeholder="Назва товару"
+                    value={item.name}
+                    onChange={(e) => updateItem(i, "name", e.target.value)}
+                    className="flex-1 text-sm"
+                  />
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    placeholder="0"
+                    value={item.price || ""}
+                    onChange={(e) =>
+                      updateItem(i, "price", parseFloat(e.target.value) || 0)
+                    }
+                    className="w-24 text-sm"
+                    min={0}
+                    step={0.01}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeItem(i)}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={addItem}
+              className="flex items-center gap-2 text-sm font-medium text-rose-600 transition-colors hover:text-rose-500 dark:text-pink-400 dark:hover:text-pink-300"
+            >
+              <Plus className="h-4 w-4" />
+              Додати товар
+            </button>
+          </div>
+        ) : (
+          /* SIMPLE MODE: amount */
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+              Сума ({settings.currency})
+            </label>
+            <Input
+              type="number"
+              inputMode="decimal"
+              placeholder="0"
+              value={form.amount || ""}
+              onChange={(e) => set("amount", parseFloat(e.target.value) || 0)}
+              className="text-2xl font-semibold"
+              min={0}
+              step={0.01}
+            />
+          </div>
+        )}
 
-      {/* Submit */}
-      <Button type="submit" className="w-full">
-        {expense ? "Зберегти зміни" : "Додати витрату"}
-      </Button>
+        {/* Category */}
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+            Категорія
+          </label>
+          <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6 sm:gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => {
+                  if (!longFired.current) set("categoryId", cat.id);
+                }}
+                onPointerDown={() => onCatPressStart(cat)}
+                onPointerUp={onCatPressEnd}
+                onPointerLeave={onCatPressEnd}
+                onPointerCancel={onCatPressEnd}
+                className={`group relative flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
+                  form.categoryId === cat.id
+                    ? "bg-rose-500/20 ring-2 ring-rose-500/40"
+                    : "bg-foreground/5 hover:bg-foreground/10"
+                }`}
+              >
+                <span className="text-xl transition-transform group-hover:animate-emoji-bounce">
+                  {cat.emoji}
+                </span>
+                <span className="text-[10px] font-medium leading-tight text-foreground/60">
+                  {cat.name}
+                </span>
+              </button>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => setShowCreateCategory(true)}
+              className="group relative flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-rose-500/30 bg-rose-500/6 p-2 text-center transition-all hover:scale-110 hover:bg-rose-500/10 active:scale-95"
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-[135deg,#e11d48_0%,#f472b6_100%] text-white shadow-sm transition-transform group-hover:scale-110">
+                <Plus className="h-4 w-4" />
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Date + Paid by */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="relative">
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+              Дата
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowDatePicker((v) => !v)}
+              className="input-glass flex w-full items-center gap-2 text-left"
+            >
+              <CalendarDays className="h-4 w-4 shrink-0 text-foreground/40" />
+              <span className="flex-1 text-sm">
+                {format(parseISO(form.date), "d MMMM yyyy", { locale: uk })}
+              </span>
+            </button>
+
+            {showDatePicker && (
+              <>
+                {/* Overlay — no blur, just dim */}
+                <div
+                  className="fixed inset-0 z-60 bg-black/40"
+                  onClick={() => setShowDatePicker(false)}
+                />
+                {/* Picker panel — centered on screen */}
+                <div
+                  className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-surface shadow-2xl dark:border-white/10"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <DayPicker
+                    mode="single"
+                    selected={parseISO(form.date)}
+                    onSelect={(date) => {
+                      if (date) {
+                        set("date", format(date, "yyyy-MM-dd"));
+                        setShowDatePicker(false);
+                      }
+                    }}
+                    locale={uk}
+                    weekStartsOn={1}
+                    defaultMonth={parseISO(form.date)}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+              Хто платив
+            </label>
+            <div className="flex gap-2">
+              {(["person1", "person2"] as const).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => set("paidBy", p)}
+                  className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                    form.paidBy === p
+                      ? "bg-rose-500/15 text-rose-600 ring-2 ring-rose-500/40 dark:text-pink-400"
+                      : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
+                  }`}
+                >
+                  {p === "person1"
+                    ? settings.person1Name
+                    : settings.person2Name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Note */}
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+            Нотатка
+          </label>
+          <Textarea
+            placeholder="Необов'язковий коментар..."
+            value={form.note}
+            onChange={(e) => set("note", e.target.value)}
+            rows={2}
+          />
+        </div>
+
+        {/* Submit */}
+        <Button type="submit" className="w-full">
+          {expense ? "Зберегти зміни" : "Додати витрату"}
+        </Button>
+      </form>
 
       {/* Long-press: category editor */}
       <Modal
@@ -390,12 +419,25 @@ export function ExpenseForm({
         onClose={() => setEditingCat(null)}
         title="Редагувати категорію"
         size="sm"
+        tall
+        allowOverflow
       >
         <CategoryForm
           category={editingCat}
           onDone={() => setEditingCat(null)}
         />
       </Modal>
-    </form>
+
+      <Modal
+        open={showCreateCategory}
+        onClose={() => setShowCreateCategory(false)}
+        title="Нова категорія"
+        size="sm"
+        tall
+        allowOverflow
+      >
+        <CategoryForm onDone={() => setShowCreateCategory(false)} />
+      </Modal>
+    </>
   );
 }

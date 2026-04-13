@@ -24,6 +24,7 @@ import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
 import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty-state";
+import { useToast } from "@/components/ui/toast";
 import type { Expense } from "@/types/expense";
 
 type SortKey = "date-desc" | "date-asc" | "amount-desc" | "amount-asc";
@@ -33,6 +34,7 @@ const fmtISO = (d: Date) => format(d, "yyyy-MM-dd");
 export default function CategoryExpensesPage() {
   const { id } = useParams<{ id: string }>();
   const { expenses, categories, settings, deleteExpense } = useExpenseStore();
+  const { toast } = useToast();
 
   const cat = categories.find((c) => c.id === id);
 
@@ -410,6 +412,10 @@ export default function CategoryExpensesPage() {
         }}
         title={editing ? "Редагувати витрату" : "Нова витрата"}
         size="md"
+        closeOnOverlay={false}
+        closeOnEscape={false}
+        tall
+        allowOverflow
       >
         <ExpenseForm
           expense={editing}
@@ -447,11 +453,16 @@ export default function CategoryExpensesPage() {
             Скасувати
           </button>
           <button
-            onClick={() => {
-              if (expenseToDelete) {
-                deleteExpense(expenseToDelete.id);
-                setExpenseToDelete(null);
-              }
+            onClick={async () => {
+              if (!expenseToDelete) return;
+              const result = await deleteExpense(expenseToDelete.id);
+              toast(
+                result.ok
+                  ? "Витрату видалено"
+                  : (result.error ?? "Не вдалося видалити витрату"),
+                result.ok ? "success" : "error",
+              );
+              if (result.ok) setExpenseToDelete(null);
             }}
             className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
           >

@@ -36,6 +36,7 @@ export function ExpenseListItem({
 
   return (
     <div
+      onClick={() => onView?.(expense)}
       className="glass-card group rounded-2xl p-4 transition-all hover:scale-[1.01] hover:shadow-md"
       style={{
         borderLeft: `3px solid ${borderColor}`,
@@ -44,10 +45,7 @@ export function ExpenseListItem({
     >
       <div className="flex items-center gap-3">
         {/* Clickable area — opens detail on mobile */}
-        <div
-          className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 sm:cursor-default"
-          onClick={() => onView?.(expense)}
-        >
+        <div className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 sm:cursor-default">
           {/* Emoji */}
           <div
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg sm:h-11 sm:w-11 sm:text-xl"
