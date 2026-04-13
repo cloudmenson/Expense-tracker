@@ -284,11 +284,12 @@ export function ExpenseForm({
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
             Категорія
           </label>
-          <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-6 sm:gap-2">
+          <div className="no-select-callout grid grid-cols-4 gap-1.5 sm:grid-cols-6 sm:gap-2">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
+                onContextMenu={(e) => e.preventDefault()}
                 onClick={() => {
                   if (!longFired.current) set("categoryId", cat.id);
                 }}
@@ -296,7 +297,7 @@ export function ExpenseForm({
                 onPointerUp={onCatPressEnd}
                 onPointerLeave={onCatPressEnd}
                 onPointerCancel={onCatPressEnd}
-                className={`group relative flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
+                className={`no-select-callout group relative flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
                   form.categoryId === cat.id
                     ? "bg-rose-500/20 ring-2 ring-rose-500/40"
                     : "bg-foreground/5 hover:bg-foreground/10"
@@ -313,8 +314,9 @@ export function ExpenseForm({
 
             <button
               type="button"
+              onContextMenu={(e) => e.preventDefault()}
               onClick={() => setShowCreateCategory(true)}
-              className="group relative flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-rose-500/30 bg-rose-500/6 p-2 text-center transition-all hover:scale-110 hover:bg-rose-500/10 active:scale-95"
+              className="no-select-callout group relative flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-rose-500/30 bg-rose-500/6 p-2 text-center transition-all hover:scale-110 hover:bg-rose-500/10 active:scale-95"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-[135deg,#e11d48_0%,#f472b6_100%] text-white shadow-sm transition-transform group-hover:scale-110">
                 <Plus className="h-4 w-4" />
@@ -420,7 +422,6 @@ export function ExpenseForm({
         title="Редагувати категорію"
         size="sm"
         tall
-        allowOverflow
       >
         <CategoryForm
           category={editingCat}
@@ -434,7 +435,6 @@ export function ExpenseForm({
         title="Нова категорія"
         size="sm"
         tall
-        allowOverflow
       >
         <CategoryForm onDone={() => setShowCreateCategory(false)} />
       </Modal>

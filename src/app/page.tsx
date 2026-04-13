@@ -196,7 +196,6 @@ export default function DashboardPage() {
         closeOnOverlay={false}
         closeOnEscape={false}
         tall
-        allowOverflow
       >
         <ExpenseForm expense={editing} onDone={() => setShowForm(false)} />
       </Modal>

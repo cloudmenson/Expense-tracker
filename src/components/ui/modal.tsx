@@ -60,12 +60,18 @@ export function Modal({
           }}
           onPointerDownOutside={(event) => {
             if (!closeOnOverlay) {
-              event.preventDefault();
+              const target = event.target as HTMLElement | null;
+              if (!target?.closest("[data-allow-modal-outside='true']")) {
+                event.preventDefault();
+              }
             }
           }}
           onInteractOutside={(event) => {
             if (!closeOnOverlay) {
-              event.preventDefault();
+              const target = event.target as HTMLElement | null;
+              if (!target?.closest("[data-allow-modal-outside='true']")) {
+                event.preventDefault();
+              }
             }
           }}
           className={cn(

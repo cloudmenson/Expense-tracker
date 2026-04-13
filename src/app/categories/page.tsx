@@ -130,7 +130,6 @@ export default function CategoriesPage() {
         title={editing ? "Редагувати категорію" : "Нова категорія"}
         size="sm"
         tall
-        allowOverflow
       >
         <CategoryForm category={editing} onDone={() => setShowForm(false)} />
       </Modal>

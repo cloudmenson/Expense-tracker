@@ -296,6 +296,13 @@ select.input-glass option {
   animation: slide-in-from-bottom 0.3s ease-out;
 }
 
+/* iOS long-press selection/callout guard */
+@utility no-select-callout {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 /* Splash screen ping */
 @keyframes splash-ping {
   0%,

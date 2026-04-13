@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 
 const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
   {
@@ -207,6 +208,8 @@ interface EmojiPickerProps {
 export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [panelStyle, setPanelStyle] = useState<CSSProperties>({});
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   const filteredGroups = search
     ? EMOJI_GROUPS.map((g) => ({
@@ -217,9 +220,63 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
       })).filter((g) => g.emojis.length > 0)
     : EMOJI_GROUPS;
 
+  useEffect(() => {
+    if (!open) return;
+
+    const updatePosition = () => {
+      const trigger = triggerRef.current;
+      if (!trigger || typeof window === "undefined") return;
+
+      const rect = trigger.getBoundingClientRect();
+      const isMobile = window.innerWidth < 640;
+
+      if (isMobile) {
+        setPanelStyle({
+          left: "50%",
+          top: "50%",
+          width: "calc(100vw - 24px)",
+          maxWidth: "24rem",
+          maxHeight: "min(70dvh, 440px)",
+          transform: "translate(-50%, -50%)",
+        });
+        return;
+      }
+
+      const panelWidth = 288;
+      const panelHeight = 420;
+      const sidePadding = 12;
+      const spaceBelow = window.innerHeight - rect.bottom - sidePadding;
+      const left = Math.min(
+        Math.max(rect.left, sidePadding),
+        window.innerWidth - panelWidth - sidePadding,
+      );
+      const top =
+        spaceBelow >= panelHeight
+          ? rect.bottom + 8
+          : Math.max(sidePadding, rect.top - panelHeight - 8);
+
+      setPanelStyle({
+        left,
+        top,
+        width: "18rem",
+        maxHeight: "min(70dvh, 440px)",
+      });
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open]);
+
   return (
     <div className="relative">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen(!open)}
         className="glass-card flex h-11 w-11 items-center justify-center rounded-xl text-xl transition-all hover:scale-110 active:scale-95 sm:h-12 sm:w-12 sm:text-2xl"
@@ -227,62 +284,68 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
         {value || "📦"}
       </button>
 
-      {open && (
-        <>
-          {/* Full-screen overlay — always clickable to close */}
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)}>
-            {/* Mobile: dark backdrop, Desktop: transparent */}
-            <div className="h-full bg-black/30 sm:bg-transparent" />
-          </div>
-          {/* Picker dropdown */}
-          <div
-            className="fixed left-1/2 top-1/2 z-50 w-[calc(100vw-24px)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/15 bg-surface p-4 shadow-2xl backdrop-blur-2xl sm:absolute sm:left-0 sm:top-full sm:mt-2 sm:w-72 sm:translate-x-0 sm:translate-y-0 sm:p-3 dark:border-white/10 dark:bg-surface/95"
-            style={{ maxHeight: "min(70dvh, 440px)" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <input
-              type="text"
-              placeholder="Шукати..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="mb-3 w-full rounded-xl bg-foreground/5 px-3 py-2.5 text-sm outline-none placeholder:text-foreground/30 focus:ring-2 focus:ring-rose-500/30"
-            />
+      {typeof document !== "undefined" &&
+        open &&
+        createPortal(
+          <>
             <div
-              className="overflow-y-auto overscroll-contain"
-              style={{ maxHeight: "min(calc(70dvh - 80px), 360px)" }}
+              data-allow-modal-outside="true"
+              className="fixed inset-0 z-90"
+              onClick={() => setOpen(false)}
             >
-              <div className="space-y-3">
-                {filteredGroups.map((group) => (
-                  <div key={group.label}>
-                    <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-foreground/40">
-                      {group.label}
-                    </p>
-                    <div className="flex flex-wrap gap-0.5 p-0.5">
-                      {group.emojis.map((emoji) => (
-                        <button
-                          key={emoji}
-                          type="button"
-                          onClick={() => {
-                            onChange(emoji);
-                            setOpen(false);
-                          }}
-                          className={`flex h-9 w-9 items-center justify-center rounded-lg text-lg transition-all hover:bg-foreground/10 sm:h-8 sm:w-8 ${
-                            value === emoji
-                              ? "bg-rose-500/20 ring-2 ring-rose-500/40"
-                              : ""
-                          }`}
-                        >
-                          {emoji}
-                        </button>
-                      ))}
+              <div className="h-full bg-black/30 sm:bg-transparent" />
+            </div>
+
+            <div
+              data-allow-modal-outside="true"
+              className="fixed z-91 rounded-2xl border border-white/15 bg-surface p-4 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-surface/95 sm:p-3"
+              style={panelStyle}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <input
+                type="text"
+                placeholder="Шукати..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="mb-3 w-full rounded-xl bg-foreground/5 px-3 py-2.5 text-sm outline-none placeholder:text-foreground/30 focus:ring-2 focus:ring-rose-500/30"
+              />
+              <div
+                className="overflow-y-auto overscroll-contain"
+                style={{ maxHeight: "min(calc(70dvh - 80px), 360px)" }}
+              >
+                <div className="space-y-3">
+                  {filteredGroups.map((group) => (
+                    <div key={group.label}>
+                      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-foreground/40">
+                        {group.label}
+                      </p>
+                      <div className="flex flex-wrap gap-0.5 p-0.5">
+                        {group.emojis.map((emoji) => (
+                          <button
+                            key={emoji}
+                            type="button"
+                            onClick={() => {
+                              onChange(emoji);
+                              setOpen(false);
+                            }}
+                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-lg transition-all hover:bg-foreground/10 sm:h-8 sm:w-8 ${
+                              value === emoji
+                                ? "bg-rose-500/20 ring-2 ring-rose-500/40"
+                                : ""
+                            }`}
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </>
-      )}
+          </>,
+          document.body,
+        )}
     </div>
   );
 }
