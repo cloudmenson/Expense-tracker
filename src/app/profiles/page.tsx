@@ -53,7 +53,6 @@ export default function ProfilesPage() {
   const [editIncome, setEditIncome] = useState(0);
   // Stores the final data: URL (or undefined) — sent directly to the server on save
   const [editAvatarImage, setEditAvatarImage] = useState<string | undefined>();
-  const [avatarConverting, setAvatarConverting] = useState(false);
   // Crop modal
   const [cropSrc, setCropSrc] = useState<string | null>(null);
 
@@ -91,7 +90,6 @@ export default function ProfilesPage() {
     setEditColor(p.color);
     setEditIncome(p.monthlyIncome);
     setEditAvatarImage(p.avatarImage || undefined);
-    setAvatarConverting(false);
   };
 
   const handleAvatarUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -204,8 +202,30 @@ export default function ProfilesPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-sm text-foreground/60">
-        <Loader2 className="h-4 w-4 animate-spin" /> Завантаження профілів…
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="space-y-2">
+            <div className="h-8 w-32 animate-pulse rounded-xl bg-foreground/8" />
+            <div className="h-4 w-56 animate-pulse rounded-lg bg-foreground/5" />
+          </div>
+          <div className="h-10 w-28 animate-pulse rounded-xl bg-foreground/8" />
+        </div>
+        {/* Cards skeleton */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          {[0, 1].map((i) => (
+            <div key={i} className="glass-card rounded-2xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 animate-pulse rounded-xl bg-foreground/8" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-24 animate-pulse rounded-lg bg-foreground/8" />
+                  <div className="h-3 w-16 animate-pulse rounded-lg bg-foreground/5" />
+                </div>
+                <div className="h-4 w-16 animate-pulse rounded-lg bg-foreground/8" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

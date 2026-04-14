@@ -34,7 +34,8 @@ type SortKey = "date-desc" | "date-asc" | "amount-desc" | "amount-asc";
 const fmtISO = (d: Date) => format(d, "yyyy-MM-dd");
 
 export default function ExpensesPage() {
-  const { expenses, categories, settings, deleteExpense } = useExpenseStore();
+  const { expenses, categories, settings, deleteExpense, _hydrated } =
+    useExpenseStore();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<PageTab>("categories");
@@ -157,6 +158,40 @@ export default function ExpensesPage() {
       ? `${format(dateRange.from, "d MMM", { locale: uk })} — ${format(dateRange.to, "d MMM", { locale: uk })}`
       : format(dateRange.from, "d MMM yyyy", { locale: uk })
     : null;
+
+  if (!_hydrated) {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <div className="h-8 w-28 animate-pulse rounded-xl bg-foreground/8" />
+            <div className="h-4 w-40 animate-pulse rounded-lg bg-foreground/5" />
+          </div>
+          <div className="h-10 w-28 animate-pulse rounded-xl bg-foreground/8" />
+        </div>
+        {/* Tabs */}
+        <div className="h-11 w-48 animate-pulse rounded-2xl bg-foreground/5" />
+        {/* Category list */}
+        <div className="space-y-2">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="glass-card flex items-center gap-3 rounded-2xl px-4 py-3.5"
+            >
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl bg-foreground/8" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-1/3 animate-pulse rounded-lg bg-foreground/8" />
+                <div className="h-3 w-1/4 animate-pulse rounded-lg bg-foreground/5" />
+              </div>
+              <div className="h-5 w-16 animate-pulse rounded-lg bg-foreground/8" />
+              <div className="h-4 w-4 animate-pulse rounded-lg bg-foreground/5" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -24,8 +24,15 @@ import {
 import * as api from "@/lib/api-client";
 
 export default function SettingsPage() {
-  const { settings, updateSettings, expenses, categories, _setAll, hydrate } =
-    useExpenseStore();
+  const {
+    settings,
+    updateSettings,
+    expenses,
+    categories,
+    _setAll,
+    hydrate,
+    _hydrated,
+  } = useExpenseStore();
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [showClear, setShowClear] = useState(false);
@@ -110,6 +117,38 @@ export default function SettingsPage() {
       toast("Помилка очищення даних", "error");
     }
   };
+
+  if (!_hydrated) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <div className="h-8 w-40 animate-pulse rounded-xl bg-foreground/8" />
+          <div className="h-4 w-56 animate-pulse rounded-lg bg-foreground/5" />
+        </div>
+        <div className="glass-card space-y-4 rounded-2xl p-4 sm:p-6">
+          <div className="h-5 w-24 animate-pulse rounded-lg bg-foreground/8" />
+          <div className="h-10 w-full animate-pulse rounded-xl bg-foreground/8" />
+        </div>
+        <div className="glass-card space-y-4 rounded-2xl p-4 sm:p-6">
+          <div className="h-5 w-36 animate-pulse rounded-lg bg-foreground/8" />
+          <div className="grid grid-cols-2 gap-2">
+            <div className="h-11 animate-pulse rounded-xl bg-foreground/8" />
+            <div className="h-11 animate-pulse rounded-xl bg-foreground/8" />
+          </div>
+        </div>
+        <div className="h-10 w-52 animate-pulse rounded-xl bg-foreground/8" />
+        <div className="glass-card space-y-4 rounded-2xl p-4 sm:p-6">
+          <div className="h-5 w-40 animate-pulse rounded-lg bg-foreground/8" />
+          <div className="h-4 w-56 animate-pulse rounded-lg bg-foreground/5" />
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="h-10 w-36 animate-pulse rounded-xl bg-foreground/8" />
+            <div className="h-10 w-36 animate-pulse rounded-xl bg-foreground/8" />
+            <div className="h-10 w-36 animate-pulse rounded-xl bg-foreground/8" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

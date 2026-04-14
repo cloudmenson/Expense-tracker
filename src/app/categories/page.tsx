@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/toast";
 import type { Category } from "@/types/expense";
 
 export default function CategoriesPage() {
-  const { categories, expenses, deleteCategory } = useExpenseStore();
+  const { categories, expenses, deleteCategory, _hydrated } = useExpenseStore();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
@@ -34,6 +34,37 @@ export default function CategoriesPage() {
     }
     setCategoryToDelete(cat);
   };
+
+  if (!_hydrated) {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <div className="h-8 w-36 animate-pulse rounded-xl bg-foreground/8" />
+            <div className="h-4 w-24 animate-pulse rounded-lg bg-foreground/5" />
+          </div>
+          <div className="h-10 w-40 animate-pulse rounded-xl bg-foreground/8" />
+        </div>
+        {/* Grid */}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+            <div
+              key={i}
+              className="glass-card flex items-center gap-4 rounded-2xl p-4"
+            >
+              <div className="h-12 w-12 shrink-0 animate-pulse rounded-xl bg-foreground/8" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-24 animate-pulse rounded-lg bg-foreground/8" />
+                <div className="h-3 w-20 animate-pulse rounded-lg bg-foreground/5" />
+              </div>
+              <div className="h-6 w-1.5 animate-pulse rounded-full bg-foreground/8" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

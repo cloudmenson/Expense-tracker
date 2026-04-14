@@ -57,8 +57,23 @@ export default function TrashPage() {
 
       {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+        <div className="space-y-2">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="glass-card flex items-center gap-3 rounded-2xl p-3 sm:p-4"
+            >
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl bg-foreground/8" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-1/3 animate-pulse rounded-lg bg-foreground/8" />
+                <div className="h-3 w-1/4 animate-pulse rounded-lg bg-foreground/5" />
+              </div>
+              <div className="flex shrink-0 gap-1">
+                <div className="h-9 w-9 animate-pulse rounded-xl bg-foreground/8" />
+                <div className="h-9 w-9 animate-pulse rounded-xl bg-foreground/8" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : trashItems.length === 0 ? (
         <EmptyState
