@@ -121,12 +121,18 @@ export default function DashboardPage() {
               value={formatMoney(summary.person1Total, settings.currency)}
               icon={Users}
               color="sky"
+              avatarImage={settings.person1AvatarImage}
+              avatarColor={settings.person1Color}
+              avatarName={settings.person1Name}
             />
             <StatCard
               label={settings.person2Name}
               value={formatMoney(summary.person2Total, settings.currency)}
               icon={Users}
               color="rose"
+              avatarImage={settings.person2AvatarImage}
+              avatarColor={settings.person2Color}
+              avatarName={settings.person2Name}
             />
             <StatCard
               label="Середня витрата"

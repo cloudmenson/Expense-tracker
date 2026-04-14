@@ -10,10 +10,10 @@ interface PersonAvatarProps {
 }
 
 const SIZE_CLS = {
-  xs: "h-4 w-4 text-[8px]",
-  sm: "h-6 w-6 text-[10px]",
-  md: "h-9 w-9 text-sm",
-  lg: "h-14 w-14 text-xl",
+  xs: "h-5 w-5 text-[8px]",
+  sm: "h-8 w-8 text-[10px]",
+  md: "h-10 w-10 text-sm",
+  lg: "h-15 w-15 text-xl",
 } as const;
 
 export function PersonAvatar({

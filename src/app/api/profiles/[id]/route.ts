@@ -28,14 +28,18 @@ export async function PUT(
       patch.monthlyIncome = Number(monthlyIncome);
     if (avatarEmoji !== undefined) patch.avatarEmoji = avatarEmoji;
     // avatarImage: empty string means "clear"; any other string means "set"
-    if (avatarImage !== undefined) patch.avatarImage = avatarImage;
+    if (avatarImage !== undefined) patch.avatarImage = String(avatarImage);
     if (status !== undefined) patch.status = status;
     if (role !== undefined) patch.role = role;
+    // Always update the timestamp so stale reads don't mask a missing write
+    patch.updatedAt = new Date();
 
-    // Write directly via the raw MongoDB driver — bypasses all Mongoose middleware,
-    // schema casting, and model caching that silently drops optional fields.
+    // Use the native mongodb.Db directly — completely bypasses the Mongoose
+    // NativeCollection wrapper and any internal Mongoose buffering/caching.
+    const nativeDb = ProfileModel.db.db;
+    if (!nativeDb) throw new Error("MongoDB Db is not initialised");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const col = ProfileModel.db.collection<any>("profiles");
+    const col = nativeDb.collection<any>("profiles");
 
     const updateResult = await col.updateOne({ _id: id }, { $set: patch });
 
@@ -58,6 +62,7 @@ export async function PUT(
       status: raw.status,
       inviteEmail: raw.inviteEmail,
       avatarEmoji: raw.avatarEmoji,
+      // Return undefined (omitted from JSON) only when genuinely absent
       avatarImage: raw.avatarImage || undefined,
       createdAt:
         raw.createdAt instanceof Date

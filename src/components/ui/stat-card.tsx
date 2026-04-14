@@ -7,10 +7,14 @@ interface StatCardProps {
   label: string;
   value: string;
   sub?: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   color?: string;
   trend?: number;
   animateValue?: boolean;
+  /** When provided, renders a person avatar instead of the icon */
+  avatarImage?: string;
+  avatarColor?: string;
+  avatarName?: string;
 }
 
 export function StatCard({
@@ -21,6 +25,9 @@ export function StatCard({
   color = "emerald",
   trend,
   animateValue = true,
+  avatarImage,
+  avatarColor,
+  avatarName,
 }: StatCardProps) {
   const colorClasses: Record<string, string> = {
     emerald:
@@ -48,11 +55,27 @@ export function StatCard({
           </p>
           {sub && <p className="text-xs text-foreground/50">{sub}</p>}
         </div>
-        <div
-          className={`flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br ${iconBg}`}
-        >
-          <Icon className="h-5 w-5" />
-        </div>
+        {avatarImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={avatarImage}
+            alt={avatarName ?? label}
+            className="h-10 w-10 rounded-full object-cover ring-2 ring-white/10"
+          />
+        ) : avatarColor ? (
+          <div
+            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white ring-2 ring-white/10"
+            style={{ backgroundColor: avatarColor }}
+          >
+            {avatarName?.trim().charAt(0).toUpperCase() ?? "?"}
+          </div>
+        ) : Icon ? (
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br ${iconBg}`}
+          >
+            <Icon className="h-5 w-5" />
+          </div>
+        ) : null}
       </div>
       {trend !== undefined && (
         <div className="mt-3 flex items-center gap-1.5 text-xs font-medium">

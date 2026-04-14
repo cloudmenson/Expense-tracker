@@ -22,7 +22,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useExpenseStore } from "@/lib/store";
 import * as api from "@/lib/api-client";
-import { imageFileToDataUrl, profileAvatarFallback } from "@/lib/utils";
+import { profileAvatarFallback } from "@/lib/utils";
+import { ImageCropModal } from "@/components/ui/image-crop-modal";
 import type { Profile } from "@/types/profile";
 
 const AVATAR_COLORS = [
@@ -53,6 +54,8 @@ export default function ProfilesPage() {
   // Stores the final data: URL (or undefined) — sent directly to the server on save
   const [editAvatarImage, setEditAvatarImage] = useState<string | undefined>();
   const [avatarConverting, setAvatarConverting] = useState(false);
+  // Crop modal
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
 
   const [showInvite, setShowInvite] = useState(false);
   const [inviteName, setInviteName] = useState("");
@@ -91,7 +94,7 @@ export default function ProfilesPage() {
     setAvatarConverting(false);
   };
 
-  const handleAvatarUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
 
@@ -105,15 +108,10 @@ export default function ProfilesPage() {
       return;
     }
 
-    setAvatarConverting(true);
-    try {
-      const dataUrl = await imageFileToDataUrl(file);
-      setEditAvatarImage(dataUrl);
-    } catch {
-      toast("Не вдалося обробити зображення", "error");
-    } finally {
-      setAvatarConverting(false);
-    }
+    // Read raw data URL and open crop modal
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(String(reader.result ?? ""));
+    reader.readAsDataURL(file);
   };
 
   const handleSaveProfile = async () => {
@@ -306,53 +304,59 @@ export default function ProfilesPage() {
         title="Редагувати профіль"
         size="sm"
       >
-        <div className="space-y-4">
-          <div className="flex flex-col items-center gap-3 rounded-2xl bg-foreground/3 px-4 py-5">
+        <div className="space-y-5">
+          {/* Avatar hero */}
+          <div className="relative flex flex-col items-center pb-1 pt-2">
+            {/* colour glow */}
             <div
-              className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full text-3xl font-bold text-white"
+              className="absolute top-0 h-32 w-32 rounded-full opacity-25 blur-3xl"
               style={{ backgroundColor: editColor }}
-            >
-              {avatarConverting ? (
-                <Loader2 className="h-8 w-8 animate-spin opacity-50" />
-              ) : editAvatarImage ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={editAvatarImage}
-                  alt={editName || editing?.name || "avatar"}
-                  className="h-24 w-24 object-cover"
-                />
-              ) : (
-                profileAvatarFallback(
-                  editName || editing?.name || "",
-                  editing?.avatarEmoji,
-                )
-              )}
-            </div>
-            <div className="flex w-full flex-col gap-2 sm:flex-row">
-              <label className="flex-1">
+            />
+
+            <div className="relative z-10">
+              <div
+                className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full text-3xl font-bold text-white shadow-lg ring-4 ring-background"
+                style={{ backgroundColor: editColor }}
+              >
+                {editAvatarImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={editAvatarImage}
+                    alt={editName || editing?.name || "avatar"}
+                    className="h-24 w-24 object-cover"
+                  />
+                ) : (
+                  profileAvatarFallback(
+                    editName || editing?.name || "",
+                    editing?.avatarEmoji,
+                  )
+                )}
+              </div>
+
+              {/* Camera icon */}
+              <label className="absolute bottom-0 right-0 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-foreground text-background shadow-md transition-transform hover:scale-110 active:scale-95">
                 <input
                   type="file"
                   accept="image/*"
                   className="hidden"
                   onChange={handleAvatarUpload}
                 />
-                <span className="btn-secondary flex w-full cursor-pointer items-center justify-center gap-2">
-                  <Upload className="h-4 w-4" />
-                  Завантажити аватар
-                </span>
+                <Upload className="h-3.5 w-3.5" />
               </label>
-              <Button
-                type="button"
-                variant="ghost"
-                className="w-full sm:w-auto"
-                onClick={() => setEditAvatarImage(undefined)}
-                disabled={!editAvatarImage}
-              >
-                <Trash2 className="h-4 w-4" />
-                Прибрати фото
-              </Button>
             </div>
+
+            {editAvatarImage && (
+              <button
+                type="button"
+                onClick={() => setEditAvatarImage(undefined)}
+                className="mt-3 text-xs text-foreground/35 transition-colors hover:text-rose-500"
+              >
+                Прибрати фото
+              </button>
+            )}
           </div>
+
+          {/* Name */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Ім’я
@@ -362,6 +366,8 @@ export default function ProfilesPage() {
               onChange={(e) => setEditName(e.target.value)}
             />
           </div>
+
+          {/* Colour */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Колір
@@ -375,17 +381,19 @@ export default function ProfilesPage() {
                     type="button"
                     aria-label={`Обрати колір ${color}`}
                     onClick={() => setEditColor(color)}
-                    className={`h-11 rounded-2xl border transition-transform hover:scale-[1.03] ${
-                      active
-                        ? "border-foreground/20 ring-2 ring-rose-500/35"
-                        : "border-transparent"
-                    }`}
+                    className="relative h-10 rounded-[10px] transition-transform hover:scale-[1.06] active:scale-95"
                     style={{ backgroundColor: color }}
-                  />
+                  >
+                    {active && (
+                      <span className="absolute inset-0 rounded-[20px] ring-2 ring-white/60 ring-offset-2 ring-offset-background" />
+                    )}
+                  </button>
                 );
               })}
             </div>
           </div>
+
+          {/* Income */}
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Місячний дохід
@@ -397,11 +405,12 @@ export default function ProfilesPage() {
               min={0}
             />
           </div>
+
           <Button
             type="button"
             className="w-full"
             onClick={handleSaveProfile}
-            disabled={savingId === editing?.id || avatarConverting}
+            disabled={savingId === editing?.id}
           >
             {savingId === editing?.id ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -412,6 +421,18 @@ export default function ProfilesPage() {
           </Button>
         </div>
       </Modal>
+
+      {cropSrc && (
+        <ImageCropModal
+          open={!!cropSrc}
+          imageSrc={cropSrc}
+          onCancel={() => setCropSrc(null)}
+          onConfirm={(dataUrl) => {
+            setEditAvatarImage(dataUrl);
+            setCropSrc(null);
+          }}
+        />
+      )}
 
       <Modal
         open={showInvite}
