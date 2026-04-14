@@ -218,6 +218,7 @@ export default function DashboardPage() {
           <BudgetProgress
             person1Income={settings.person1Income}
             person2Income={settings.person2Income}
+            totalSpent={summary.total}
             currency={settings.currency}
             person1Name={settings.person1Name}
             person2Name={settings.person2Name}
