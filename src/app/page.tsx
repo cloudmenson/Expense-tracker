@@ -150,6 +150,10 @@ export default function DashboardPage() {
             currency={settings.currency}
             person1Name={settings.person1Name}
             person2Name={settings.person2Name}
+            person1Color={settings.person1Color}
+            person2Color={settings.person2Color}
+            person1AvatarImage={settings.person1AvatarImage}
+            person2AvatarImage={settings.person2AvatarImage}
           />
 
           {/* Charts row */}
@@ -158,6 +162,8 @@ export default function DashboardPage() {
               data={monthlyChartData}
               person1Name={settings.person1Name}
               person2Name={settings.person2Name}
+              person1Color={settings.person1Color}
+              person2Color={settings.person2Color}
             />
             <CategoryPieChart
               data={pieData}
@@ -185,6 +191,8 @@ export default function DashboardPage() {
                   person2Name={settings.person2Name}
                   person1Color={settings.person1Color}
                   person2Color={settings.person2Color}
+                  person1AvatarImage={settings.person1AvatarImage}
+                  person2AvatarImage={settings.person2AvatarImage}
                   onView={(e) => setViewing(e)}
                 />
               ))}
@@ -266,6 +274,8 @@ export default function DashboardPage() {
             person2Name={settings.person2Name}
             person1Color={settings.person1Color}
             person2Color={settings.person2Color}
+            person1AvatarImage={settings.person1AvatarImage}
+            person2AvatarImage={settings.person2AvatarImage}
             onEdit={() => {
               setViewing(null);
               setEditing(viewing);

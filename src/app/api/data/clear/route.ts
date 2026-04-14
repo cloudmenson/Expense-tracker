@@ -33,10 +33,6 @@ export async function POST() {
     await SettingsModel.create({
       _id: "default",
       currency: "$",
-      person1Name: "Партнер 1",
-      person2Name: "Партнер 2",
-      person1Income: 2500,
-      person2Income: 2500,
       theme: "system",
     });
 

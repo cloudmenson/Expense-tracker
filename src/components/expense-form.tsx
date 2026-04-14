@@ -13,6 +13,7 @@ import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
 import "react-day-picker/style.css";
 import { useExpenseStore } from "@/lib/store";
+import { PersonAvatar } from "@/components/person-avatar";
 import { EmojiPicker } from "@/components/ui/emoji-picker";
 import { Modal } from "@/components/ui/modal";
 import { CategoryForm } from "@/components/category-form";
@@ -358,9 +359,29 @@ export function ExpenseForm({
                       : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
                   }`}
                 >
-                  {p === "person1"
-                    ? settings.person1Name
-                    : settings.person2Name}
+                  <span className="flex items-center justify-center gap-2">
+                    <PersonAvatar
+                      name={
+                        p === "person1"
+                          ? settings.person1Name
+                          : settings.person2Name
+                      }
+                      color={
+                        p === "person1"
+                          ? settings.person1Color
+                          : settings.person2Color
+                      }
+                      avatarImage={
+                        p === "person1"
+                          ? settings.person1AvatarImage
+                          : settings.person2AvatarImage
+                      }
+                      size="xs"
+                    />
+                    {p === "person1"
+                      ? settings.person1Name
+                      : settings.person2Name}
+                  </span>
                 </button>
               ))}
             </div>

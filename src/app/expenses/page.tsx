@@ -21,6 +21,7 @@ import { formatMoney } from "@/lib/utils";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
 import { ExpenseListItem } from "@/components/expense-list-item";
+import { PersonAvatar } from "@/components/person-avatar";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -146,10 +147,10 @@ export default function ExpensesPage() {
 
   const p1 = settings.person1Name;
   const p2 = settings.person2Name;
-  const p1Initial = p1.charAt(0).toUpperCase();
-  const p2Initial = p2.charAt(0).toUpperCase();
   const p1Color = settings.person1Color || "#e11d48";
   const p2Color = settings.person2Color || "#3b82f6";
+  const p1Avatar = settings.person1AvatarImage;
+  const p2Avatar = settings.person2AvatarImage;
 
   const dateLabel = dateRange?.from
     ? dateRange.to
@@ -322,12 +323,12 @@ export default function ExpensesPage() {
                         : undefined
                     }
                   >
-                    <span
-                      className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
-                      style={{ backgroundColor: p1Color }}
-                    >
-                      {p1Initial}
-                    </span>
+                    <PersonAvatar
+                      name={p1}
+                      color={p1Color}
+                      avatarImage={p1Avatar}
+                      size="xs"
+                    />
                     {p1}
                   </button>
 
@@ -345,12 +346,12 @@ export default function ExpensesPage() {
                         : undefined
                     }
                   >
-                    <span
-                      className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white"
-                      style={{ backgroundColor: p2Color }}
-                    >
-                      {p2Initial}
-                    </span>
+                    <PersonAvatar
+                      name={p2}
+                      color={p2Color}
+                      avatarImage={p2Avatar}
+                      size="xs"
+                    />
                     {p2}
                   </button>
                 </div>
@@ -492,6 +493,8 @@ export default function ExpensesPage() {
                   person2Name={settings.person2Name}
                   person1Color={settings.person1Color}
                   person2Color={settings.person2Color}
+                  person1AvatarImage={settings.person1AvatarImage}
+                  person2AvatarImage={settings.person2AvatarImage}
                   onView={(e) => setViewing(e)}
                 />
               ))}
@@ -582,6 +585,8 @@ export default function ExpensesPage() {
             person2Name={settings.person2Name}
             person1Color={settings.person1Color}
             person2Color={settings.person2Color}
+            person1AvatarImage={settings.person1AvatarImage}
+            person2AvatarImage={settings.person2AvatarImage}
             onEdit={() => {
               setViewing(null);
               setEditing(viewing);

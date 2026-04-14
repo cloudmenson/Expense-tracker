@@ -8,6 +8,7 @@ export interface Profile {
   status: "active" | "invited";
   inviteEmail?: string;
   avatarEmoji?: string;
+  avatarImage?: string;
   createdAt: string;
   updatedAt: string;
 }

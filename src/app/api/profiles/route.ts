@@ -1,10 +1,37 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { ProfileModel } from "@/models/profile";
-import { SettingsModel } from "@/models/settings";
 
 const toIso = (v: unknown) =>
   v instanceof Date ? v.toISOString() : new Date().toISOString();
+
+const serializeProfile = (p: {
+  _id: string;
+  familyId: string;
+  name: string;
+  color: string;
+  monthlyIncome: number;
+  role: "owner" | "member";
+  status: "active" | "invited";
+  inviteEmail?: string;
+  avatarEmoji?: string;
+  avatarImage?: string;
+  createdAt?: unknown;
+  updatedAt?: unknown;
+}) => ({
+  id: String(p._id),
+  familyId: p.familyId,
+  name: p.name,
+  color: p.color,
+  monthlyIncome: p.monthlyIncome,
+  role: p.role,
+  status: p.status,
+  inviteEmail: p.inviteEmail,
+  avatarEmoji: p.avatarEmoji,
+  avatarImage: p.avatarImage,
+  createdAt: toIso(p.createdAt),
+  updatedAt: toIso(p.updatedAt),
+});
 
 /* GET /api/profiles — list family profiles, auto-seed first two from settings */
 export async function GET() {
@@ -16,35 +43,26 @@ export async function GET() {
       .lean();
 
     if (profiles.length === 0) {
-      const settings = await SettingsModel.findById("default").lean();
-
-      const person1Name = settings?.person1Name ?? "Партнер 1";
-      const person2Name = settings?.person2Name ?? "Партнер 2";
-      const person1Color = settings?.person1Color ?? "#e11d48";
-      const person2Color = settings?.person2Color ?? "#3b82f6";
-      const person1Income = settings?.person1Income ?? 2500;
-      const person2Income = settings?.person2Income ?? 2500;
-
       await ProfileModel.insertMany([
         {
           _id: "person1",
           familyId: "default",
-          name: person1Name,
-          color: person1Color,
-          monthlyIncome: person1Income,
+          name: "Партнер 1",
+          color: "#e11d48",
+          monthlyIncome: 2500,
           role: "owner",
           status: "active",
-          avatarEmoji: "🧑",
+          avatarEmoji: "👤",
         },
         {
           _id: "person2",
           familyId: "default",
-          name: person2Name,
-          color: person2Color,
-          monthlyIncome: person2Income,
+          name: "Партнер 2",
+          color: "#3b82f6",
+          monthlyIncome: 2500,
           role: "member",
           status: "active",
-          avatarEmoji: "🧑",
+          avatarEmoji: "👤",
         },
       ]);
 
@@ -54,19 +72,22 @@ export async function GET() {
     }
 
     return NextResponse.json(
-      profiles.map((p) => ({
-        id: String(p._id),
-        familyId: p.familyId,
-        name: p.name,
-        color: p.color,
-        monthlyIncome: p.monthlyIncome,
-        role: p.role,
-        status: p.status,
-        inviteEmail: p.inviteEmail,
-        avatarEmoji: p.avatarEmoji,
-        createdAt: toIso(p.createdAt),
-        updatedAt: toIso(p.updatedAt),
-      })),
+      profiles.map((p) =>
+        serializeProfile({
+          _id: String(p._id),
+          familyId: p.familyId,
+          name: p.name,
+          color: p.color,
+          monthlyIncome: p.monthlyIncome,
+          role: p.role,
+          status: p.status,
+          inviteEmail: p.inviteEmail,
+          avatarEmoji: p.avatarEmoji,
+          avatarImage: p.avatarImage,
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt,
+        }),
+      ),
     );
   } catch (error) {
     console.error("GET /api/profiles error:", error);
@@ -93,24 +114,10 @@ export async function POST(request: Request) {
       status: body.status ?? "invited",
       inviteEmail: body.inviteEmail,
       avatarEmoji: body.avatarEmoji ?? "👤",
+      avatarImage: body.avatarImage,
     });
 
-    return NextResponse.json(
-      {
-        id: String(profile._id),
-        familyId: profile.familyId,
-        name: profile.name,
-        color: profile.color,
-        monthlyIncome: profile.monthlyIncome,
-        role: profile.role,
-        status: profile.status,
-        inviteEmail: profile.inviteEmail,
-        avatarEmoji: profile.avatarEmoji,
-        createdAt: profile.createdAt.toISOString(),
-        updatedAt: profile.updatedAt.toISOString(),
-      },
-      { status: 201 },
-    );
+    return NextResponse.json(serializeProfile(profile), { status: 201 });
   } catch (error) {
     console.error("POST /api/profiles error:", error);
     return NextResponse.json(

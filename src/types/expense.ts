@@ -65,8 +65,10 @@ export interface AppSettings {
   person1Income: number;
   person2Income: number;
   theme: "light" | "dark" | "system";
-  person1Color?: string;
-  person2Color?: string;
+  person1Color: string;
+  person2Color: string;
+  person1AvatarImage?: string;
+  person2AvatarImage?: string;
 }
 
 /* ─── Trash ─── */

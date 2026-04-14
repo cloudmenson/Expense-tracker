@@ -122,3 +122,51 @@ export function todayISO(): string {
 export function currentMonthKey(): string {
   return format(new Date(), "yyyy-MM");
 }
+
+/* ── Resize an image File to a 256×256 WebP data URL (browser-only) ── */
+export async function imageFileToDataUrl(file: File): Promise<string> {
+  const rawDataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.onerror = () => reject(new Error("read_failed"));
+    reader.readAsDataURL(file);
+  });
+
+  return new Promise<string>((resolve, reject) => {
+    const img = new window.Image();
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const size = 256;
+      canvas.width = size;
+      canvas.height = size;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("canvas_failed"));
+        return;
+      }
+
+      // Centre-crop to a square before scaling
+      const minSide = Math.min(img.width, img.height);
+      const sx = (img.width - minSide) / 2;
+      const sy = (img.height - minSide) / 2;
+
+      ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+      resolve(canvas.toDataURL("image/webp", 0.88));
+    };
+
+    img.onerror = () => reject(new Error("image_failed"));
+    img.src = rawDataUrl;
+  });
+}
+
+/* ── First non-generic emoji or capitalised first letter for a profile ── */
+export function profileAvatarFallback(
+  name: string,
+  avatarEmoji?: string,
+): string {
+  const emoji = avatarEmoji?.trim();
+  if (emoji && emoji !== "👤" && emoji !== "🧑") return emoji;
+  return name.trim().charAt(0).toUpperCase() || "👤";
+}

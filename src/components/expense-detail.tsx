@@ -2,6 +2,7 @@
 
 import { Pencil, Trash2 } from "lucide-react";
 import type { Expense, Category } from "@/types/expense";
+import { PersonAvatar } from "@/components/person-avatar";
 import { formatMoney } from "@/lib/utils";
 
 interface ExpenseDetailProps {
@@ -12,6 +13,8 @@ interface ExpenseDetailProps {
   person2Name: string;
   person1Color?: string;
   person2Color?: string;
+  person1AvatarImage?: string;
+  person2AvatarImage?: string;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -24,12 +27,15 @@ export function ExpenseDetail({
   person2Name,
   person1Color = "#e11d48",
   person2Color = "#3b82f6",
+  person1AvatarImage,
+  person2AvatarImage,
   onEdit,
   onDelete,
 }: ExpenseDetailProps) {
-  const personName = expense.paidBy === "person1" ? person1Name : person2Name;
-  const personColor =
-    expense.paidBy === "person1" ? person1Color : person2Color;
+  const isPerson1 = expense.paidBy === "person1";
+  const personName = isPerson1 ? person1Name : person2Name;
+  const personColor = isPerson1 ? person1Color : person2Color;
+  const personAvatarImage = isPerson1 ? person1AvatarImage : person2AvatarImage;
 
   return (
     <div className="space-y-5">
@@ -79,9 +85,11 @@ export function ExpenseDetail({
             Хто платив
           </span>
           <span className="flex items-center gap-2 text-sm font-semibold">
-            <span
-              className="inline-block h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: personColor }}
+            <PersonAvatar
+              name={personName}
+              color={personColor}
+              avatarImage={personAvatarImage}
+              size="xs"
             />
             {personName}
           </span>

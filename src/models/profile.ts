@@ -10,6 +10,7 @@ export interface IProfile {
   status: "active" | "invited";
   inviteEmail?: string;
   avatarEmoji?: string;
+  avatarImage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +26,7 @@ const ProfileSchema = new Schema(
     status: { type: String, enum: ["active", "invited"], default: "active" },
     inviteEmail: { type: String },
     avatarEmoji: { type: String, default: "👤" },
+    avatarImage: { type: String },
   },
   {
     _id: false,

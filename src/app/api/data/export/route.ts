@@ -50,20 +50,7 @@ export async function GET() {
     const settings = rawSettings
       ? {
           currency: rawSettings.currency,
-          person1Name: rawSettings.person1Name,
-          person2Name: rawSettings.person2Name,
-          person1Income:
-            typeof rawSettings.person1Income === "number"
-              ? rawSettings.person1Income
-              : Math.round((rawSettings.monthlyBudget ?? 0) / 2),
-          person2Income:
-            typeof rawSettings.person2Income === "number"
-              ? rawSettings.person2Income
-              : (rawSettings.monthlyBudget ?? 0) -
-                Math.round((rawSettings.monthlyBudget ?? 0) / 2),
           theme: rawSettings.theme,
-          person1Color: rawSettings.person1Color ?? "#e11d48",
-          person2Color: rawSettings.person2Color ?? "#3b82f6",
         }
       : null;
 
@@ -77,6 +64,7 @@ export async function GET() {
       status: p.status,
       inviteEmail: p.inviteEmail,
       avatarEmoji: p.avatarEmoji,
+      avatarImage: p.avatarImage,
       createdAt:
         p.createdAt instanceof Date
           ? p.createdAt.toISOString()

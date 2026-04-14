@@ -1,6 +1,7 @@
 "use client";
 
 import type { Expense, Category } from "@/types/expense";
+import { PersonAvatar } from "@/components/person-avatar";
 import { formatMoney } from "@/lib/utils";
 
 interface ExpenseListItemProps {
@@ -11,6 +12,8 @@ interface ExpenseListItemProps {
   person2Name: string;
   person1Color?: string;
   person2Color?: string;
+  person1AvatarImage?: string;
+  person2AvatarImage?: string;
   hideCategoryBadge?: boolean;
   onView?: (e: Expense) => void;
 }
@@ -23,11 +26,15 @@ export function ExpenseListItem({
   person2Name,
   person1Color = "#e11d48",
   person2Color = "#3b82f6",
+  person1AvatarImage,
+  person2AvatarImage,
   hideCategoryBadge = false,
   onView,
 }: ExpenseListItemProps) {
-  const borderColor =
-    expense.paidBy === "person1" ? person1Color : person2Color;
+  const isPerson1 = expense.paidBy === "person1";
+  const borderColor = isPerson1 ? person1Color : person2Color;
+  const payerName = isPerson1 ? person1Name : person2Name;
+  const payerAvatarImage = isPerson1 ? person1AvatarImage : person2AvatarImage;
 
   // Parse RGB from hex color
   const r = parseInt(borderColor.slice(1, 3), 16);
@@ -73,16 +80,14 @@ export function ExpenseListItem({
               )}
             </div>
             <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-foreground/40 sm:text-xs">
-              <span
-                className="inline-block h-1.5 w-1.5 shrink-0 rounded-full"
-                style={{
-                  backgroundColor:
-                    expense.paidBy === "person1" ? person1Color : person2Color,
-                }}
+              <PersonAvatar
+                name={payerName}
+                color={borderColor}
+                avatarImage={payerAvatarImage}
+                size="xs"
               />
               <span className="truncate">
-                {expense.paidBy === "person1" ? person1Name : person2Name} ·{" "}
-                {expense.date}
+                {payerName} · {expense.date}
                 {expense.note ? ` · ${expense.note}` : ""}
               </span>
             </p>

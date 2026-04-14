@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { ProfileModel } from "@/models/profile";
-import { SettingsModel } from "@/models/settings";
 
 /* PUT /api/profiles/[id] — update one profile */
 export async function PUT(
@@ -11,54 +10,63 @@ export async function PUT(
   try {
     const { id } = await params;
     await connectDB();
-    const body = await request.json();
+    const body = (await request.json()) as Record<string, unknown>;
+    const {
+      name,
+      color,
+      monthlyIncome,
+      avatarEmoji,
+      avatarImage,
+      status,
+      role,
+    } = body;
 
-    const profile = await ProfileModel.findByIdAndUpdate(id, body, {
-      new: true,
-      runValidators: true,
-    }).lean();
+    const patch: Record<string, unknown> = {};
+    if (name !== undefined) patch.name = String(name).trim();
+    if (color !== undefined) patch.color = color;
+    if (monthlyIncome !== undefined)
+      patch.monthlyIncome = Number(monthlyIncome);
+    if (avatarEmoji !== undefined) patch.avatarEmoji = avatarEmoji;
+    // avatarImage: empty string means "clear"; any other string means "set"
+    if (avatarImage !== undefined) patch.avatarImage = avatarImage;
+    if (status !== undefined) patch.status = status;
+    if (role !== undefined) patch.role = role;
 
-    if (!profile) {
+    // Write directly via the raw MongoDB driver — bypasses all Mongoose middleware,
+    // schema casting, and model caching that silently drops optional fields.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const col = ProfileModel.db.collection<any>("profiles");
+
+    const updateResult = await col.updateOne({ _id: id }, { $set: patch });
+
+    if (updateResult.matchedCount === 0) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    if (id === "person1" || id === "person2") {
-      const settingsPatch =
-        id === "person1"
-          ? {
-              person1Name: profile.name,
-              person1Color: profile.color,
-              person1Income: profile.monthlyIncome,
-            }
-          : {
-              person2Name: profile.name,
-              person2Color: profile.color,
-              person2Income: profile.monthlyIncome,
-            };
-
-      await SettingsModel.findByIdAndUpdate("default", settingsPatch, {
-        upsert: true,
-      });
+    const raw = await col.findOne({ _id: id });
+    if (!raw) {
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
     return NextResponse.json({
-      id: String(profile._id),
-      familyId: profile.familyId,
-      name: profile.name,
-      color: profile.color,
-      monthlyIncome: profile.monthlyIncome,
-      role: profile.role,
-      status: profile.status,
-      inviteEmail: profile.inviteEmail,
-      avatarEmoji: profile.avatarEmoji,
+      id: String(raw._id),
+      familyId: raw.familyId,
+      name: raw.name,
+      color: raw.color,
+      monthlyIncome: raw.monthlyIncome,
+      role: raw.role,
+      status: raw.status,
+      inviteEmail: raw.inviteEmail,
+      avatarEmoji: raw.avatarEmoji,
+      avatarImage: raw.avatarImage || undefined,
       createdAt:
-        profile.createdAt instanceof Date
-          ? profile.createdAt.toISOString()
-          : String(profile.createdAt),
+        raw.createdAt instanceof Date
+          ? raw.createdAt.toISOString()
+          : String(raw.createdAt),
       updatedAt:
-        profile.updatedAt instanceof Date
-          ? profile.updatedAt.toISOString()
-          : String(profile.updatedAt),
+        raw.updatedAt instanceof Date
+          ? raw.updatedAt.toISOString()
+          : String(raw.updatedAt),
     });
   } catch (error) {
     console.error("PUT /api/profiles/[id] error:", error);

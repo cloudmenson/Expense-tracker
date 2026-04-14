@@ -31,12 +31,16 @@ interface MonthlyChartProps {
   data: { month: string; total: number; person1: number; person2: number }[];
   person1Name: string;
   person2Name: string;
+  person1Color?: string;
+  person2Color?: string;
 }
 
 export function MonthlyBarChart({
   data,
   person1Name,
   person2Name,
+  person1Color = "#e11d48",
+  person2Color = "#3b82f6",
 }: MonthlyChartProps) {
   return (
     <div className="widget-no-outline glass-card rounded-2xl p-5">
@@ -71,14 +75,14 @@ export function MonthlyBarChart({
             <Bar
               dataKey="person1"
               stackId="a"
-              fill="#e11d48"
+              fill={person1Color}
               radius={[0, 0, 0, 0]}
               name={person1Name}
             />
             <Bar
               dataKey="person2"
               stackId="a"
-              fill="#f472b6"
+              fill={person2Color}
               radius={[4, 4, 0, 0]}
               name={person2Name}
             />
@@ -203,12 +207,16 @@ interface PersonCompareProps {
   categories: Category[];
   person1Name: string;
   person2Name: string;
+  person1Color?: string;
+  person2Color?: string;
 }
 
 export function PersonCompareChart({
   data,
   person1Name,
   person2Name,
+  person1Color = "#e11d48",
+  person2Color = "#3b82f6",
 }: PersonCompareProps) {
   return (
     <div className="widget-no-outline glass-card rounded-2xl p-5">
@@ -240,13 +248,13 @@ export function PersonCompareChart({
             <Tooltip contentStyle={tooltipStyle} />
             <Bar
               dataKey="person1"
-              fill="#e11d48"
+              fill={person1Color}
               radius={[0, 4, 4, 0]}
               name={person1Name}
             />
             <Bar
               dataKey="person2"
-              fill="#f472b6"
+              fill={person2Color}
               radius={[0, 4, 4, 0]}
               name={person2Name}
             />

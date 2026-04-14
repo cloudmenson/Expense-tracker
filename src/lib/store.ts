@@ -22,6 +22,8 @@ const defaultSettings: AppSettings = {
   theme: "system",
   person1Color: "#e11d48",
   person2Color: "#3b82f6",
+  person1AvatarImage: undefined,
+  person2AvatarImage: undefined,
 };
 
 /* ─── Store shape ─── */
@@ -59,12 +61,16 @@ interface ExpenseStore {
 
   // Settings
   updateSettings: (s: Partial<AppSettings>) => void;
+  refreshSettings: () => Promise<void>;
 
   // Trash
   fetchTrash: () => Promise<void>;
   restoreFromTrash: (id: string) => Promise<{ ok: boolean; error?: string }>;
   deleteFromTrash: (id: string) => Promise<{ ok: boolean; error?: string }>;
   clearTrash: () => Promise<{ ok: boolean; error?: string }>;
+
+  /** Directly patch settings state without an API call (used after profile save) */
+  _patchSettings: (patch: Partial<AppSettings>) => void;
 
   /** Re-set all local data (used after import/clear) */
   _setAll: (data: {
@@ -175,7 +181,10 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
     }));
 
     try {
-      await api.updateExpense(id, safeDraft);
+      const saved = await api.updateExpense(id, safeDraft);
+      set((s) => ({
+        expenses: s.expenses.map((e) => (e.id === id ? saved : e)),
+      }));
       return { ok: true };
     } catch (err) {
       console.error("Failed to update expense:", err);
@@ -235,7 +244,10 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
     }));
 
     try {
-      await api.updateCategory(id, data);
+      const saved = await api.updateCategory(id, data);
+      set((s) => ({
+        categories: s.categories.map((c) => (c.id === id ? saved : c)),
+      }));
       return { ok: true };
     } catch (err) {
       console.error("Failed to update category:", err);
@@ -271,10 +283,29 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
     const prev = get().settings;
     set((s) => ({ settings: { ...s.settings, ...patch } }));
 
-    api.updateSettings(patch).catch((err) => {
-      console.error("Failed to update settings:", err);
-      set({ settings: prev });
-    });
+    api
+      .updateSettings(patch)
+      .then((serverSettings) => {
+        set({ settings: { ...defaultSettings, ...serverSettings } });
+      })
+      .catch((err) => {
+        console.error("Failed to update settings:", err);
+        set({ settings: prev });
+      });
+  },
+
+  refreshSettings: async () => {
+    try {
+      const settings = await api.fetchSettings();
+      set({ settings: { ...defaultSettings, ...(settings ?? {}) } });
+    } catch (err) {
+      console.error("Failed to refresh settings:", err);
+    }
+  },
+
+  /* ── Direct settings patch (no API call) ── */
+  _patchSettings: (patch) => {
+    set((s) => ({ settings: { ...s.settings, ...patch } }));
   },
 
   /* ── Bulk set (for import/clear) ── */

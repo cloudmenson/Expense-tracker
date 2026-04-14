@@ -68,11 +68,16 @@ export async function POST(request: Request) {
       await ExpenseModel.insertMany(expDocs);
     }
 
-    // Import settings
-    if (settings) {
-      await SettingsModel.findByIdAndUpdate("default", settings, {
-        upsert: true,
-      });
+    // Import settings (only currency + theme; person* data lives in profiles)
+    if (settings && typeof settings === "object") {
+      const patch: Record<string, unknown> = {};
+      if (settings.currency) patch.currency = settings.currency;
+      if (settings.theme) patch.theme = settings.theme;
+      if (Object.keys(patch).length > 0) {
+        await SettingsModel.findByIdAndUpdate("default", patch, {
+          upsert: true,
+        });
+      }
     }
 
     if (profiles && Array.isArray(profiles) && profiles.length > 0) {
@@ -87,6 +92,7 @@ export async function POST(request: Request) {
           status?: "active" | "invited";
           inviteEmail?: string;
           avatarEmoji?: string;
+          avatarImage?: string;
           createdAt?: string;
           updatedAt?: string;
         }) => ({
@@ -99,6 +105,7 @@ export async function POST(request: Request) {
           status: p.status ?? "active",
           inviteEmail: p.inviteEmail,
           avatarEmoji: p.avatarEmoji ?? "👤",
+          avatarImage: p.avatarImage,
           createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
           updatedAt: p.updatedAt ? new Date(p.updatedAt) : new Date(),
         }),

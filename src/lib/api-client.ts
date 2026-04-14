@@ -158,6 +158,7 @@ export function createProfile(
       | "monthlyIncome"
       | "inviteEmail"
       | "avatarEmoji"
+      | "avatarImage"
       | "role"
       | "status"
     >
@@ -174,7 +175,13 @@ export function updateProfile(
   data: Partial<
     Pick<
       Profile,
-      "name" | "color" | "monthlyIncome" | "avatarEmoji" | "status" | "role"
+      | "name"
+      | "color"
+      | "monthlyIncome"
+      | "avatarEmoji"
+      | "avatarImage"
+      | "status"
+      | "role"
     >
   >,
 ): Promise<Profile> {

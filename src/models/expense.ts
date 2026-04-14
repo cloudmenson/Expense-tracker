@@ -9,6 +9,7 @@ export interface IExpense {
   date: string;
   note?: string;
   emoji?: string;
+  items?: Array<{ name: string; price: number }>;
   createdAt: Date;
   updatedAt: Date;
 }

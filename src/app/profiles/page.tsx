@@ -1,18 +1,46 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Plus, Save, Loader2, UserRound, Mail, Trash2 } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+} from "react";
+import {
+  Plus,
+  Save,
+  Loader2,
+  UserRound,
+  Mail,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useExpenseStore } from "@/lib/store";
 import * as api from "@/lib/api-client";
+import { imageFileToDataUrl, profileAvatarFallback } from "@/lib/utils";
 import type { Profile } from "@/types/profile";
+
+const AVATAR_COLORS = [
+  "#e11d48",
+  "#f97316",
+  "#f59e0b",
+  "#22c55e",
+  "#14b8a6",
+  "#3b82f6",
+  "#6366f1",
+  "#8b5cf6",
+  "#ec4899",
+  "#64748b",
+];
 
 export default function ProfilesPage() {
   const { toast } = useToast();
-  const { settings, updateSettings } = useExpenseStore();
+  const { settings, _patchSettings } = useExpenseStore();
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +50,9 @@ export default function ProfilesPage() {
   const [editName, setEditName] = useState("");
   const [editColor, setEditColor] = useState("#e11d48");
   const [editIncome, setEditIncome] = useState(0);
+  // Stores the final data: URL (or undefined) — sent directly to the server on save
+  const [editAvatarImage, setEditAvatarImage] = useState<string | undefined>();
+  const [avatarConverting, setAvatarConverting] = useState(false);
 
   const [showInvite, setShowInvite] = useState(false);
   const [inviteName, setInviteName] = useState("");
@@ -36,25 +67,53 @@ export default function ProfilesPage() {
     [profiles],
   );
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const result = await api.fetchProfiles();
-        setProfiles(result);
-      } catch {
-        toast("Не вдалося завантажити профілі", "error");
-      } finally {
-        setLoading(false);
-      }
-    };
-    void load();
+  const loadProfiles = useCallback(async () => {
+    try {
+      const result = await api.fetchProfiles();
+      setProfiles(result);
+    } catch {
+      toast("Не вдалося завантажити профілі", "error");
+    } finally {
+      setLoading(false);
+    }
   }, [toast]);
+
+  useEffect(() => {
+    void loadProfiles();
+  }, [loadProfiles]);
 
   const openEdit = (p: Profile) => {
     setEditing(p);
     setEditName(p.name);
     setEditColor(p.color);
     setEditIncome(p.monthlyIncome);
+    setEditAvatarImage(p.avatarImage || undefined);
+    setAvatarConverting(false);
+  };
+
+  const handleAvatarUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast("Оберіть файл зображення", "error");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast("Зображення має бути до 5 МБ", "error");
+      return;
+    }
+
+    setAvatarConverting(true);
+    try {
+      const dataUrl = await imageFileToDataUrl(file);
+      setEditAvatarImage(dataUrl);
+    } catch {
+      toast("Не вдалося обробити зображення", "error");
+    } finally {
+      setAvatarConverting(false);
+    }
   };
 
   const handleSaveProfile = async () => {
@@ -67,28 +126,29 @@ export default function ProfilesPage() {
 
     setSavingId(editing.id);
     try {
-      const updated = await api.updateProfile(editing.id, {
+      const saved = await api.updateProfile(editing.id, {
         name,
         color: editColor,
         monthlyIncome: editIncome,
+        avatarImage: editAvatarImage ?? "",
       });
 
-      setProfiles((prev) =>
-        prev.map((p) => (p.id === updated.id ? updated : p)),
-      );
+      setProfiles((prev) => prev.map((p) => (p.id === editing.id ? saved : p)));
 
-      if (updated.id === "person1") {
-        updateSettings({
-          person1Name: updated.name,
-          person1Color: updated.color,
-          person1Income: updated.monthlyIncome,
+      // Sync Zustand settings immediately for the two core profiles
+      if (editing.id === "person1") {
+        _patchSettings({
+          person1Name: saved.name,
+          person1Color: saved.color,
+          person1Income: saved.monthlyIncome,
+          person1AvatarImage: saved.avatarImage ?? undefined,
         });
-      }
-      if (updated.id === "person2") {
-        updateSettings({
-          person2Name: updated.name,
-          person2Color: updated.color,
-          person2Income: updated.monthlyIncome,
+      } else if (editing.id === "person2") {
+        _patchSettings({
+          person2Name: saved.name,
+          person2Color: saved.color,
+          person2Income: saved.monthlyIncome,
+          person2AvatarImage: saved.avatarImage ?? undefined,
         });
       }
 
@@ -111,7 +171,7 @@ export default function ProfilesPage() {
 
     setSavingId("invite");
     try {
-      const created = await api.createProfile({
+      await api.createProfile({
         name,
         inviteEmail: email,
         status: "invited",
@@ -119,7 +179,7 @@ export default function ProfilesPage() {
         color: "#6366f1",
         monthlyIncome: 0,
       });
-      setProfiles((prev) => [...prev, created]);
+      await loadProfiles();
       setInviteName("");
       setInviteEmail("");
       setShowInvite(false);
@@ -135,7 +195,7 @@ export default function ProfilesPage() {
     setSavingId(id);
     try {
       await api.deleteProfile(id);
-      setProfiles((prev) => prev.filter((p) => p.id !== id));
+      await loadProfiles();
       toast("Запрошення видалено", "success");
     } catch {
       toast("Не вдалося видалити", "error");
@@ -178,10 +238,19 @@ export default function ProfilesPage() {
           >
             <div className="flex items-center gap-3">
               <div
-                className="flex h-10 w-10 items-center justify-center rounded-xl text-lg"
+                className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl text-lg"
                 style={{ backgroundColor: `${p.color}22`, color: p.color }}
               >
-                {p.avatarEmoji || "👤"}
+                {p.avatarImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={p.avatarImage}
+                    alt={p.name}
+                    className="h-10 w-10 object-cover"
+                  />
+                ) : (
+                  profileAvatarFallback(p.name, p.avatarEmoji)
+                )}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{p.name}</p>
@@ -238,6 +307,52 @@ export default function ProfilesPage() {
         size="sm"
       >
         <div className="space-y-4">
+          <div className="flex flex-col items-center gap-3 rounded-2xl bg-foreground/3 px-4 py-5">
+            <div
+              className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full text-3xl font-bold text-white"
+              style={{ backgroundColor: editColor }}
+            >
+              {avatarConverting ? (
+                <Loader2 className="h-8 w-8 animate-spin opacity-50" />
+              ) : editAvatarImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={editAvatarImage}
+                  alt={editName || editing?.name || "avatar"}
+                  className="h-24 w-24 object-cover"
+                />
+              ) : (
+                profileAvatarFallback(
+                  editName || editing?.name || "",
+                  editing?.avatarEmoji,
+                )
+              )}
+            </div>
+            <div className="flex w-full flex-col gap-2 sm:flex-row">
+              <label className="flex-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                />
+                <span className="btn-secondary flex w-full cursor-pointer items-center justify-center gap-2">
+                  <Upload className="h-4 w-4" />
+                  Завантажити аватар
+                </span>
+              </label>
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full sm:w-auto"
+                onClick={() => setEditAvatarImage(undefined)}
+                disabled={!editAvatarImage}
+              >
+                <Trash2 className="h-4 w-4" />
+                Прибрати фото
+              </Button>
+            </div>
+          </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Ім’я
@@ -251,10 +366,25 @@ export default function ProfilesPage() {
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Колір
             </label>
-            <Input
-              value={editColor}
-              onChange={(e) => setEditColor(e.target.value)}
-            />
+            <div className="grid grid-cols-5 gap-2">
+              {AVATAR_COLORS.map((color) => {
+                const active = editColor === color;
+                return (
+                  <button
+                    key={color}
+                    type="button"
+                    aria-label={`Обрати колір ${color}`}
+                    onClick={() => setEditColor(color)}
+                    className={`h-11 rounded-2xl border transition-transform hover:scale-[1.03] ${
+                      active
+                        ? "border-foreground/20 ring-2 ring-rose-500/35"
+                        : "border-transparent"
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                );
+              })}
+            </div>
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
@@ -271,7 +401,7 @@ export default function ProfilesPage() {
             type="button"
             className="w-full"
             onClick={handleSaveProfile}
-            disabled={savingId === editing?.id}
+            disabled={savingId === editing?.id || avatarConverting}
           >
             {savingId === editing?.id ? (
               <Loader2 className="h-4 w-4 animate-spin" />
