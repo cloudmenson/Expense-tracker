@@ -210,6 +210,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
   const [search, setSearch] = useState("");
   const [panelStyle, setPanelStyle] = useState<CSSProperties>({});
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   const filteredGroups = search
     ? EMOJI_GROUPS.map((g) => ({
@@ -290,7 +291,8 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
           <>
             <div
               data-allow-modal-outside="true"
-              className="fixed inset-0 z-90"
+              className="fixed inset-0 pointer-events-auto"
+              style={{ zIndex: 100 }}
               onClick={() => setOpen(false)}
             >
               <div className="h-full bg-black/30 sm:bg-transparent" />
@@ -298,9 +300,15 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
 
             <div
               data-allow-modal-outside="true"
-              className="fixed z-91 rounded-2xl border border-white/15 bg-surface p-4 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-surface/95 sm:p-3"
-              style={panelStyle}
+              className="fixed pointer-events-auto rounded-2xl border border-white/15 bg-surface p-4 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-surface/95 sm:p-3"
+              style={{ ...panelStyle, zIndex: 101 }}
               onClick={(e) => e.stopPropagation()}
+              onWheelCapture={(e) => {
+                const list = listRef.current;
+                if (!list) return;
+                list.scrollTop += e.deltaY;
+                e.preventDefault();
+              }}
             >
               <input
                 type="text"
@@ -310,7 +318,8 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
                 className="mb-3 w-full rounded-xl bg-foreground/5 px-3 py-2.5 text-sm outline-none placeholder:text-foreground/30 focus:ring-2 focus:ring-rose-500/30"
               />
               <div
-                className="overflow-y-auto overscroll-contain"
+                ref={listRef}
+                className="overflow-y-auto overscroll-contain [touch-action:pan-y]"
                 style={{ maxHeight: "min(calc(70dvh - 80px), 360px)" }}
               >
                 <div className="space-y-3">
