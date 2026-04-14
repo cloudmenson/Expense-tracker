@@ -33,6 +33,7 @@ export function ExpenseListItem({
 }: ExpenseListItemProps) {
   const isPerson1 = expense.paidBy === "person1";
   const borderColor = isPerson1 ? person1Color : person2Color;
+  const categoryColor = category?.color ?? "#94a3b8";
   const payerName = isPerson1 ? person1Name : person2Name;
   const payerAvatarImage = isPerson1 ? person1AvatarImage : person2AvatarImage;
 
@@ -56,23 +57,25 @@ export function ExpenseListItem({
           {/* Emoji */}
           <div
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg sm:h-11 sm:w-11 sm:text-xl"
-            style={{ backgroundColor: (category?.color ?? "#94a3b8") + "18" }}
+            style={{ backgroundColor: `${categoryColor}18` }}
           >
             {expense.emoji || category?.emoji || "📦"}
           </div>
 
           {/* Details — takes remaining space */}
           <div className="min-w-0 flex-1">
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex items-center gap-2">
               <p className="truncate text-sm font-semibold sm:text-base">
                 {expense.title}
               </p>
               {!hideCategoryBadge && (
                 <span
-                  className="hidden shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-medium sm:inline"
+                  className="hidden shrink-0 rounded-lg border px-2 py-0.5 text-[11px] font-semibold leading-5 sm:inline sm:text-xs"
                   style={{
-                    backgroundColor: (category?.color ?? "#94a3b8") + "20",
-                    color: category?.color ?? "#94a3b8",
+                    backgroundColor: `${categoryColor}26`,
+                    borderColor: `${categoryColor}55`,
+                    boxShadow: `0 2px 10px ${categoryColor}22`,
+                    color: categoryColor,
                   }}
                 >
                   {category?.name ?? "Інше"}
