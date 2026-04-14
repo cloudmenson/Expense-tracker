@@ -343,10 +343,27 @@ select.input-glass option {
   border-radius: 3px;
 }
 
+@media (max-width: 1023px) {
+  html,
+  body,
+  .mobile-scrollbar-hidden {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  body::-webkit-scrollbar,
+  .mobile-scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
 /* ─── react-day-picker v9 theme ─── */
 .rdp-root {
   --rdp-accent-color: #e11d48;
   --rdp-accent-background-color: rgba(225, 29, 72, 0.12);
+  --rdp-selected-border: 0 solid transparent;
   --rdp-day-height: 40px;
   --rdp-day-width: 40px;
   --rdp-day_button-height: 36px;
@@ -467,7 +484,16 @@ select.input-glass option {
 .rdp-range_middle .rdp-day_button {
   background: var(--rdp-range_middle-background-color) !important;
   color: var(--foreground) !important;
-  border-radius: 9999px;
+  border: none !important;
+  border-radius: 9999px !important;
+}
+
+/* Keep range days circular (override default square range cell backgrounds) */
+.rdp-range_start,
+.rdp-range_middle,
+.rdp-range_end,
+.rdp-range_start.rdp-range_end {
+  background: transparent !important;
 }
 
 /* Common input-leading icon visibility */

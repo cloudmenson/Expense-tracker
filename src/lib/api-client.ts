@@ -5,6 +5,7 @@ import type {
   AppSettings,
   TrashItem,
 } from "@/types/expense";
+import type { Profile } from "@/types/profile";
 
 const BASE = "/api";
 
@@ -102,6 +103,7 @@ export function exportAllData(): Promise<{
   expenses: Expense[];
   categories: Category[];
   settings: AppSettings;
+  profiles?: Profile[];
   exportedAt: string;
 }> {
   return fetcher(`${BASE}/data/export`);
@@ -111,6 +113,7 @@ export function importAllData(data: {
   expenses: Expense[];
   categories: Category[];
   settings: AppSettings;
+  profiles?: Profile[];
 }): Promise<{ ok: boolean }> {
   return fetcher(`${BASE}/data/import`, {
     method: "POST",
@@ -138,4 +141,49 @@ export function deleteFromTrash(id: string): Promise<{ ok: boolean }> {
 
 export function clearTrash(): Promise<{ ok: boolean }> {
   return fetcher(`${BASE}/trash`, { method: "DELETE" });
+}
+
+/* ── Profiles ── */
+
+export function fetchProfiles(): Promise<Profile[]> {
+  return fetcher(`${BASE}/profiles`);
+}
+
+export function createProfile(
+  data: Partial<
+    Pick<
+      Profile,
+      | "name"
+      | "color"
+      | "monthlyIncome"
+      | "inviteEmail"
+      | "avatarEmoji"
+      | "role"
+      | "status"
+    >
+  >,
+): Promise<Profile> {
+  return fetcher(`${BASE}/profiles`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function updateProfile(
+  id: string,
+  data: Partial<
+    Pick<
+      Profile,
+      "name" | "color" | "monthlyIncome" | "avatarEmoji" | "status" | "role"
+    >
+  >,
+): Promise<Profile> {
+  return fetcher(`${BASE}/profiles/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+export function deleteProfile(id: string): Promise<{ ok: boolean }> {
+  return fetcher(`${BASE}/profiles/${id}`, { method: "DELETE" });
 }

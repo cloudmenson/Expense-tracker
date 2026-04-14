@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { SettingsModel } from "@/models/settings";
+import { ProfileModel } from "@/models/profile";
 
 const DEFAULT_SETTINGS = {
   currency: "$",
@@ -100,6 +101,38 @@ export async function PUT(request: Request) {
       person1Color: settings.person1Color ?? "#e11d48",
       person2Color: settings.person2Color ?? "#3b82f6",
     };
+
+    // Keep profile entity in sync with current settings (scaffold for future auth/invite)
+    await Promise.all([
+      ProfileModel.findByIdAndUpdate(
+        "person1",
+        {
+          _id: "person1",
+          familyId: "default",
+          name: result.person1Name,
+          color: result.person1Color,
+          monthlyIncome: result.person1Income,
+          role: "owner",
+          status: "active",
+          avatarEmoji: "🧑",
+        },
+        { upsert: true, runValidators: true },
+      ),
+      ProfileModel.findByIdAndUpdate(
+        "person2",
+        {
+          _id: "person2",
+          familyId: "default",
+          name: result.person2Name,
+          color: result.person2Color,
+          monthlyIncome: result.person2Income,
+          role: "member",
+          status: "active",
+          avatarEmoji: "🧑",
+        },
+        { upsert: true, runValidators: true },
+      ),
+    ]);
 
     return NextResponse.json(result);
   } catch (error) {

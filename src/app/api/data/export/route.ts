@@ -3,17 +3,22 @@ import { connectDB } from "@/lib/mongodb";
 import { ExpenseModel } from "@/models/expense";
 import { CategoryModel } from "@/models/category";
 import { SettingsModel } from "@/models/settings";
+import { ProfileModel } from "@/models/profile";
 
 /* GET /api/data/export — export all data as JSON */
 export async function GET() {
   try {
     await connectDB();
 
-    const [rawExpenses, rawCategories, rawSettings] = await Promise.all([
-      ExpenseModel.find().sort({ createdAt: -1 }).lean(),
-      CategoryModel.find().lean(),
-      SettingsModel.findById("default").lean(),
-    ]);
+    const [rawExpenses, rawCategories, rawSettings, rawProfiles] =
+      await Promise.all([
+        ExpenseModel.find().sort({ createdAt: -1 }).lean(),
+        CategoryModel.find().lean(),
+        SettingsModel.findById("default").lean(),
+        ProfileModel.find({ familyId: "default" })
+          .sort({ createdAt: 1 })
+          .lean(),
+      ]);
 
     const expenses = rawExpenses.map((e) => ({
       id: String(e._id),
@@ -62,10 +67,31 @@ export async function GET() {
         }
       : null;
 
+    const profiles = rawProfiles.map((p) => ({
+      id: String(p._id),
+      familyId: p.familyId,
+      name: p.name,
+      color: p.color,
+      monthlyIncome: p.monthlyIncome,
+      role: p.role,
+      status: p.status,
+      inviteEmail: p.inviteEmail,
+      avatarEmoji: p.avatarEmoji,
+      createdAt:
+        p.createdAt instanceof Date
+          ? p.createdAt.toISOString()
+          : String(p.createdAt),
+      updatedAt:
+        p.updatedAt instanceof Date
+          ? p.updatedAt.toISOString()
+          : String(p.updatedAt),
+    }));
+
     return NextResponse.json({
       expenses,
       categories,
       settings,
+      profiles,
       exportedAt: new Date().toISOString(),
     });
   } catch (error) {

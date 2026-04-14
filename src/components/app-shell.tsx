@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { LayoutDashboard, Receipt, Settings, Cat } from "lucide-react";
+import {
+  LayoutDashboard,
+  Receipt,
+  Settings,
+  Cat,
+  UsersRound,
+} from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { HeartLogo } from "@/components/heart-logo";
 
@@ -14,6 +20,12 @@ const NAV_ITEMS = [
     label: "Витрати",
     mobileLabel: "Витрати",
     icon: Receipt,
+  },
+  {
+    href: "/profiles",
+    label: "Профілі",
+    mobileLabel: "Профілі",
+    icon: UsersRound,
   },
   {
     href: "/settings",
@@ -34,19 +46,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
+  const swipeAxis = useRef<"x" | "y" | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(
     null,
   );
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
+    swipeAxis.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+
+    const dx = e.touches[0].clientX - touchStartX.current;
+    const dy = e.touches[0].clientY - touchStartY.current;
+
+    if (!swipeAxis.current && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+      swipeAxis.current = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+    }
+
+    if (swipeAxis.current === "x" && Math.abs(dx) > Math.abs(dy)) {
+      e.preventDefault();
+    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     const dx = e.changedTouches[0].clientX - touchStartX.current;
     const dy = e.changedTouches[0].clientY - touchStartY.current;
+    swipeAxis.current = null;
     // Only horizontal swipes (more horizontal than vertical, min 60px)
     if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.8) return;
     const hrefs = NAV_ITEMS.map((i) => i.href);
@@ -64,6 +95,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       setIsNavigating(true);
       router.push(hrefs[current - 1]);
     }
+  };
+
+  const handleTouchCancel = () => {
+    swipeAxis.current = null;
   };
 
   useEffect(() => {
@@ -133,9 +168,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── Content ── */}
       <main
-        className="flex-1 pt-[calc(52px+max(12px,env(safe-area-inset-top)))] pb-[calc(86px+env(safe-area-inset-bottom))] lg:pl-65 lg:pt-0 lg:pb-0"
+        className="mobile-scrollbar-hidden flex-1 pt-[calc(52px+max(12px,env(safe-area-inset-top)))] pb-[calc(86px+env(safe-area-inset-bottom))] lg:pl-65 lg:pt-0 lg:pb-0"
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchCancel}
+        style={{ touchAction: "pan-y" }}
       >
         <div
           className={`mx-auto max-w-6xl px-4 py-5 transition-all duration-220 ease-out sm:px-6 lg:px-8 lg:py-8 ${

@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { ExpenseModel } from "@/models/expense";
 import { CategoryModel } from "@/models/category";
 import { SettingsModel } from "@/models/settings";
+import { ProfileModel } from "@/models/profile";
 
 /* POST /api/data/import — import data from JSON backup */
 export async function POST(request: Request) {
@@ -10,12 +11,13 @@ export async function POST(request: Request) {
     await connectDB();
     const body = await request.json();
 
-    const { expenses, categories, settings } = body;
+    const { expenses, categories, settings, profiles } = body;
 
     // Clear existing data
     await Promise.all([
       ExpenseModel.deleteMany({}),
       CategoryModel.deleteMany({}),
+      ProfileModel.deleteMany({}),
     ]);
 
     // Import categories
@@ -71,6 +73,37 @@ export async function POST(request: Request) {
       await SettingsModel.findByIdAndUpdate("default", settings, {
         upsert: true,
       });
+    }
+
+    if (profiles && Array.isArray(profiles) && profiles.length > 0) {
+      const profileDocs = profiles.map(
+        (p: {
+          id: string;
+          familyId?: string;
+          name: string;
+          color?: string;
+          monthlyIncome?: number;
+          role?: "owner" | "member";
+          status?: "active" | "invited";
+          inviteEmail?: string;
+          avatarEmoji?: string;
+          createdAt?: string;
+          updatedAt?: string;
+        }) => ({
+          _id: p.id,
+          familyId: p.familyId ?? "default",
+          name: p.name,
+          color: p.color ?? "#e11d48",
+          monthlyIncome: p.monthlyIncome ?? 0,
+          role: p.role ?? "member",
+          status: p.status ?? "active",
+          inviteEmail: p.inviteEmail,
+          avatarEmoji: p.avatarEmoji ?? "👤",
+          createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
+          updatedAt: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+        }),
+      );
+      await ProfileModel.insertMany(profileDocs);
     }
 
     return NextResponse.json({ ok: true });

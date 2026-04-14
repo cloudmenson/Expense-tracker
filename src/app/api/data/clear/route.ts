@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { ExpenseModel } from "@/models/expense";
 import { CategoryModel } from "@/models/category";
 import { SettingsModel } from "@/models/settings";
+import { ProfileModel } from "@/models/profile";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
 
 /* POST /api/data/clear — clear all data and re-seed defaults */
@@ -15,6 +16,7 @@ export async function POST() {
       ExpenseModel.deleteMany({}),
       CategoryModel.deleteMany({}),
       SettingsModel.deleteMany({}),
+      ProfileModel.deleteMany({}),
     ]);
 
     // Re-seed default categories
@@ -37,6 +39,29 @@ export async function POST() {
       person2Income: 2500,
       theme: "system",
     });
+
+    await ProfileModel.insertMany([
+      {
+        _id: "person1",
+        familyId: "default",
+        name: "Партнер 1",
+        color: "#e11d48",
+        monthlyIncome: 2500,
+        role: "owner",
+        status: "active",
+        avatarEmoji: "🧑",
+      },
+      {
+        _id: "person2",
+        familyId: "default",
+        name: "Партнер 2",
+        color: "#3b82f6",
+        monthlyIncome: 2500,
+        role: "member",
+        status: "active",
+        avatarEmoji: "🧑",
+      },
+    ]);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

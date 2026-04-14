@@ -29,14 +29,14 @@ const tooltipStyle = {
 /* ─── Monthly bar chart ─── */
 interface MonthlyChartProps {
   data: { month: string; total: number; person1: number; person2: number }[];
-  person1Name?: string;
-  person2Name?: string;
+  person1Name: string;
+  person2Name: string;
 }
 
 export function MonthlyBarChart({
   data,
-  person1Name = "Партнер 1",
-  person2Name = "Партнер 2",
+  person1Name,
+  person2Name,
 }: MonthlyChartProps) {
   return (
     <div className="widget-no-outline glass-card rounded-2xl p-5">
@@ -201,14 +201,14 @@ export function SpendingTrendChart({ data }: TrendChartProps) {
 interface PersonCompareProps {
   data: { category: string; person1: number; person2: number }[];
   categories: Category[];
-  person1Name?: string;
-  person2Name?: string;
+  person1Name: string;
+  person2Name: string;
 }
 
 export function PersonCompareChart({
   data,
-  person1Name = "Партнер 1",
-  person2Name = "Партнер 2",
+  person1Name,
+  person2Name,
 }: PersonCompareProps) {
   return (
     <div className="widget-no-outline glass-card rounded-2xl p-5">

@@ -14,7 +14,6 @@ import { useTheme } from "@/components/theme-provider";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectTrigger,
@@ -23,37 +22,6 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import * as api from "@/lib/api-client";
-
-const PRESET_COLORS = [
-  "#e11d48",
-  "#fb923c",
-  "#14b8a6",
-  "#06b6d4",
-  "#3b82f6",
-  "#6366f1",
-  "#8b5cf6",
-  "#a855f7",
-  "#ec4899",
-  "#f43f5e",
-  "#f97316",
-  "#eab308",
-  "#ef4444",
-  "#64748b",
-  "#10b981",
-  "#059669",
-  "#0d9488",
-  "#0891b2",
-  "#0ea5e9",
-  "#2563eb",
-  "#1d4ed8",
-  "#4f46e5",
-  "#4c1d95",
-  "#7c3aed",
-  "#6d28d9",
-  "#d946ef",
-  "#c2185b",
-  "#880e4f",
-];
 
 export default function SettingsPage() {
   const { settings, updateSettings, expenses, categories, _setAll, hydrate } =
@@ -64,29 +32,13 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [importing, setImporting] = useState(false);
 
-  const [person1Name, setPerson1Name] = useState(settings.person1Name);
-  const [person2Name, setPerson2Name] = useState(settings.person2Name);
-  const [person1Color, setPerson1Color] = useState(
-    settings.person1Color ?? "#e11d48",
-  );
-  const [person2Color, setPerson2Color] = useState(
-    settings.person2Color ?? "#3b82f6",
-  );
   const [currency, setCurrency] = useState(settings.currency);
-  const [person1Income, setPerson1Income] = useState(settings.person1Income);
-  const [person2Income, setPerson2Income] = useState(settings.person2Income);
 
   const handleSave = async () => {
     setSaving(true);
     try {
       updateSettings({
-        person1Name,
-        person2Name,
         currency,
-        person1Income,
-        person2Income,
-        person1Color,
-        person2Color,
       });
       await new Promise((r) => setTimeout(r, 300));
       toast("Налаштування збережено", "success");
@@ -170,90 +122,10 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* Profile settings */}
+      {/* General settings */}
       <div className="glass-card rounded-2xl p-4 sm:p-6">
-        <h2 className="mb-4 text-base font-semibold">Профілі</h2>
-        <div className="grid gap-6 sm:grid-cols-2">
-          {/* Person 1 */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div
-                className="h-9 w-9 shrink-0 rounded-xl"
-                style={{ backgroundColor: person1Color }}
-              />
-              <Input
-                type="text"
-                placeholder="Ім'я партнера 1"
-                value={person1Name}
-                onChange={(e) => setPerson1Name(e.target.value)}
-                className="flex-1"
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-                Колір
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {PRESET_COLORS.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setPerson1Color(c)}
-                    className={`h-7 w-7 rounded-lg transition-all hover:scale-110 ${
-                      person1Color === c
-                        ? "ring-2 ring-foreground/30 ring-offset-2 ring-offset-surface"
-                        : ""
-                    }`}
-                    style={{ backgroundColor: c }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Person 2 */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div
-                className="h-9 w-9 shrink-0 rounded-xl"
-                style={{ backgroundColor: person2Color }}
-              />
-              <Input
-                type="text"
-                placeholder="Ім'я партнера 2"
-                value={person2Name}
-                onChange={(e) => setPerson2Name(e.target.value)}
-                className="flex-1"
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-                Колір
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {PRESET_COLORS.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setPerson2Color(c)}
-                    className={`h-7 w-7 rounded-lg transition-all hover:scale-110 ${
-                      person2Color === c
-                        ? "ring-2 ring-foreground/30 ring-offset-2 ring-offset-surface"
-                        : ""
-                    }`}
-                    style={{ backgroundColor: c }}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Income settings */}
-      <div className="glass-card rounded-2xl p-4 sm:p-6">
-        <h2 className="mb-4 text-base font-semibold">Доходи</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <h2 className="mb-4 text-base font-semibold">Загальні</h2>
+        <div className="grid gap-4 sm:grid-cols-1">
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Валюта
@@ -268,28 +140,6 @@ export default function SettingsPage() {
                 <SelectItem value="₴">₴ Гривня</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Дохід {person1Name || "Партнер 1"}
-            </label>
-            <Input
-              type="number"
-              value={person1Income}
-              onChange={(e) => setPerson1Income(parseInt(e.target.value) || 0)}
-              min={0}
-            />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Дохід {person2Name || "Партнер 2"}
-            </label>
-            <Input
-              type="number"
-              value={person2Income}
-              onChange={(e) => setPerson2Income(parseInt(e.target.value) || 0)}
-              min={0}
-            />
           </div>
         </div>
       </div>

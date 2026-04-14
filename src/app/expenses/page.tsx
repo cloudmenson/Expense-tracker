@@ -144,8 +144,8 @@ export default function ExpensesPage() {
     setShowCalendar(false);
   }, []);
 
-  const p1 = settings.person1Name || "Person 1";
-  const p2 = settings.person2Name || "Person 2";
+  const p1 = settings.person1Name;
+  const p2 = settings.person2Name;
   const p1Initial = p1.charAt(0).toUpperCase();
   const p2Initial = p2.charAt(0).toUpperCase();
   const p1Color = settings.person1Color || "#e11d48";
@@ -363,7 +363,7 @@ export default function ExpensesPage() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setShowCalendar((v) => !v)}
+                    onClick={() => setShowCalendar(true)}
                     className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
                       hasDateFilter
                         ? "shadow-sm ring-1 ring-foreground/10"
@@ -397,26 +397,24 @@ export default function ExpensesPage() {
                   )}
                 </div>
 
-                {showCalendar && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-60 bg-black/40"
-                      onClick={() => setShowCalendar(false)}
+                <Modal
+                  open={showCalendar}
+                  onClose={() => setShowCalendar(false)}
+                  title="Оберіть період"
+                  size="sm"
+                >
+                  <div className="flex justify-center">
+                    <DayPicker
+                      mode="range"
+                      selected={dateRange}
+                      onSelect={(range) => {
+                        setDateRange(range);
+                      }}
+                      locale={uk}
+                      weekStartsOn={1}
                     />
-                    <div
-                      className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/12 bg-surface/95 p-1 shadow-[0_20px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl dark:border-white/10"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <DayPicker
-                        mode="range"
-                        selected={dateRange}
-                        onSelect={setDateRange}
-                        locale={uk}
-                        weekStartsOn={1}
-                      />
-                    </div>
-                  </>
-                )}
+                  </div>
+                </Modal>
               </div>
 
               <div>
