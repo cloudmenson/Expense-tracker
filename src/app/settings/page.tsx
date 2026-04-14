@@ -73,7 +73,8 @@ export default function SettingsPage() {
     settings.person2Color ?? "#3b82f6",
   );
   const [currency, setCurrency] = useState(settings.currency);
-  const [budget, setBudget] = useState(settings.monthlyBudget);
+  const [person1Income, setPerson1Income] = useState(settings.person1Income);
+  const [person2Income, setPerson2Income] = useState(settings.person2Income);
 
   const handleSave = async () => {
     setSaving(true);
@@ -82,7 +83,8 @@ export default function SettingsPage() {
         person1Name,
         person2Name,
         currency,
-        monthlyBudget: budget,
+        person1Income,
+        person2Income,
         person1Color,
         person2Color,
       });
@@ -248,10 +250,10 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Budget settings */}
+      {/* Income settings */}
       <div className="glass-card rounded-2xl p-4 sm:p-6">
-        <h2 className="mb-4 text-base font-semibold">Бюджет</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <h2 className="mb-4 text-base font-semibold">Доходи</h2>
+        <div className="grid gap-4 sm:grid-cols-3">
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
               Валюта
@@ -269,12 +271,23 @@ export default function SettingsPage() {
           </div>
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Місячний бюджет
+              Дохід {person1Name || "Партнер 1"}
             </label>
             <Input
               type="number"
-              value={budget}
-              onChange={(e) => setBudget(parseInt(e.target.value) || 0)}
+              value={person1Income}
+              onChange={(e) => setPerson1Income(parseInt(e.target.value) || 0)}
+              min={0}
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+              Дохід {person2Name || "Партнер 2"}
+            </label>
+            <Input
+              type="number"
+              value={person2Income}
+              onChange={(e) => setPerson2Income(parseInt(e.target.value) || 0)}
               min={0}
             />
           </div>

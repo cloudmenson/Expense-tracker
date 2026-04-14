@@ -45,4 +45,9 @@
 - `npm run build` — production build
 - `npm run start` — запуск production-сборки
 - `npm run lint` — проверка линтером
-# Expense-tracker
+- `npm run lint:fix` — автоисправление линта
+- `npm run typecheck` — проверка TypeScript
+
+## Архитектура
+
+См. [ARCHITECTURE.md](ARCHITECTURE.md) — там зафиксированы слои, правила и чеклист качества.

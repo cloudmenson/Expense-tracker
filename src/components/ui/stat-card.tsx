@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -23,16 +22,6 @@ export function StatCard({
   trend,
   animateValue = true,
 }: StatCardProps) {
-  const [displayValue, setDisplayValue] = useState(value);
-  const hasMountedRef = useRef(false);
-
-  useEffect(() => {
-    if (!animateValue || !hasMountedRef.current) {
-      hasMountedRef.current = true;
-      return;
-    }
-    setDisplayValue(value);
-  }, [value, animateValue]);
   const colorClasses: Record<string, string> = {
     emerald:
       "from-rose-500/25 via-rose-500/15 to-pink-500/15 text-rose-600 dark:text-pink-300",
@@ -52,8 +41,10 @@ export function StatCard({
           <p className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
             {label}
           </p>
-          <p className="animate-count-up text-2xl font-bold tracking-tight">
-            {displayValue}
+          <p
+            className={`text-2xl font-bold tracking-tight ${animateValue ? "animate-count-up" : ""}`}
+          >
+            {value}
           </p>
           {sub && <p className="text-xs text-foreground/50">{sub}</p>}
         </div>

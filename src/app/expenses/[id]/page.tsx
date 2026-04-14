@@ -172,7 +172,7 @@ export default function CategoryExpensesPage() {
       {/* ── Toolbar ── */}
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/30" />
+          <Search className="field-icon pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Пошук..."
@@ -313,7 +313,7 @@ export default function CategoryExpensesPage() {
                 />
                 {/* Picker panel — centered */}
                 <div
-                  className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-surface shadow-2xl dark:border-white/10"
+                  className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/12 bg-surface/95 p-1 shadow-[0_20px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl dark:border-white/10"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <DayPicker
@@ -415,7 +415,6 @@ export default function CategoryExpensesPage() {
         closeOnOverlay={false}
         closeOnEscape={false}
         tall
-        allowOverflow
       >
         <ExpenseForm
           expense={editing}

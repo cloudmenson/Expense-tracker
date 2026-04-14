@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, Wallet, TrendingUp, Users, Target } from "lucide-react";
+import { Plus, Wallet, TrendingUp, Users } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
 import {
   formatMoney,
@@ -145,14 +145,20 @@ export default function DashboardPage() {
 
           {/* Budget progress */}
           <BudgetProgress
-            spent={summary.total}
-            budget={settings.monthlyBudget}
+            person1Income={settings.person1Income}
+            person2Income={settings.person2Income}
             currency={settings.currency}
+            person1Name={settings.person1Name}
+            person2Name={settings.person2Name}
           />
 
           {/* Charts row */}
           <div className="grid gap-4 lg:grid-cols-2">
-            <MonthlyBarChart data={monthlyChartData} />
+            <MonthlyBarChart
+              data={monthlyChartData}
+              person1Name={settings.person1Name}
+              person2Name={settings.person2Name}
+            />
             <CategoryPieChart
               data={pieData}
               total={summary.total}

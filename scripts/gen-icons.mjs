@@ -15,7 +15,6 @@ if (!fs.existsSync(OUT)) fs.mkdirSync(OUT, { recursive: true });
 // Rose gradient background + white heart, rounded corners via clipPath
 function makeSvg(size, maskable = false) {
   // For maskable icons the content is contained in the central 80% (safe zone)
-  const padding = maskable ? size * 0.1 : size * 0.06;
   const r = maskable ? size * 0.28 : size * 0.26; // corner radius
   const heartScale = maskable ? 0.44 : 0.5;
   const cx = size / 2;

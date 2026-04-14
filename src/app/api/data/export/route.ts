@@ -47,7 +47,15 @@ export async function GET() {
           currency: rawSettings.currency,
           person1Name: rawSettings.person1Name,
           person2Name: rawSettings.person2Name,
-          monthlyBudget: rawSettings.monthlyBudget,
+          person1Income:
+            typeof rawSettings.person1Income === "number"
+              ? rawSettings.person1Income
+              : Math.round((rawSettings.monthlyBudget ?? 0) / 2),
+          person2Income:
+            typeof rawSettings.person2Income === "number"
+              ? rawSettings.person2Income
+              : (rawSettings.monthlyBudget ?? 0) -
+                Math.round((rawSettings.monthlyBudget ?? 0) / 2),
           theme: rawSettings.theme,
           person1Color: rawSettings.person1Color ?? "#e11d48",
           person2Color: rawSettings.person2Color ?? "#3b82f6",

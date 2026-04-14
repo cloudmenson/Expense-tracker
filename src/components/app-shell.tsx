@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LayoutDashboard, Receipt, Settings, Cat } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { HeartLogo } from "@/components/heart-logo";
@@ -34,10 +34,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const touchStartX = useRef(0);
   const touchStartY = useRef(0);
-
-  if (pathname === "/unlock") {
-    return <>{children}</>;
-  }
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(
+    null,
+  );
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -53,9 +53,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const current = hrefs.findIndex((h) =>
       h === "/" ? pathname === "/" : pathname.startsWith(h),
     );
-    if (dx < 0 && current < hrefs.length - 1) router.push(hrefs[current + 1]);
-    if (dx > 0 && current > 0) router.push(hrefs[current - 1]);
+    if (dx < 0 && current < hrefs.length - 1) {
+      setSwipeDirection("left");
+      setIsNavigating(true);
+      router.push(hrefs[current + 1]);
+    }
+
+    if (dx > 0 && current > 0) {
+      setSwipeDirection("right");
+      setIsNavigating(true);
+      router.push(hrefs[current - 1]);
+    }
   };
+
+  useEffect(() => {
+    if (!isNavigating) return;
+    const t = window.setTimeout(() => {
+      setIsNavigating(false);
+      setSwipeDirection(null);
+    }, 220);
+    return () => window.clearTimeout(t);
+  }, [pathname, isNavigating]);
+
+  if (pathname === "/unlock") {
+    return <>{children}</>;
+  }
 
   return (
     <>
@@ -111,18 +133,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── Content ── */}
       <main
-        className="flex-1 pt-[calc(52px+max(12px,env(safe-area-inset-top)))] pb-[calc(56px+env(safe-area-inset-bottom))] lg:pl-65 lg:pt-0 lg:pb-0"
+        className="flex-1 pt-[calc(52px+max(12px,env(safe-area-inset-top)))] pb-[calc(86px+env(safe-area-inset-bottom))] lg:pl-65 lg:pt-0 lg:pb-0"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+        <div
+          className={`mx-auto max-w-6xl px-4 py-5 transition-all duration-220 ease-out sm:px-6 lg:px-8 lg:py-8 ${
+            isNavigating
+              ? swipeDirection === "left"
+                ? "-translate-x-2 opacity-85"
+                : "translate-x-2 opacity-85"
+              : "translate-x-0 opacity-100"
+          }`}
+        >
           {children}
         </div>
       </main>
 
-      {/* ── Mobile bottom nav (fixed) ── */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-surface/80 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl lg:hidden dark:border-white/5">
-        <div className="mx-auto flex h-14 max-w-lg items-stretch">
+      {/* ── Mobile bottom nav (island) ── */}
+      <nav className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+8px)] z-40 px-3 lg:hidden">
+        <div className="mx-auto flex h-14 w-full max-w-sm items-stretch rounded-2xl border border-white/15 bg-surface/88 shadow-[0_12px_30px_rgba(0,0,0,0.24)] backdrop-blur-2xl dark:border-white/10">
           {NAV_ITEMS.map((item) => {
             const active =
               item.href === "/"
@@ -136,7 +166,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               >
                 {/* Active pill */}
                 {active && (
-                  <span className="absolute inset-x-2 top-0 h-0.75 rounded-b-full bg-rose-500 dark:bg-pink-400" />
+                  <span className="absolute inset-x-3 top-1.5 h-1 rounded-full bg-linear-[135deg,#e11d48_0%,#f472b6_100%]" />
                 )}
                 <item.icon
                   className={`h-6 w-6 ${

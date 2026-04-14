@@ -392,7 +392,7 @@ select.input-glass option {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: 9999px;
   border: 1px solid var(--border);
   background: var(--glass-bg);
   color: var(--foreground);
@@ -430,7 +430,7 @@ select.input-glass option {
 .rdp-day_button {
   width: var(--rdp-day_button-width);
   height: var(--rdp-day_button-height);
-  border-radius: 10px;
+  border-radius: 9999px;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -467,7 +467,12 @@ select.input-glass option {
 .rdp-range_middle .rdp-day_button {
   background: var(--rdp-range_middle-background-color) !important;
   color: var(--foreground) !important;
-  border-radius: 0;
+  border-radius: 9999px;
+}
+
+/* Common input-leading icon visibility */
+.field-icon {
+  color: color-mix(in srgb, var(--foreground) 62%, transparent);
 }
 
 /* Range start / end */
@@ -549,4 +554,15 @@ select.input-glass option {
 
 .dark .ambient-bg::after {
   opacity: 0.07;
+}
+
+/* Chart widgets: remove browser focus outline artifacts */
+.widget-no-outline :focus,
+.widget-no-outline :focus-visible,
+.widget-no-outline .recharts-sector:focus,
+.widget-no-outline .recharts-sector:focus-visible,
+.widget-no-outline .recharts-pie-sector:focus,
+.widget-no-outline .recharts-pie-sector:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
 }

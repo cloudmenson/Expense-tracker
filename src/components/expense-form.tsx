@@ -336,7 +336,7 @@ export function ExpenseForm({
               onClick={() => setShowDatePicker((v) => !v)}
               className="input-glass flex w-full items-center gap-2 text-left"
             >
-              <CalendarDays className="h-4 w-4 shrink-0 text-foreground/40" />
+              <CalendarDays className="h-4 w-4 shrink-0 field-icon" />
               <span className="flex-1 text-sm">
                 {format(parseISO(form.date), "d MMMM yyyy", { locale: uk })}
               </span>
@@ -351,7 +351,7 @@ export function ExpenseForm({
                 />
                 {/* Picker panel — centered on screen */}
                 <div
-                  className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border border-white/15 bg-surface shadow-2xl dark:border-white/10"
+                  className="fixed left-1/2 top-1/2 z-61 -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-white/12 bg-surface/95 p-1 shadow-[0_20px_70px_rgba(0,0,0,0.38)] backdrop-blur-xl dark:border-white/10"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <DayPicker

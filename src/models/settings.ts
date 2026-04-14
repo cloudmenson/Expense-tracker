@@ -5,7 +5,8 @@ export interface ISettings {
   currency: string;
   person1Name: string;
   person2Name: string;
-  monthlyBudget: number;
+  person1Income: number;
+  person2Income: number;
   theme: "light" | "dark" | "system";
   person1Color?: string;
   person2Color?: string;
@@ -17,7 +18,8 @@ const SettingsSchema = new Schema(
     currency: { type: String, default: "$" },
     person1Name: { type: String, default: "Партнер 1" },
     person2Name: { type: String, default: "Партнер 2" },
-    monthlyBudget: { type: Number, default: 5000 },
+    person1Income: { type: Number, default: 2500 },
+    person2Income: { type: Number, default: 2500 },
     theme: {
       type: String,
       enum: ["light", "dark", "system"],

@@ -29,11 +29,17 @@ const tooltipStyle = {
 /* ─── Monthly bar chart ─── */
 interface MonthlyChartProps {
   data: { month: string; total: number; person1: number; person2: number }[];
+  person1Name?: string;
+  person2Name?: string;
 }
 
-export function MonthlyBarChart({ data }: MonthlyChartProps) {
+export function MonthlyBarChart({
+  data,
+  person1Name = "Партнер 1",
+  person2Name = "Партнер 2",
+}: MonthlyChartProps) {
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="widget-no-outline glass-card rounded-2xl p-5">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
         Витрати по місяцях
       </p>
@@ -67,14 +73,14 @@ export function MonthlyBarChart({ data }: MonthlyChartProps) {
               stackId="a"
               fill="#e11d48"
               radius={[0, 0, 0, 0]}
-              name="Партнер 1"
+              name={person1Name}
             />
             <Bar
               dataKey="person2"
               stackId="a"
               fill="#f472b6"
               radius={[4, 4, 0, 0]}
-              name="Партнер 2"
+              name={person2Name}
             />
           </BarChart>
         </ResponsiveContainer>
@@ -92,7 +98,7 @@ interface CategoryPieProps {
 
 export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="widget-no-outline glass-card rounded-2xl p-5">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
         За категоріями
       </p>
@@ -149,7 +155,7 @@ interface TrendChartProps {
 
 export function SpendingTrendChart({ data }: TrendChartProps) {
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="widget-no-outline glass-card rounded-2xl p-5">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
         Тренд витрат
       </p>
@@ -195,11 +201,17 @@ export function SpendingTrendChart({ data }: TrendChartProps) {
 interface PersonCompareProps {
   data: { category: string; person1: number; person2: number }[];
   categories: Category[];
+  person1Name?: string;
+  person2Name?: string;
 }
 
-export function PersonCompareChart({ data }: PersonCompareProps) {
+export function PersonCompareChart({
+  data,
+  person1Name = "Партнер 1",
+  person2Name = "Партнер 2",
+}: PersonCompareProps) {
   return (
-    <div className="glass-card rounded-2xl p-5">
+    <div className="widget-no-outline glass-card rounded-2xl p-5">
       <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
         Порівняння витрат
       </p>
@@ -230,13 +242,13 @@ export function PersonCompareChart({ data }: PersonCompareProps) {
               dataKey="person1"
               fill="#e11d48"
               radius={[0, 4, 4, 0]}
-              name="Партнер 1"
+              name={person1Name}
             />
             <Bar
               dataKey="person2"
               fill="#f472b6"
               radius={[0, 4, 4, 0]}
-              name="Партнер 2"
+              name={person2Name}
             />
           </BarChart>
         </ResponsiveContainer>
