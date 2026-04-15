@@ -102,11 +102,26 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
     set({ _loading: true });
 
     try {
-      const [expenses, categories, settings] = await Promise.all([
-        api.fetchExpenses(),
-        api.fetchCategories(),
-        api.fetchSettings(),
-      ]);
+      let expenses: Expense[] = [];
+      let categories: Category[] = [];
+      let settings: AppSettings | null = null;
+
+      try {
+        const bootstrap = await api.fetchBootstrap();
+        expenses = bootstrap.expenses;
+        categories = bootstrap.categories;
+        settings = bootstrap.settings;
+      } catch (bootstrapError) {
+        console.warn(
+          "Bootstrap endpoint failed, falling back to legacy hydrate:",
+          bootstrapError,
+        );
+        [expenses, categories, settings] = await Promise.all([
+          api.fetchExpenses(),
+          api.fetchCategories(),
+          api.fetchSettings(),
+        ]);
+      }
 
       set({
         expenses,

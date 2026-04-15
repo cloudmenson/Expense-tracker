@@ -9,6 +9,12 @@ import type { Profile } from "@/types/profile";
 
 const BASE = "/api";
 
+export interface BootstrapPayload {
+  expenses: Expense[];
+  categories: Category[];
+  settings: AppSettings;
+}
+
 async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...options,
@@ -27,6 +33,10 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
 }
 
 /* ── Expenses ── */
+
+export function fetchBootstrap(): Promise<BootstrapPayload> {
+  return fetcher(`${BASE}/bootstrap`);
+}
 
 export function fetchExpenses(): Promise<Expense[]> {
   return fetcher(`${BASE}/expenses`);
