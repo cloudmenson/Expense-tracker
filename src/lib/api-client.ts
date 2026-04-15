@@ -161,8 +161,11 @@ export function clearTrash(): Promise<{ ok: boolean }> {
 
 /* ── Profiles ── */
 
-export function fetchProfiles(): Promise<Profile[]> {
-  return fetcher(`${BASE}/profiles`);
+export function fetchProfiles(options?: {
+  includeAvatarImage?: boolean;
+}): Promise<Profile[]> {
+  const query = options?.includeAvatarImage ? "?includeAvatarImage=1" : "";
+  return fetcher(`${BASE}/profiles${query}`);
 }
 
 export function createProfile(

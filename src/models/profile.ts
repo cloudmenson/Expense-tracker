@@ -35,6 +35,8 @@ const ProfileSchema = new Schema(
   },
 );
 
+ProfileSchema.index({ familyId: 1, createdAt: 1 });
+
 ProfileSchema.set("toJSON", {
   versionKey: false,
   transform: (_doc: unknown, ret: Record<string, unknown>) => {

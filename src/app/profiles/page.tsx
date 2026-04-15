@@ -69,6 +69,16 @@ export default function ProfilesPage() {
     [profiles],
   );
 
+  const getProfileAvatarImage = useCallback(
+    (profile: Profile) => {
+      if (profile.avatarImage) return profile.avatarImage;
+      if (profile.id === "person1") return settings.person1AvatarImage;
+      if (profile.id === "person2") return settings.person2AvatarImage;
+      return undefined;
+    },
+    [settings.person1AvatarImage, settings.person2AvatarImage],
+  );
+
   const loadProfiles = useCallback(async () => {
     try {
       const result = await api.fetchProfiles();
@@ -89,7 +99,7 @@ export default function ProfilesPage() {
     setEditName(p.name);
     setEditColor(p.color);
     setEditIncome(p.monthlyIncome);
-    setEditAvatarImage(p.avatarImage || undefined);
+    setEditAvatarImage(getProfileAvatarImage(p));
   };
 
   const handleAvatarUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -247,42 +257,45 @@ export default function ProfilesPage() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        {activeProfiles.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => openEdit(p)}
-            className="glass-card text-left rounded-2xl p-4 transition-colors hover:bg-foreground/5"
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl text-lg"
-                style={{ backgroundColor: `${p.color}22`, color: p.color }}
-              >
-                {p.avatarImage ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={p.avatarImage}
-                    alt={p.name}
-                    className="h-10 w-10 object-cover"
-                  />
-                ) : (
-                  profileAvatarFallback(p.name, p.avatarEmoji)
-                )}
+        {activeProfiles.map((p) => {
+          const avatarImage = getProfileAvatarImage(p);
+          return (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => openEdit(p)}
+              className="glass-card text-left rounded-2xl p-4 transition-colors hover:bg-foreground/5"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl text-lg"
+                  style={{ backgroundColor: `${p.color}22`, color: p.color }}
+                >
+                  {avatarImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={avatarImage}
+                      alt={p.name}
+                      className="h-10 w-10 object-cover"
+                    />
+                  ) : (
+                    profileAvatarFallback(p.name, p.avatarEmoji)
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">{p.name}</p>
+                  <p className="text-xs text-foreground/45">
+                    {p.role === "owner" ? "Власник" : "Учасник"}
+                  </p>
+                </div>
+                <span className="text-sm font-semibold tabular-nums">
+                  {settings.currency}{" "}
+                  {Math.round(p.monthlyIncome).toLocaleString("en-US")}
+                </span>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold">{p.name}</p>
-                <p className="text-xs text-foreground/45">
-                  {p.role === "owner" ? "Власник" : "Учасник"}
-                </p>
-              </div>
-              <span className="text-sm font-semibold tabular-nums">
-                {settings.currency}{" "}
-                {Math.round(p.monthlyIncome).toLocaleString("en-US")}
-              </span>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
 
       {invitedProfiles.length > 0 && (

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { ProfileModel } from "@/models/profile";
 
-const profileProjection = {
+const profileProjectionBase = {
   familyId: 1,
   name: 1,
   color: 1,
@@ -11,9 +11,13 @@ const profileProjection = {
   status: 1,
   inviteEmail: 1,
   avatarEmoji: 1,
-  avatarImage: 1,
   createdAt: 1,
   updatedAt: 1,
+} as const;
+
+const profileProjectionWithAvatar = {
+  ...profileProjectionBase,
+  avatarImage: 1,
 } as const;
 
 const toIso = (v: unknown) =>
@@ -48,12 +52,17 @@ const serializeProfile = (p: {
 });
 
 /* GET /api/profiles — list family profiles, auto-seed first two from settings */
-export async function GET() {
+export async function GET(request: Request) {
   try {
     await connectDB();
+    const includeAvatarImage =
+      new URL(request.url).searchParams.get("includeAvatarImage") === "1";
+    const projection = includeAvatarImage
+      ? profileProjectionWithAvatar
+      : profileProjectionBase;
 
     let profiles = await ProfileModel.find({ familyId: "default" })
-      .select(profileProjection)
+      .select(projection)
       .sort({ createdAt: 1 })
       .lean();
 
@@ -82,7 +91,7 @@ export async function GET() {
       ]);
 
       profiles = await ProfileModel.find({ familyId: "default" })
-        .select(profileProjection)
+        .select(projection)
         .sort({ createdAt: 1 })
         .lean();
     }
