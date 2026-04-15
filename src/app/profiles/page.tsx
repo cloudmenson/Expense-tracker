@@ -59,6 +59,7 @@ export default function ProfilesPage() {
   const [showInvite, setShowInvite] = useState(false);
   const [inviteName, setInviteName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
+  const isBusy = savingId !== null;
 
   const activeProfiles = useMemo(
     () => profiles.filter((p) => p.status === "active"),
@@ -123,6 +124,7 @@ export default function ProfilesPage() {
   };
 
   const handleSaveProfile = async () => {
+    if (isBusy) return;
     if (!editing) return;
     const name = editName.trim();
     if (!name) {
@@ -168,6 +170,7 @@ export default function ProfilesPage() {
   };
 
   const handleInvite = async () => {
+    if (isBusy) return;
     const name = inviteName.trim();
     const email = inviteEmail.trim();
     if (!name || !email) {
@@ -198,6 +201,7 @@ export default function ProfilesPage() {
   };
 
   const handleRemoveInvite = async (id: string) => {
+    if (isBusy) return;
     setSavingId(id);
     try {
       await api.deleteProfile(id);
@@ -251,7 +255,11 @@ export default function ProfilesPage() {
             Заготовка під сімейні акаунти, інвайти та майбутню логінізацію
           </p>
         </div>
-        <Button type="button" onClick={() => setShowInvite(true)}>
+        <Button
+          type="button"
+          onClick={() => setShowInvite(true)}
+          disabled={isBusy}
+        >
           <Plus className="h-4 w-4" /> Запросити
         </Button>
       </div>
@@ -264,6 +272,7 @@ export default function ProfilesPage() {
               key={p.id}
               type="button"
               onClick={() => openEdit(p)}
+              disabled={isBusy}
               className="glass-card text-left rounded-2xl p-4 transition-colors hover:bg-foreground/5"
             >
               <div className="flex items-center gap-3">
@@ -317,6 +326,7 @@ export default function ProfilesPage() {
                 <button
                   type="button"
                   onClick={() => handleRemoveInvite(p.id)}
+                  disabled={isBusy}
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/35 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
                 >
                   {savingId === p.id ? (
@@ -372,6 +382,7 @@ export default function ProfilesPage() {
                   type="file"
                   accept="image/*"
                   className="hidden"
+                  disabled={isBusy}
                   onChange={handleAvatarUpload}
                 />
                 <Upload className="h-3.5 w-3.5" />
@@ -382,6 +393,7 @@ export default function ProfilesPage() {
               <button
                 type="button"
                 onClick={() => setEditAvatarImage(undefined)}
+                disabled={isBusy}
                 className="mt-3 text-xs text-foreground/35 transition-colors hover:text-rose-500"
               >
                 Прибрати фото
@@ -397,6 +409,7 @@ export default function ProfilesPage() {
             <Input
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
+              disabled={isBusy}
             />
           </div>
 
@@ -414,6 +427,7 @@ export default function ProfilesPage() {
                     type="button"
                     aria-label={`Обрати колір ${color}`}
                     onClick={() => setEditColor(color)}
+                    disabled={isBusy}
                     className="relative h-10 rounded-[10px] transition-transform hover:scale-[1.06] active:scale-95"
                     style={{ backgroundColor: color }}
                   >
@@ -436,6 +450,7 @@ export default function ProfilesPage() {
               value={editIncome}
               onChange={(e) => setEditIncome(parseInt(e.target.value) || 0)}
               min={0}
+              disabled={isBusy}
             />
           </div>
 
@@ -443,7 +458,7 @@ export default function ProfilesPage() {
             type="button"
             className="w-full"
             onClick={handleSaveProfile}
-            disabled={savingId === editing?.id}
+            disabled={isBusy}
           >
             {savingId === editing?.id ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -469,7 +484,10 @@ export default function ProfilesPage() {
 
       <Modal
         open={showInvite}
-        onClose={() => setShowInvite(false)}
+        onClose={() => {
+          if (isBusy) return;
+          setShowInvite(false);
+        }}
         title="Запросити до сімейного бюджету"
         size="sm"
       >
@@ -481,6 +499,7 @@ export default function ProfilesPage() {
             <Input
               value={inviteName}
               onChange={(e) => setInviteName(e.target.value)}
+              disabled={isBusy}
             />
           </div>
           <div>
@@ -492,13 +511,14 @@ export default function ProfilesPage() {
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder="name@example.com"
+              disabled={isBusy}
             />
           </div>
           <Button
             type="button"
             className="w-full"
             onClick={handleInvite}
-            disabled={savingId === "invite"}
+            disabled={isBusy}
           >
             {savingId === "invite" ? (
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -34,8 +34,14 @@ type SortKey = "date-desc" | "date-asc" | "amount-desc" | "amount-asc";
 const fmtISO = (d: Date) => format(d, "yyyy-MM-dd");
 
 export default function ExpensesPage() {
-  const { expenses, categories, settings, deleteExpense, _hydrated } =
-    useExpenseStore();
+  const {
+    expenses,
+    categories,
+    settings,
+    deleteExpense,
+    _hydrated,
+    _mutating,
+  } = useExpenseStore();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [activeTab, setActiveTab] = useState<PageTab>("categories");
@@ -207,9 +213,11 @@ export default function ExpensesPage() {
         </div>
         <button
           onClick={() => {
+            if (_mutating) return;
             setEditing(null);
             setShowForm(true);
           }}
+          disabled={_mutating}
           className="btn-primary self-start"
         >
           <Plus className="h-4 w-4" />
@@ -581,6 +589,7 @@ export default function ExpensesPage() {
           <button
             type="button"
             onClick={() => setExpenseToDelete(null)}
+            disabled={_mutating}
             className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
           >
             Скасувати
@@ -588,6 +597,7 @@ export default function ExpensesPage() {
           <button
             type="button"
             onClick={async () => {
+              if (_mutating) return;
               if (!expenseToDelete) return;
               const result = await deleteExpense(expenseToDelete.id);
               toast(
@@ -598,9 +608,10 @@ export default function ExpensesPage() {
               );
               if (result.ok) setExpenseToDelete(null);
             }}
+            disabled={_mutating}
             className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
           >
-            Видалити
+            {_mutating ? "Зачекайте..." : "Видалити"}
           </button>
         </div>
       </Modal>

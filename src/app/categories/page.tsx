@@ -9,7 +9,8 @@ import { useToast } from "@/components/ui/toast";
 import type { Category } from "@/types/expense";
 
 export default function CategoriesPage() {
-  const { categories, expenses, deleteCategory, _hydrated } = useExpenseStore();
+  const { categories, expenses, deleteCategory, _hydrated, _mutating } =
+    useExpenseStore();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
@@ -80,9 +81,11 @@ export default function CategoriesPage() {
         </div>
         <button
           onClick={() => {
+            if (_mutating) return;
             setEditing(null);
             setShowForm(true);
           }}
+          disabled={_mutating}
           className="btn-primary"
         >
           <Plus className="h-4 w-4" />
@@ -133,9 +136,11 @@ export default function CategoriesPage() {
               <div className="flex shrink-0 gap-0.5 sm:opacity-0 sm:transition-opacity sm:group-hover:opacity-100">
                 <button
                   onClick={() => {
+                    if (_mutating) return;
                     setEditing(cat);
                     setShowForm(true);
                   }}
+                  disabled={_mutating}
                   className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-foreground/10 hover:text-foreground active:bg-foreground/10"
                 >
                   <Pencil className="h-3.5 w-3.5" />
@@ -143,6 +148,7 @@ export default function CategoriesPage() {
                 {cat.isCustom && (
                   <button
                     onClick={() => handleDelete(cat)}
+                    disabled={_mutating}
                     className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-rose-500/10 hover:text-rose-500 active:bg-rose-500/10 active:text-rose-500"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -182,12 +188,14 @@ export default function CategoriesPage() {
         <div className="flex justify-end gap-3">
           <button
             onClick={() => setCategoryToDelete(null)}
+            disabled={_mutating}
             className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
           >
             Скасувати
           </button>
           <button
             onClick={async () => {
+              if (_mutating) return;
               if (!categoryToDelete) return;
               const result = await deleteCategory(categoryToDelete.id);
               toast(
@@ -198,9 +206,10 @@ export default function CategoriesPage() {
               );
               if (result.ok) setCategoryToDelete(null);
             }}
+            disabled={_mutating}
             className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
           >
-            Видалити
+            {_mutating ? "Зачекайте..." : "Видалити"}
           </button>
         </div>
       </Modal>

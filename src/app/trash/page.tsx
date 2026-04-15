@@ -24,6 +24,7 @@ export default function TrashPage() {
     deleteFromTrash,
     clearTrash,
     settings,
+    _mutating,
   } = useExpenseStore();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -47,6 +48,7 @@ export default function TrashPage() {
         {trashItems.length > 0 && (
           <button
             onClick={() => setConfirmClear(true)}
+            disabled={_mutating}
             className="flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-medium text-rose-500 transition-colors hover:bg-rose-500/20"
           >
             <Trash2 className="h-4 w-4" />
@@ -131,6 +133,7 @@ export default function TrashPage() {
                 <div className="flex shrink-0 gap-1">
                   <button
                     onClick={async () => {
+                      if (_mutating) return;
                       const result = await restoreFromTrash(item.id);
                       toast(
                         result.ok
@@ -139,6 +142,7 @@ export default function TrashPage() {
                         result.ok ? "success" : "error",
                       );
                     }}
+                    disabled={_mutating}
                     className="flex h-9 w-9 items-center justify-center rounded-xl text-brand transition-colors hover:bg-brand/10"
                     title="Відновити"
                   >
@@ -146,6 +150,7 @@ export default function TrashPage() {
                   </button>
                   <button
                     onClick={() => setConfirmDelete(item)}
+                    disabled={_mutating}
                     className="flex h-9 w-9 items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
                     title="Видалити назавжди"
                   >
@@ -178,12 +183,14 @@ export default function TrashPage() {
         <div className="flex justify-end gap-3">
           <button
             onClick={() => setConfirmClear(false)}
+            disabled={_mutating}
             className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
           >
             Скасувати
           </button>
           <button
             onClick={async () => {
+              if (_mutating) return;
               const result = await clearTrash();
               toast(
                 result.ok
@@ -193,9 +200,10 @@ export default function TrashPage() {
               );
               if (result.ok) setConfirmClear(false);
             }}
+            disabled={_mutating}
             className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
           >
-            Очистити
+            {_mutating ? "Зачекайте..." : "Очистити"}
           </button>
         </div>
       </Modal>
@@ -218,12 +226,14 @@ export default function TrashPage() {
         <div className="flex justify-end gap-3">
           <button
             onClick={() => setConfirmDelete(null)}
+            disabled={_mutating}
             className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
           >
             Скасувати
           </button>
           <button
             onClick={async () => {
+              if (_mutating) return;
               if (!confirmDelete) return;
               const result = await deleteFromTrash(confirmDelete.id);
               toast(
@@ -234,9 +244,10 @@ export default function TrashPage() {
               );
               if (result.ok) setConfirmDelete(null);
             }}
+            disabled={_mutating}
             className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
           >
-            Видалити
+            {_mutating ? "Зачекайте..." : "Видалити"}
           </button>
         </div>
       </Modal>

@@ -32,7 +32,7 @@ const PRESET_COLORS = [
 ];
 
 export function CategoryForm({ category, onDone }: CategoryFormProps) {
-  const { addCategory, updateCategory } = useExpenseStore();
+  const { addCategory, updateCategory, _mutating } = useExpenseStore();
   const { toast } = useToast();
 
   const [name, setName] = useState(category?.name ?? "");
@@ -41,6 +41,7 @@ export function CategoryForm({ category, onDone }: CategoryFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (_mutating) return;
     if (!name.trim()) return;
 
     const result = category
@@ -59,41 +60,50 @@ export function CategoryForm({ category, onDone }: CategoryFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="flex gap-3">
-        <EmojiPicker value={emoji} onChange={setEmoji} />
-        <Input
-          type="text"
-          placeholder="Назва категорії"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="flex-1 text-base"
-        />
-      </div>
-
-      <div>
-        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-          Колір
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {PRESET_COLORS.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setColor(c)}
-              className={`h-8 w-8 rounded-lg transition-all hover:scale-110 ${
-                color === c
-                  ? "ring-2 ring-foreground/30 ring-offset-2 ring-offset-surface"
-                  : ""
-              }`}
-              style={{ backgroundColor: c }}
-            />
-          ))}
+      <fieldset
+        disabled={_mutating}
+        className={`space-y-5 ${_mutating ? "opacity-70" : ""}`}
+      >
+        <div className="flex gap-3">
+          <EmojiPicker value={emoji} onChange={setEmoji} />
+          <Input
+            type="text"
+            placeholder="Назва категорії"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="flex-1 text-base"
+          />
         </div>
-      </div>
 
-      <Button type="submit" className="w-full">
-        {category ? "Зберегти" : "Створити категорію"}
-      </Button>
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
+            Колір
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {PRESET_COLORS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setColor(c)}
+                className={`h-8 w-8 rounded-lg transition-all hover:scale-110 ${
+                  color === c
+                    ? "ring-2 ring-foreground/30 ring-offset-2 ring-offset-surface"
+                    : ""
+                }`}
+                style={{ backgroundColor: c }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <Button type="submit" className="w-full">
+          {_mutating
+            ? "Зачекайте..."
+            : category
+              ? "Зберегти"
+              : "Створити категорію"}
+        </Button>
+      </fieldset>
     </form>
   );
 }

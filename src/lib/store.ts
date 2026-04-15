@@ -26,6 +26,8 @@ const defaultSettings: AppSettings = {
   person2AvatarImage: undefined,
 };
 
+const MUTATION_LOCK_ERROR = "Дочекайтесь завершення поточної дії";
+
 /* ─── Store shape ─── */
 interface ExpenseStore {
   expenses: Expense[];
@@ -37,6 +39,8 @@ interface ExpenseStore {
   _hydrated: boolean;
   /** Whether hydration is in progress */
   _loading: boolean;
+  /** Whether a mutating request is in progress */
+  _mutating: boolean;
 
   /** Load all data from MongoDB API */
   hydrate: () => Promise<void>;
@@ -95,6 +99,7 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
   trashItems: [],
   _hydrated: false,
   _loading: false,
+  _mutating: false,
 
   /* ── Hydrate from MongoDB ── */
   hydrate: async () => {
@@ -139,6 +144,10 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
 
   /* ── Expenses (optimistic + API) ── */
   addExpense: async (draft) => {
+    if (get()._mutating) {
+      return { ok: false, error: MUTATION_LOCK_ERROR };
+    }
+
     if (draft.paidBy !== "person1" && draft.paidBy !== "person2") {
       // Safety guard: UI should prevent this, but keep store type-safe.
       console.warn("Skipped expense creation: payer is not selected");
@@ -160,6 +169,7 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
     };
 
     // Optimistic: add immediately
+    set({ _mutating: true });
     set((s) => ({ expenses: [tempExpense, ...s.expenses] }));
 
     // Persist to MongoDB
@@ -175,10 +185,16 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
         expenses: s.expenses.filter((e) => e.id !== tempId),
       }));
       return { ok: false, error: "Не вдалося створити витрату" };
+    } finally {
+      set({ _mutating: false });
     }
   },
 
   updateExpense: async (id, draft) => {
+    if (get()._mutating) {
+      return { ok: false, error: MUTATION_LOCK_ERROR };
+    }
+
     const { paidBy, ...rest } = draft;
     const safeDraft: ExpenseDraftPatch = {
       ...rest,
@@ -186,6 +202,7 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
     };
 
     // Optimistic update
+    set({ _mutating: true });
     const prev = get().expenses.find((e) => e.id === id);
     set((s) => ({
       expenses: s.expenses.map((e) =>
@@ -209,10 +226,17 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
         }));
       }
       return { ok: false, error: "Не вдалося оновити витрату" };
+    } finally {
+      set({ _mutating: false });
     }
   },
 
   deleteExpense: async (id) => {
+    if (get()._mutating) {
+      return { ok: false, error: MUTATION_LOCK_ERROR };
+    }
+
+    set({ _mutating: true });
     const prev = get().expenses.find((e) => e.id === id);
     set((s) => ({ expenses: s.expenses.filter((e) => e.id !== id) }));
 
@@ -225,11 +249,18 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
         set((s) => ({ expenses: [prev, ...s.expenses] }));
       }
       return { ok: false, error: "Не вдалося видалити витрату" };
+    } finally {
+      set({ _mutating: false });
     }
   },
 
   /* ── Categories (optimistic + API) ── */
   addCategory: async (cat) => {
+    if (get()._mutating) {
+      return { ok: false, error: MUTATION_LOCK_ERROR };
+    }
+
+    set({ _mutating: true });
     const tempId = `custom-${Date.now()}`;
     const newCat: Category = { ...cat, id: tempId, isCustom: true };
 
@@ -247,10 +278,17 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
         categories: s.categories.filter((c) => c.id !== tempId),
       }));
       return { ok: false, error: "Не вдалося створити категорію" };
+    } finally {
+      set({ _mutating: false });
     }
   },
 
   updateCategory: async (id, data) => {
+    if (get()._mutating) {
+      return { ok: false, error: MUTATION_LOCK_ERROR };
+    }
+
+    set({ _mutating: true });
     const prev = get().categories.find((c) => c.id === id);
     set((s) => ({
       categories: s.categories.map((c) =>
@@ -272,10 +310,17 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
         }));
       }
       return { ok: false, error: "Не вдалося оновити категорію" };
+    } finally {
+      set({ _mutating: false });
     }
   },
 
   deleteCategory: async (id) => {
+    if (get()._mutating) {
+      return { ok: false, error: MUTATION_LOCK_ERROR };
+    }
+
+    set({ _mutating: true });
     const prev = get().categories.find((c) => c.id === id);
     set((s) => ({
       categories: s.categories.filter((c) => c.id !== id),
@@ -290,11 +335,16 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
         set((s) => ({ categories: [...s.categories, prev] }));
       }
       return { ok: false, error: "Не вдалося видалити категорію" };
+    } finally {
+      set({ _mutating: false });
     }
   },
 
   /* ── Settings (optimistic + API) ── */
   updateSettings: (patch) => {
+    if (get()._mutating) return;
+
+    set({ _mutating: true });
     const prev = get().settings;
     set((s) => ({ settings: { ...s.settings, ...patch } }));
 
@@ -306,6 +356,9 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
       .catch((err) => {
         console.error("Failed to update settings:", err);
         set({ settings: prev });
+      })
+      .finally(() => {
+        set({ _mutating: false });
       });
   },
 
@@ -343,8 +396,16 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
   },
 
   restoreFromTrash: async (id) => {
+    if (get()._mutating) {
+      return { ok: false, error: MUTATION_LOCK_ERROR };
+    }
+
+    set({ _mutating: true });
     const item = get().trashItems.find((t) => t.id === id);
-    if (!item) return { ok: false, error: "Елемент не знайдено" };
+    if (!item) {
+      set({ _mutating: false });
+      return { ok: false, error: "Елемент не знайдено" };
+    }
 
     // Optimistic: remove from trash
     set((s) => ({ trashItems: s.trashItems.filter((t) => t.id !== id) }));
@@ -370,10 +431,17 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
       console.error("Failed to restore from trash:", err);
       set((s) => ({ trashItems: [...s.trashItems, item] }));
       return { ok: false, error: "Не вдалося відновити елемент" };
+    } finally {
+      set({ _mutating: false });
     }
   },
 
   deleteFromTrash: async (id) => {
+    if (get()._mutating) {
+      return { ok: false, error: MUTATION_LOCK_ERROR };
+    }
+
+    set({ _mutating: true });
     const item = get().trashItems.find((t) => t.id === id);
     set((s) => ({ trashItems: s.trashItems.filter((t) => t.id !== id) }));
 
@@ -386,10 +454,17 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
         set((s) => ({ trashItems: [...s.trashItems, item] }));
       }
       return { ok: false, error: "Не вдалося видалити елемент назавжди" };
+    } finally {
+      set({ _mutating: false });
     }
   },
 
   clearTrash: async () => {
+    if (get()._mutating) {
+      return { ok: false, error: MUTATION_LOCK_ERROR };
+    }
+
+    set({ _mutating: true });
     const prev = get().trashItems;
     set({ trashItems: [] });
 
@@ -400,6 +475,8 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
       console.error("Failed to clear trash:", err);
       set({ trashItems: prev });
       return { ok: false, error: "Не вдалося очистити кошик" };
+    } finally {
+      set({ _mutating: false });
     }
   },
 }));

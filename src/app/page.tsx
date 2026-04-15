@@ -23,8 +23,14 @@ import { useToast } from "@/components/ui/toast";
 import type { Expense } from "@/types/expense";
 
 export default function DashboardPage() {
-  const { expenses, categories, settings, deleteExpense, _hydrated } =
-    useExpenseStore();
+  const {
+    expenses,
+    categories,
+    settings,
+    deleteExpense,
+    _hydrated,
+    _mutating,
+  } = useExpenseStore();
   const { toast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
@@ -307,12 +313,14 @@ export default function DashboardPage() {
         <div className="flex justify-end gap-3">
           <button
             onClick={() => setExpenseToDelete(null)}
+            disabled={_mutating}
             className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
           >
             Скасувати
           </button>
           <button
             onClick={async () => {
+              if (_mutating) return;
               if (!expenseToDelete) return;
               const result = await deleteExpense(expenseToDelete.id);
               toast(
@@ -323,9 +331,10 @@ export default function DashboardPage() {
               );
               if (result.ok) setExpenseToDelete(null);
             }}
+            disabled={_mutating}
             className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
           >
-            Видалити
+            {_mutating ? "Зачекайте..." : "Видалити"}
           </button>
         </div>
       </Modal>
