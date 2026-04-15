@@ -70,7 +70,7 @@ export function ExpenseListItem({
               </p>
               {!hideCategoryBadge && (
                 <span
-                  className="hidden shrink-0 rounded-lg border px-2 py-0.5 text-[11px] font-semibold leading-5 sm:inline sm:text-xs"
+                  className="shrink-0 rounded-lg border px-1.5 py-0.5 text-[10px] font-semibold leading-4 sm:px-2 sm:text-xs sm:leading-5"
                   style={{
                     backgroundColor: `${categoryColor}26`,
                     borderColor: `${categoryColor}55`,

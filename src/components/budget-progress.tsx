@@ -88,7 +88,12 @@ export function BudgetProgress({
             size="sm"
           />
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-foreground/45">{person1Name}</p>
+            <p
+              className="text-xs font-semibold"
+              style={{ color: person1Color }}
+            >
+              {person1Name}
+            </p>
             <p className="text-base font-semibold tabular-nums">
               {formatMoney(person1Income, currency)}
             </p>
@@ -102,7 +107,12 @@ export function BudgetProgress({
             size="sm"
           />
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-foreground/45">{person2Name}</p>
+            <p
+              className="text-xs font-semibold"
+              style={{ color: person2Color }}
+            >
+              {person2Name}
+            </p>
             <p className="text-base font-semibold tabular-nums">
               {formatMoney(person2Income, currency)}
             </p>

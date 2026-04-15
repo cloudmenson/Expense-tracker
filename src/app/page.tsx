@@ -189,6 +189,7 @@ export default function DashboardPage() {
             />
             <StatCard
               label={settings.person1Name}
+              labelColor={settings.person1Color}
               value={formatMoney(summary.person1Total, settings.currency)}
               icon={Users}
               color="sky"
@@ -198,6 +199,7 @@ export default function DashboardPage() {
             />
             <StatCard
               label={settings.person2Name}
+              labelColor={settings.person2Color}
               value={formatMoney(summary.person2Total, settings.currency)}
               icon={Users}
               color="rose"

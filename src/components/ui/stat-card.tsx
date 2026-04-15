@@ -5,6 +5,7 @@ import type { LucideIcon } from "lucide-react";
 
 interface StatCardProps {
   label: string;
+  labelColor?: string;
   value: string;
   sub?: string;
   icon?: LucideIcon;
@@ -19,6 +20,7 @@ interface StatCardProps {
 
 export function StatCard({
   label,
+  labelColor,
   value,
   sub,
   icon: Icon,
@@ -45,7 +47,10 @@ export function StatCard({
     <div className="glass-card group rounded-2xl p-5 transition-all hover:scale-[1.02] hover:shadow-lg">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
+          <p
+            className="text-xs font-semibold uppercase tracking-wider"
+            style={{ color: labelColor ?? "var(--foreground)", opacity: 0.75 }}
+          >
             {label}
           </p>
           <p

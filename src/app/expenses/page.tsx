@@ -17,7 +17,7 @@ import { format } from "date-fns";
 import { uk } from "date-fns/locale";
 import "react-day-picker/style.css";
 import { useExpenseStore } from "@/lib/store";
-import { formatMoney } from "@/lib/utils";
+import { formatMoney, monthLabel } from "@/lib/utils";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
 import { ExpenseListItem } from "@/components/expense-list-item";
@@ -26,6 +26,13 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useToast } from "@/components/ui/toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { Expense } from "@/types/expense";
 
 type PageTab = "categories" | "all";
@@ -56,6 +63,9 @@ export default function ExpensesPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [selectedMonth, setSelectedMonth] = useState(() =>
+    format(new Date(), "yyyy-MM"),
+  );
 
   const categoryMap = useMemo(
     () => Object.fromEntries(categories.map((cat) => [cat.id, cat])),
@@ -76,7 +86,29 @@ export default function ExpensesPage() {
       .sort((a, b) => b.total - a.total);
   }, [expenses, categories]);
 
-  const total = expenses.reduce((s, e) => s + e.amount, 0);
+  const monthOptions = useMemo(() => {
+    const uniqueMonths = Array.from(
+      new Set(expenses.map((e) => e.date.slice(0, 7))),
+    );
+    if (!uniqueMonths.includes(selectedMonth)) {
+      uniqueMonths.push(selectedMonth);
+    }
+    return uniqueMonths.sort((a, b) => b.localeCompare(a));
+  }, [expenses, selectedMonth]);
+
+  const monthlyExpenses = useMemo(
+    () => expenses.filter((e) => e.date.startsWith(selectedMonth)),
+    [expenses, selectedMonth],
+  );
+  const monthlyTotal = useMemo(
+    () => monthlyExpenses.reduce((s, e) => s + e.amount, 0),
+    [monthlyExpenses],
+  );
+  const monthlyBudget = settings.person1Income + settings.person2Income;
+  const budgetRemaining = monthlyBudget - monthlyTotal;
+  const isOverBudget = budgetRemaining < 0;
+  const budgetProgress =
+    monthlyBudget > 0 ? Math.min((monthlyTotal / monthlyBudget) * 100, 100) : 0;
 
   const filteredExpenses = useMemo(() => {
     let result = [...expenses];
@@ -166,65 +198,95 @@ export default function ExpensesPage() {
     : null;
 
   if (!_hydrated) {
-    return (
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-2">
-            <div className="h-8 w-28 animate-pulse rounded-xl bg-foreground/8" />
-            <div className="h-4 w-40 animate-pulse rounded-lg bg-foreground/5" />
-          </div>
-          <div className="h-10 w-28 animate-pulse rounded-xl bg-foreground/8" />
-        </div>
-        {/* Tabs */}
-        <div className="h-11 w-48 animate-pulse rounded-2xl bg-foreground/5" />
-        {/* Category list */}
-        <div className="space-y-2">
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="glass-card flex items-center gap-3 rounded-2xl px-4 py-3.5"
-            >
-              <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl bg-foreground/8" />
-              <div className="flex-1 space-y-2">
-                <div className="h-4 w-1/3 animate-pulse rounded-lg bg-foreground/8" />
-                <div className="h-3 w-1/4 animate-pulse rounded-lg bg-foreground/5" />
-              </div>
-              <div className="h-5 w-16 animate-pulse rounded-lg bg-foreground/8" />
-              <div className="h-4 w-4 animate-pulse rounded-lg bg-foreground/5" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <div className="space-y-6" />;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Витрати
-          </h1>
-          <p className="mt-1 text-sm text-foreground/50">
-            {expenses.length} записів · {formatMoney(total, settings.currency)}
-          </p>
-        </div>
-        <button
-          onClick={() => {
-            if (_mutating) return;
-            setEditing(null);
-            setShowForm(true);
-          }}
-          disabled={_mutating}
-          className="btn-primary self-start"
-        >
-          <Plus className="h-4 w-4" />
-          Додати
-        </button>
-      </div>
+      <div className="space-y-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Витрати
+            </h1>
+            <p className="mt-1 text-sm text-foreground/50">
+              {expenses.length} записів
+            </p>
+          </div>
 
+          <button
+            onClick={() => {
+              if (_mutating) return;
+              setEditing(null);
+              setShowForm(true);
+            }}
+            disabled={_mutating}
+            className="btn-primary self-start"
+          >
+            <Plus className="h-4 w-4" />
+            Додати
+          </button>
+        </div>
+
+        <div className="glass-card w-full rounded-2xl p-3 sm:p-4">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-foreground/40">
+                  Сума за обраний місяць
+                </p>
+                <p className="mt-1 text-3xl font-black leading-none tracking-tight text-rose-500 dark:text-pink-300 sm:text-4xl">
+                  {formatMoney(monthlyTotal, settings.currency)}
+                </p>
+                <p className="mt-1 text-xs text-foreground/45">
+                  {monthLabel(selectedMonth)}
+                </p>
+              </div>
+
+              <div className="w-full sm:w-56">
+                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {monthOptions.map((monthKey) => (
+                      <SelectItem key={monthKey} value={monthKey}>
+                        {monthLabel(monthKey)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2 text-xs">
+              <span className="rounded-lg bg-foreground/8 px-2.5 py-1 text-foreground/60">
+                Бюджет: {formatMoney(monthlyBudget, settings.currency)}
+              </span>
+              <span
+                className={`rounded-lg px-2.5 py-1 font-semibold ${
+                  isOverBudget
+                    ? "bg-rose-500/15 text-rose-500"
+                    : "bg-emerald-500/15 text-emerald-500"
+                }`}
+              >
+                {isOverBudget ? "Перевитрата" : "Залишок"}:{" "}
+                {formatMoney(Math.abs(budgetRemaining), settings.currency)}
+              </span>
+            </div>
+
+            <div className="h-2 overflow-hidden rounded-full bg-foreground/10">
+              <div
+                className={`h-full rounded-full transition-all ${
+                  isOverBudget ? "bg-rose-500" : "bg-emerald-500"
+                }`}
+                style={{ width: `${budgetProgress}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="inline-flex w-full gap-1 rounded-2xl bg-foreground/5 p-1 sm:w-auto">
         <button
           type="button"
