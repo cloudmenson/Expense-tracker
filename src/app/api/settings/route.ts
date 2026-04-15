@@ -9,16 +9,32 @@ export async function GET() {
   try {
     await connectDB();
 
-    let settings = await SettingsModel.findById("default").lean();
+    let settings = await SettingsModel.findById("default")
+      .select({ currency: 1, theme: 1 })
+      .lean();
     if (!settings) {
       settings = await SettingsModel.create({ _id: "default" });
-      settings = await SettingsModel.findById("default").lean();
+      settings = await SettingsModel.findById("default")
+        .select({ currency: 1, theme: 1 })
+        .lean();
     }
 
-    const [p1, p2] = await Promise.all([
-      ProfileModel.findById("person1").lean(),
-      ProfileModel.findById("person2").lean(),
-    ]);
+    const profiles = await ProfileModel.find({
+      familyId: "default",
+      _id: { $in: ["person1", "person2"] },
+    })
+      .select({
+        _id: 1,
+        name: 1,
+        color: 1,
+        monthlyIncome: 1,
+        avatarImage: 1,
+      })
+      .lean();
+
+    const profileMap = new Map(profiles.map((p) => [String(p._id), p]));
+    const p1 = profileMap.get("person1");
+    const p2 = profileMap.get("person2");
 
     return NextResponse.json({
       currency: settings?.currency ?? "$",
@@ -56,7 +72,9 @@ export async function PUT(request: Request) {
       new: true,
       upsert: true,
       runValidators: true,
-    }).lean();
+    })
+      .select({ currency: 1, theme: 1 })
+      .lean();
 
     if (!settings) {
       return NextResponse.json(
@@ -66,10 +84,22 @@ export async function PUT(request: Request) {
     }
 
     // Re-assemble full response from profiles so caller always gets fresh data
-    const [p1, p2] = await Promise.all([
-      ProfileModel.findById("person1").lean(),
-      ProfileModel.findById("person2").lean(),
-    ]);
+    const profiles = await ProfileModel.find({
+      familyId: "default",
+      _id: { $in: ["person1", "person2"] },
+    })
+      .select({
+        _id: 1,
+        name: 1,
+        color: 1,
+        monthlyIncome: 1,
+        avatarImage: 1,
+      })
+      .lean();
+
+    const profileMap = new Map(profiles.map((p) => [String(p._id), p]));
+    const p1 = profileMap.get("person1");
+    const p2 = profileMap.get("person2");
 
     return NextResponse.json({
       currency: settings.currency,

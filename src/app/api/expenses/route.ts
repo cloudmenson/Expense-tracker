@@ -2,11 +2,27 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { ExpenseModel } from "@/models/expense";
 
+const expenseProjection = {
+  title: 1,
+  amount: 1,
+  categoryId: 1,
+  paidBy: 1,
+  date: 1,
+  note: 1,
+  emoji: 1,
+  items: 1,
+  createdAt: 1,
+  updatedAt: 1,
+} as const;
+
 /* GET /api/expenses — list all expenses (newest first) */
 export async function GET() {
   try {
     await connectDB();
-    const expenses = await ExpenseModel.find().sort({ createdAt: -1 }).lean();
+    const expenses = await ExpenseModel.find()
+      .select(expenseProjection)
+      .sort({ createdAt: -1 })
+      .lean();
 
     // transform lean documents
     const result = expenses.map((e) => ({

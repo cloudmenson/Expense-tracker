@@ -51,15 +51,38 @@ export async function POST(
         _id: new mongoose.Types.ObjectId(item.originalId),
       };
       await ExpenseModel.create(expenseData);
+
+      await TrashModel.findByIdAndDelete(id);
+      return NextResponse.json({
+        ok: true,
+        restored: {
+          type: "expense",
+          data: {
+            ...(data as Record<string, unknown>),
+            id: item.originalId,
+          },
+        },
+      });
     } else if (item.type === "category") {
       const { id: _id, ...rest } = data as Record<string, unknown>;
       void _id;
       const categoryData = { ...rest, _id: item.originalId };
       await CategoryModel.create(categoryData);
+
+      await TrashModel.findByIdAndDelete(id);
+      return NextResponse.json({
+        ok: true,
+        restored: {
+          type: "category",
+          data: {
+            ...(data as Record<string, unknown>),
+            id: item.originalId,
+          },
+        },
+      });
     }
 
     await TrashModel.findByIdAndDelete(id);
-
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("POST /api/trash/[id] (restore) error:", error);

@@ -15,6 +15,10 @@ export interface BootstrapPayload {
   settings: AppSettings;
 }
 
+export type RestoreFromTrashResponse =
+  | { ok: true; restored?: { type: "expense"; data: Expense } }
+  | { ok: true; restored?: { type: "category"; data: Category } };
+
 async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, {
     ...options,
@@ -141,7 +145,9 @@ export function fetchTrash(): Promise<TrashItem[]> {
   return fetcher(`${BASE}/trash`);
 }
 
-export function restoreFromTrash(id: string): Promise<{ ok: boolean }> {
+export function restoreFromTrash(
+  id: string,
+): Promise<RestoreFromTrashResponse> {
   return fetcher(`${BASE}/trash/${id}`, { method: "POST" });
 }
 

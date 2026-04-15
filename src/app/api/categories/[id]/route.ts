@@ -52,7 +52,7 @@ export async function DELETE(
     const { id } = await params;
     await connectDB();
 
-    const category = await CategoryModel.findById(id).lean();
+    const category = await CategoryModel.findByIdAndDelete(id).lean();
 
     if (!category) {
       return NextResponse.json(
@@ -73,8 +73,6 @@ export async function DELETE(
       },
       deletedAt: new Date(),
     });
-
-    await CategoryModel.findByIdAndDelete(id);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

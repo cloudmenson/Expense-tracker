@@ -39,6 +39,8 @@ const ExpenseSchema = new Schema(
   },
 );
 
+ExpenseSchema.index({ createdAt: -1 });
+
 ExpenseSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,

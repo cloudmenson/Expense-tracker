@@ -34,20 +34,30 @@ export async function PUT(
     // Always update the timestamp so stale reads don't mask a missing write
     patch.updatedAt = new Date();
 
-    // Use the native mongodb.Db directly — completely bypasses the Mongoose
-    // NativeCollection wrapper and any internal Mongoose buffering/caching.
-    const nativeDb = ProfileModel.db.db;
-    if (!nativeDb) throw new Error("MongoDB Db is not initialised");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const col = nativeDb.collection<any>("profiles");
+    const raw = await ProfileModel.findOneAndUpdate(
+      { _id: id },
+      { $set: patch },
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
+      .select({
+        _id: 1,
+        familyId: 1,
+        name: 1,
+        color: 1,
+        monthlyIncome: 1,
+        role: 1,
+        status: 1,
+        inviteEmail: 1,
+        avatarEmoji: 1,
+        avatarImage: 1,
+        createdAt: 1,
+        updatedAt: 1,
+      })
+      .lean();
 
-    const updateResult = await col.updateOne({ _id: id }, { $set: patch });
-
-    if (updateResult.matchedCount === 0) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
-    }
-
-    const raw = await col.findOne({ _id: id });
     if (!raw) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }

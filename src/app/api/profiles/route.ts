@@ -2,6 +2,20 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { ProfileModel } from "@/models/profile";
 
+const profileProjection = {
+  familyId: 1,
+  name: 1,
+  color: 1,
+  monthlyIncome: 1,
+  role: 1,
+  status: 1,
+  inviteEmail: 1,
+  avatarEmoji: 1,
+  avatarImage: 1,
+  createdAt: 1,
+  updatedAt: 1,
+} as const;
+
 const toIso = (v: unknown) =>
   v instanceof Date ? v.toISOString() : new Date().toISOString();
 
@@ -39,6 +53,7 @@ export async function GET() {
     await connectDB();
 
     let profiles = await ProfileModel.find({ familyId: "default" })
+      .select(profileProjection)
       .sort({ createdAt: 1 })
       .lean();
 
@@ -67,6 +82,7 @@ export async function GET() {
       ]);
 
       profiles = await ProfileModel.find({ familyId: "default" })
+        .select(profileProjection)
         .sort({ createdAt: 1 })
         .lean();
     }

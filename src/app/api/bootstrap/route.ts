@@ -8,19 +8,57 @@ import { SettingsModel } from "@/models/settings";
 
 const CORE_PROFILE_IDS = ["person1", "person2"] as const;
 
+const expenseProjection = {
+  title: 1,
+  amount: 1,
+  categoryId: 1,
+  paidBy: 1,
+  date: 1,
+  note: 1,
+  emoji: 1,
+  items: 1,
+  createdAt: 1,
+  updatedAt: 1,
+} as const;
+
+const categoryProjection = {
+  name: 1,
+  emoji: 1,
+  color: 1,
+  isCustom: 1,
+} as const;
+
+const settingsProjection = {
+  currency: 1,
+  theme: 1,
+} as const;
+
+const profileProjection = {
+  _id: 1,
+  name: 1,
+  color: 1,
+  monthlyIncome: 1,
+  avatarImage: 1,
+} as const;
+
 export async function GET() {
   try {
     await connectDB();
 
     const [rawExpenses, rawCategories, rawSettings, rawProfiles] =
       await Promise.all([
-        ExpenseModel.find().sort({ createdAt: -1 }).lean(),
-        CategoryModel.find().lean(),
-        SettingsModel.findById("default").lean(),
+        ExpenseModel.find()
+          .select(expenseProjection)
+          .sort({ createdAt: -1 })
+          .lean(),
+        CategoryModel.find().select(categoryProjection).lean(),
+        SettingsModel.findById("default").select(settingsProjection).lean(),
         ProfileModel.find({
           familyId: "default",
           _id: { $in: CORE_PROFILE_IDS },
-        }).lean(),
+        })
+          .select(profileProjection)
+          .lean(),
       ]);
 
     let categories = rawCategories;
@@ -34,13 +72,15 @@ export async function GET() {
           isCustom: c.isCustom,
         })),
       );
-      categories = await CategoryModel.find().lean();
+      categories = await CategoryModel.find().select(categoryProjection).lean();
     }
 
     let settings = rawSettings;
     if (!settings) {
       await SettingsModel.create({ _id: "default" });
-      settings = await SettingsModel.findById("default").lean();
+      settings = await SettingsModel.findById("default")
+        .select(settingsProjection)
+        .lean();
     }
 
     let profiles = rawProfiles;
@@ -79,7 +119,9 @@ export async function GET() {
       profiles = await ProfileModel.find({
         familyId: "default",
         _id: { $in: CORE_PROFILE_IDS },
-      }).lean();
+      })
+        .select(profileProjection)
+        .lean();
     }
 
     const profileMap = new Map(profiles.map((p) => [String(p._id), p]));

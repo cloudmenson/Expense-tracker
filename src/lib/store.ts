@@ -350,13 +350,21 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
     set((s) => ({ trashItems: s.trashItems.filter((t) => t.id !== id) }));
 
     try {
-      await api.restoreFromTrash(id);
-      // Re-fetch so restored item appears in expenses/categories
-      const [expenses, categories] = await Promise.all([
-        api.fetchExpenses(),
-        api.fetchCategories(),
-      ]);
-      set({ expenses, categories });
+      const restored = await api.restoreFromTrash(id);
+      const restoredItem = restored.restored;
+
+      if (restoredItem?.type === "expense") {
+        const restoredExpense = restoredItem.data as Expense;
+        set((s) => ({
+          expenses: [restoredExpense, ...s.expenses],
+        }));
+      } else if (restoredItem?.type === "category") {
+        const restoredCategory = restoredItem.data as Category;
+        set((s) => ({
+          categories: [...s.categories, restoredCategory],
+        }));
+      }
+
       return { ok: true };
     } catch (err) {
       console.error("Failed to restore from trash:", err);

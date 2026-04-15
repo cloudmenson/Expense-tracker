@@ -61,7 +61,7 @@ export async function DELETE(
     const { id } = await params;
     await connectDB();
 
-    const expense = await ExpenseModel.findById(id).lean();
+    const expense = await ExpenseModel.findByIdAndDelete(id).lean();
 
     if (!expense) {
       return NextResponse.json({ error: "Expense not found" }, { status: 404 });
@@ -85,8 +85,6 @@ export async function DELETE(
       },
       deletedAt: new Date(),
     });
-
-    await ExpenseModel.findByIdAndDelete(id);
 
     return NextResponse.json({ ok: true });
   } catch (error) {

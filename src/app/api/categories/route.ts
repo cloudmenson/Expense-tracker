@@ -3,12 +3,21 @@ import { connectDB } from "@/lib/mongodb";
 import { CategoryModel } from "@/models/category";
 import { DEFAULT_CATEGORIES } from "@/lib/categories";
 
+const categoryProjection = {
+  name: 1,
+  emoji: 1,
+  color: 1,
+  isCustom: 1,
+} as const;
+
 /* GET /api/categories — list all categories (auto-seed defaults if empty) */
 export async function GET() {
   try {
     await connectDB();
 
-    let categories = await CategoryModel.find().lean();
+    let categories = await CategoryModel.find()
+      .select(categoryProjection)
+      .lean();
 
     // Auto-seed defaults on first run
     if (categories.length === 0) {
@@ -20,7 +29,7 @@ export async function GET() {
         isCustom: c.isCustom,
       }));
       await CategoryModel.insertMany(docs);
-      categories = await CategoryModel.find().lean();
+      categories = await CategoryModel.find().select(categoryProjection).lean();
     }
 
     const result = categories.map((c) => ({
