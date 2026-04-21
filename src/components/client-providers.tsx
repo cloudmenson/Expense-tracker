@@ -8,6 +8,7 @@ import { StoreProvider } from "@/components/store-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { ServiceWorkerRegister } from "@/components/sw-register";
 import { SplashScreen } from "@/components/splash-screen";
+import { NotificationsInit } from "@/components/notifications-init";
 
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -34,6 +35,7 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
           <ToastProvider>
             <AppShell>{children}</AppShell>
             <ServiceWorkerRegister />
+            <NotificationsInit />
           </ToastProvider>
         </StoreProvider>
       </div>

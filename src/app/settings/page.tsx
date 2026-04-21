@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Save,
   Download,
@@ -8,7 +8,16 @@ import {
   Trash2,
   AlertTriangle,
   Loader2,
+  Bell,
+  BellOff,
 } from "lucide-react";
+import {
+  getPermission,
+  getNotificationsEnabled,
+  isNotificationsSupported,
+  requestPermission,
+  setNotificationsEnabled,
+} from "@/lib/notifications";
 import { useExpenseStore } from "@/lib/store";
 import { useTheme } from "@/components/theme-provider";
 import { Modal } from "@/components/ui/modal";
@@ -40,6 +49,37 @@ export default function SettingsPage() {
   const [importing, setImporting] = useState(false);
 
   const [currency, setCurrency] = useState(settings.currency);
+
+  // Notifications
+  const [notifEnabled, setNotifEnabled] = useState(false);
+  const [notifPermission, setNotifPermission] = useState<
+    NotificationPermission | "unsupported"
+  >("unsupported");
+
+  useEffect(() => {
+    setNotifPermission(getPermission());
+    setNotifEnabled(getNotificationsEnabled());
+  }, []);
+
+  const handleToggleNotifications = async () => {
+    if (!isNotificationsSupported()) return;
+
+    if (!notifEnabled) {
+      const perm = await requestPermission();
+      setNotifPermission(perm);
+      if (perm === "granted") {
+        setNotificationsEnabled(true);
+        setNotifEnabled(true);
+        toast("Сповіщення увімкнено", "success");
+      } else {
+        toast("Дозвіл на сповіщення не надано", "error");
+      }
+    } else {
+      setNotificationsEnabled(false);
+      setNotifEnabled(false);
+      toast("Сповіщення вимкнено", "success");
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -202,6 +242,40 @@ export default function SettingsPage() {
           ))}
         </div>
       </div>
+
+      {/* Notifications */}
+      {isNotificationsSupported() && (
+        <div className="glass-card rounded-2xl p-4 sm:p-6">
+          <h2 className="mb-1 text-base font-semibold">Сповіщення</h2>
+          <p className="mb-4 text-sm text-foreground/50">
+            Щоденне нагадування о 23:00 та попередження про перевищення бюджету
+          </p>
+
+          {notifPermission === "denied" ? (
+            <div className="flex items-center gap-3 rounded-xl bg-rose-500/10 px-4 py-3 text-sm text-rose-500">
+              <BellOff className="h-4 w-4 shrink-0" />
+              Сповіщення заблоковано в браузері. Дозвольте їх у налаштуваннях
+              браузера і оновіть сторінку.
+            </div>
+          ) : (
+            <button
+              onClick={handleToggleNotifications}
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                notifEnabled
+                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                  : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+              }`}
+            >
+              {notifEnabled ? (
+                <Bell className="h-4 w-4" />
+              ) : (
+                <BellOff className="h-4 w-4" />
+              )}
+              {notifEnabled ? "Сповіщення увімкнено" : "Увімкнути сповіщення"}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Save */}
       <Button

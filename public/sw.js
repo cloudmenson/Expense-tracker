@@ -27,6 +27,24 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url ?? "/expenses";
+  event.waitUntil(
+    clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((list) => {
+        const existing = list.find((c) => c.url.includes(self.location.origin));
+        if (existing) {
+          existing.focus();
+          existing.navigate(url);
+        } else {
+          clients.openWindow(url);
+        }
+      }),
+  );
+});
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
