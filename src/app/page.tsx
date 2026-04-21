@@ -183,6 +183,8 @@ export default function DashboardPage() {
             <StatCard
               label="Всього за місяць"
               value={formatMoney(summary.total, settings.currency)}
+              numericValue={summary.total}
+              currency={settings.currency}
               icon={Wallet}
               color="rose"
               trend={trend}
@@ -191,6 +193,8 @@ export default function DashboardPage() {
               label={settings.person1Name}
               labelColor={settings.person1Color}
               value={formatMoney(summary.person1Total, settings.currency)}
+              numericValue={summary.person1Total}
+              currency={settings.currency}
               icon={Users}
               color="sky"
               avatarImage={settings.person1AvatarImage}
@@ -201,6 +205,8 @@ export default function DashboardPage() {
               label={settings.person2Name}
               labelColor={settings.person2Color}
               value={formatMoney(summary.person2Total, settings.currency)}
+              numericValue={summary.person2Total}
+              currency={settings.currency}
               icon={Users}
               color="rose"
               avatarImage={settings.person2AvatarImage}
@@ -217,6 +223,14 @@ export default function DashboardPage() {
                   : 0,
                 settings.currency,
               )}
+              numericValue={
+                filterByMonth(expenses, monthKey).length > 0
+                  ? Math.round(
+                      summary.total / filterByMonth(expenses, monthKey).length,
+                    )
+                  : 0
+              }
+              currency={settings.currency}
               icon={TrendingUp}
               color="violet"
             />

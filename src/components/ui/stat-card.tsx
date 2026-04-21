@@ -2,11 +2,16 @@
 
 import { TrendingUp, TrendingDown } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useCountUp } from "@/components/ui/count-up";
+import { formatMoney } from "@/lib/utils";
 
 interface StatCardProps {
   label: string;
   labelColor?: string;
   value: string;
+  /** When provided together with currency, the value is animated with CountUp */
+  numericValue?: number;
+  currency?: string;
   sub?: string;
   icon?: LucideIcon;
   color?: string;
@@ -22,6 +27,8 @@ export function StatCard({
   label,
   labelColor,
   value,
+  numericValue,
+  currency,
   sub,
   icon: Icon,
   color = "emerald",
@@ -31,6 +38,14 @@ export function StatCard({
   avatarColor,
   avatarName,
 }: StatCardProps) {
+  const animated = useCountUp({
+    target: numericValue ?? 0,
+    duration: 1200,
+  });
+  const displayValue =
+    numericValue !== undefined && currency
+      ? formatMoney(animated, currency)
+      : value;
   const colorClasses: Record<string, string> = {
     emerald:
       "from-rose-500/25 via-rose-500/15 to-pink-500/15 text-rose-600 dark:text-pink-300",
@@ -53,11 +68,7 @@ export function StatCard({
           >
             {label}
           </p>
-          <p
-            className={`text-2xl font-bold tracking-tight ${animateValue ? "animate-count-up" : ""}`}
-          >
-            {value}
-          </p>
+          <p className="text-2xl font-bold tracking-tight">{displayValue}</p>
           {sub && <p className="text-xs text-foreground/50">{sub}</p>}
         </div>
         {avatarImage ? (
