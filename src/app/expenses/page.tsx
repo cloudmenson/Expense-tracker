@@ -229,14 +229,14 @@ export default function ExpensesPage() {
           </button>
         </div>
 
-        <div className="glass-card w-full rounded-2xl p-3 sm:p-4">
+        <div className="glass-card w-full rounded-xl p-4 sm:p-5">
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-foreground/40">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/40">
                   Сума за обраний місяць
                 </p>
-                <p className="mt-1 text-3xl font-black leading-none tracking-tight text-rose-500 dark:text-pink-300 sm:text-4xl">
+                <p className="mt-1 text-3xl font-black leading-none tracking-tight text-rose-500 dark:text-pink-300 sm:text-[2.7rem]">
                   {formatMoney(monthlyTotal, settings.currency)}
                 </p>
                 <p className="mt-1 text-xs text-foreground/45">
@@ -261,24 +261,29 @@ export default function ExpensesPage() {
             </div>
 
             <div className="flex flex-wrap gap-2 text-xs">
-              <span className="rounded-lg bg-foreground/8 px-2.5 py-1 text-foreground/60">
+              <span className="glass-pill rounded-xl px-3 py-1 text-foreground/65">
                 Бюджет: {formatMoney(monthlyBudget, settings.currency)}
               </span>
               <span
-                className={`rounded-lg px-2.5 py-1 font-semibold ${
+                className={`glass-pill rounded-xl px-3 py-1 font-semibold ${
                   isOverBudget
-                    ? "bg-rose-500/15 text-rose-500"
-                    : "bg-emerald-500/15 text-emerald-500"
+                    ? "text-rose-600 dark:text-rose-300"
+                    : "text-emerald-700 dark:text-emerald-300"
                 }`}
+                style={{
+                  backgroundColor: isOverBudget
+                    ? "var(--danger-soft)"
+                    : "var(--success-soft)",
+                }}
               >
                 {isOverBudget ? "Перевитрата" : "Залишок"}:{" "}
                 {formatMoney(Math.abs(budgetRemaining), settings.currency)}
               </span>
             </div>
 
-            <div className="h-2 overflow-hidden rounded-full bg-foreground/10">
+            <div className="glass-pill h-2.5 overflow-hidden rounded-xl bg-white/20">
               <div
-                className={`h-full rounded-full transition-all ${
+                className={`h-full rounded-xl transition-all ${
                   isOverBudget ? "bg-rose-500" : "bg-emerald-500"
                 }`}
                 style={{ width: `${budgetProgress}%` }}
@@ -287,13 +292,13 @@ export default function ExpensesPage() {
           </div>
         </div>
       </div>
-      <div className="inline-flex w-full gap-1 rounded-2xl bg-foreground/5 p-1 sm:w-auto">
+      <div className="glass-pill inline-flex w-full gap-1 rounded-xl p-1.5 sm:w-auto">
         <button
           type="button"
           onClick={() => setActiveTab("categories")}
-          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-all sm:flex-none ${
+          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all sm:flex-none ${
             activeTab === "categories"
-              ? "bg-linear-[135deg,#e11d48_0%,#f472b6_100%] text-white shadow-sm"
+              ? "btn-primary min-h-0 px-4 py-2.5"
               : "text-foreground/50 hover:text-foreground"
           }`}
         >
@@ -302,9 +307,9 @@ export default function ExpensesPage() {
         <button
           type="button"
           onClick={() => setActiveTab("all")}
-          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium transition-all sm:flex-none ${
+          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all sm:flex-none ${
             activeTab === "all"
-              ? "bg-linear-[135deg,#e11d48_0%,#f472b6_100%] text-white shadow-sm"
+              ? "btn-primary min-h-0 px-4 py-2.5"
               : "text-foreground/50 hover:text-foreground"
           }`}
         >
@@ -337,7 +342,7 @@ export default function ExpensesPage() {
                 <Link
                   key={cat.id}
                   href={`/expenses/${cat.id}`}
-                  className="glass-card flex items-center gap-3 rounded-2xl px-4 py-3.5 transition-colors hover:bg-foreground/5 active:bg-foreground/8"
+                  className="glass-card flex items-center gap-3 rounded-xl px-4 py-3.5 transition-colors hover:bg-white/10 active:bg-white/12"
                 >
                   <div
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl"
@@ -382,13 +387,13 @@ export default function ExpensesPage() {
               onClick={() => setShowFilters((v) => !v)}
               className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all ${
                 showFilters || activeFilterCount > 0
-                  ? "bg-rose-500/15 text-rose-600 dark:text-pink-400"
-                  : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                  ? "glass-card text-rose-600 dark:text-pink-300"
+                  : "glass-pill text-foreground/50 hover:bg-white/14"
               }`}
             >
               <SlidersHorizontal className="h-4 w-4" />
               {activeFilterCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-xl bg-rose-500 text-[9px] font-bold text-white">
                   {activeFilterCount}
                 </span>
               )}
@@ -396,7 +401,7 @@ export default function ExpensesPage() {
           </div>
 
           {showFilters && (
-            <div className="glass-card space-y-4 rounded-2xl p-4">
+            <div className="glass-card space-y-4 rounded-xl p-4">
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
                   Хто платив
@@ -405,10 +410,10 @@ export default function ExpensesPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedPerson("all")}
-                    className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+                    className={`rounded-xl px-4 py-1.5 text-xs font-semibold transition-all ${
                       selectedPerson === "all"
-                        ? "bg-foreground text-background shadow-sm"
-                        : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                        ? "glass-card text-foreground shadow-sm"
+                        : "glass-pill text-foreground/50 hover:bg-white/14"
                     }`}
                   >
                     Всі
@@ -417,10 +422,10 @@ export default function ExpensesPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedPerson("person1")}
-                    className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 rounded-xl py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
                       selectedPerson === "person1"
-                        ? "shadow-sm ring-1 ring-foreground/10"
-                        : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                        ? "glass-card shadow-sm ring-1 ring-white/10"
+                        : "glass-pill text-foreground/50 hover:bg-white/14"
                     }`}
                     style={
                       selectedPerson === "person1"
@@ -440,10 +445,10 @@ export default function ExpensesPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedPerson("person2")}
-                    className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 rounded-xl py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
                       selectedPerson === "person2"
-                        ? "shadow-sm ring-1 ring-foreground/10"
-                        : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                        ? "glass-card shadow-sm ring-1 ring-white/10"
+                        : "glass-pill text-foreground/50 hover:bg-white/14"
                     }`}
                     style={
                       selectedPerson === "person2"
@@ -470,10 +475,10 @@ export default function ExpensesPage() {
                   <button
                     type="button"
                     onClick={() => setShowCalendar(true)}
-                    className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 rounded-xl py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
                       hasDateFilter
-                        ? "shadow-sm ring-1 ring-foreground/10"
-                        : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                        ? "glass-card shadow-sm ring-1 ring-white/10"
+                        : "glass-pill text-foreground/50 hover:bg-white/14"
                     }`}
                     style={
                       hasDateFilter
@@ -482,7 +487,7 @@ export default function ExpensesPage() {
                     }
                   >
                     <span
-                      className="flex h-5 w-5 items-center justify-center rounded-full text-white"
+                      className="flex h-5 w-5 items-center justify-center rounded-xl text-white"
                       style={{ backgroundColor: "#e11d48" }}
                     >
                       <CalendarDays className="h-3 w-3" />
@@ -496,7 +501,7 @@ export default function ExpensesPage() {
                         setDateRange(undefined);
                         setShowCalendar(false);
                       }}
-                      className="flex h-7 w-7 items-center justify-center rounded-full bg-foreground/5 text-foreground/40 transition-colors hover:bg-foreground/10"
+                      className="glass-pill flex h-7 w-7 items-center justify-center rounded-xl text-foreground/40 transition-colors hover:bg-white/14"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>

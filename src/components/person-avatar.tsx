@@ -23,7 +23,7 @@ export function PersonAvatar({
   size = "sm",
   className = "",
 }: PersonAvatarProps) {
-  const cls = `${SIZE_CLS[size]} shrink-0 rounded-full object-cover ${className}`;
+  const cls = `${SIZE_CLS[size]} shrink-0 rounded-full object-cover ring-2 ring-white/20 shadow-[0_10px_24px_rgba(18,32,57,0.12)] ${className}`;
   const initial = name.trim().charAt(0).toUpperCase() || "?";
 
   if (avatarImage) {

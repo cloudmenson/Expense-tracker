@@ -42,9 +42,10 @@ export function StatCard({
     target: numericValue ?? 0,
     duration: 1200,
   });
+  const numericDisplay = animateValue ? animated : (numericValue ?? 0);
   const displayValue =
     numericValue !== undefined && currency
-      ? formatMoney(animated, currency)
+      ? formatMoney(numericDisplay, currency)
       : value;
   const colorClasses: Record<string, string> = {
     emerald:
@@ -59,35 +60,37 @@ export function StatCard({
   const iconBg = colorClasses[color] || colorClasses.emerald;
 
   return (
-    <div className="glass-card group rounded-2xl p-5 transition-all hover:scale-[1.02] hover:shadow-lg">
+    <div className="glass-card group rounded-xl p-5 transition-all hover:-translate-y-1 hover:shadow-[0_30px_70px_rgba(18,32,57,0.16)]">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <p
-            className="text-xs font-semibold uppercase tracking-wider"
+            className="text-[11px] font-semibold uppercase tracking-[0.24em]"
             style={{ color: labelColor ?? "var(--foreground)", opacity: 0.75 }}
           >
             {label}
           </p>
-          <p className="text-2xl font-bold tracking-tight">{displayValue}</p>
-          {sub && <p className="text-xs text-foreground/50">{sub}</p>}
+          <p className="text-2xl font-black tracking-tight sm:text-[1.8rem]">
+            {displayValue}
+          </p>
+          {sub && <p className="text-xs text-foreground/55">{sub}</p>}
         </div>
         {avatarImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={avatarImage}
             alt={avatarName ?? label}
-            className="h-10 w-10 rounded-full object-cover ring-2 ring-white/10"
+            className="h-11 w-11 rounded-full object-cover ring-2 ring-white/20"
           />
         ) : avatarColor ? (
           <div
-            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white ring-2 ring-white/10"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white ring-2 ring-white/20"
             style={{ backgroundColor: avatarColor }}
           >
             {avatarName?.trim().charAt(0).toUpperCase() ?? "?"}
           </div>
         ) : Icon ? (
           <div
-            className={`flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br ${iconBg}`}
+            className={`flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br ${iconBg}`}
           >
             <Icon className="h-5 w-5" />
           </div>
@@ -96,11 +99,15 @@ export function StatCard({
       {trend !== undefined && (
         <div className="mt-3 flex items-center gap-1.5 text-xs font-medium">
           <div
-            className={`flex items-center gap-1 rounded-lg px-2 py-1 ${
+            className={`glass-pill flex items-center gap-1 rounded-xl px-2.5 py-1 ${
               trend >= 0
-                ? "bg-rose-500/15 text-rose-600 dark:text-rose-300"
-                : "bg-teal-500/15 text-teal-600 dark:text-teal-300"
+                ? "text-rose-600 dark:text-rose-300"
+                : "text-teal-700 dark:text-teal-300"
             }`}
+            style={{
+              backgroundColor:
+                trend >= 0 ? "var(--brand-soft)" : "var(--success-soft)",
+            }}
           >
             {trend >= 0 ? (
               <TrendingUp className="h-3.5 w-3.5" />

@@ -165,11 +165,11 @@ export default function SettingsPage() {
           <div className="h-8 w-40 animate-pulse rounded-xl bg-foreground/8" />
           <div className="h-4 w-56 animate-pulse rounded-lg bg-foreground/5" />
         </div>
-        <div className="glass-card space-y-4 rounded-2xl p-4 sm:p-6">
+        <div className="glass-card space-y-4 rounded-xl p-4 sm:p-6">
           <div className="h-5 w-24 animate-pulse rounded-lg bg-foreground/8" />
           <div className="h-10 w-full animate-pulse rounded-xl bg-foreground/8" />
         </div>
-        <div className="glass-card space-y-4 rounded-2xl p-4 sm:p-6">
+        <div className="glass-card space-y-4 rounded-xl p-4 sm:p-6">
           <div className="h-5 w-36 animate-pulse rounded-lg bg-foreground/8" />
           <div className="grid grid-cols-2 gap-2">
             <div className="h-11 animate-pulse rounded-xl bg-foreground/8" />
@@ -177,7 +177,7 @@ export default function SettingsPage() {
           </div>
         </div>
         <div className="h-10 w-52 animate-pulse rounded-xl bg-foreground/8" />
-        <div className="glass-card space-y-4 rounded-2xl p-4 sm:p-6">
+        <div className="glass-card space-y-4 rounded-xl p-4 sm:p-6">
           <div className="h-5 w-40 animate-pulse rounded-lg bg-foreground/8" />
           <div className="h-4 w-56 animate-pulse rounded-lg bg-foreground/5" />
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -202,7 +202,7 @@ export default function SettingsPage() {
       </div>
 
       {/* General settings */}
-      <div className="glass-card rounded-2xl p-4 sm:p-6">
+      <div className="glass-card rounded-xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Загальні</h2>
         <div className="grid gap-4 sm:grid-cols-1">
           <div>
@@ -224,7 +224,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Theme */}
-      <div className="glass-card rounded-2xl p-4 sm:p-6">
+      <div className="glass-card rounded-xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Тема оформлення</h2>
         <div className="grid grid-cols-2 gap-2">
           {(["light", "dark"] as const).map((t) => (
@@ -233,8 +233,8 @@ export default function SettingsPage() {
               onClick={() => setTheme(t)}
               className={`rounded-xl px-2 py-3 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 theme === t
-                  ? "bg-rose-500/15 text-rose-600 ring-2 ring-rose-500/30 dark:text-pink-400"
-                  : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                  ? "glass-card text-rose-600 ring-2 ring-rose-400/30 dark:text-pink-300"
+                  : "glass-pill text-foreground/50 hover:bg-white/14"
               }`}
             >
               {t === "light" ? "☀️ Світла" : "🌙 Темна"}
@@ -245,14 +245,14 @@ export default function SettingsPage() {
 
       {/* Notifications */}
       {isNotificationsSupported() && (
-        <div className="glass-card rounded-2xl p-4 sm:p-6">
+        <div className="glass-card rounded-xl p-4 sm:p-6">
           <h2 className="mb-1 text-base font-semibold">Сповіщення</h2>
           <p className="mb-4 text-sm text-foreground/50">
             Щоденне нагадування о 23:00 та попередження про перевищення бюджету
           </p>
 
           {notifPermission === "denied" ? (
-            <div className="flex items-center gap-3 rounded-xl bg-rose-500/10 px-4 py-3 text-sm text-rose-500">
+            <div className="glass-pill flex items-center gap-3 rounded-xl px-4 py-3 text-sm text-rose-500">
               <BellOff className="h-4 w-4 shrink-0" />
               Сповіщення заблоковано в браузері. Дозвольте їх у налаштуваннях
               браузера і оновіть сторінку.
@@ -262,9 +262,14 @@ export default function SettingsPage() {
               onClick={handleToggleNotifications}
               className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
                 notifEnabled
-                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                  : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                  ? "glass-card text-emerald-700 dark:text-emerald-300"
+                  : "glass-pill text-foreground/50 hover:bg-white/14"
               }`}
+              style={
+                notifEnabled
+                  ? { backgroundColor: "var(--success-soft)" }
+                  : undefined
+              }
             >
               {notifEnabled ? (
                 <Bell className="h-4 w-4" />
@@ -292,7 +297,7 @@ export default function SettingsPage() {
       </Button>
 
       {/* Data management */}
-      <div className="glass-card rounded-2xl p-4 sm:p-6">
+      <div className="glass-card rounded-xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Керування даними</h2>
         <p className="mb-4 text-sm text-foreground/50">
           Всього: {expenses.length} витрат, {categories.length} категорій
@@ -334,7 +339,10 @@ export default function SettingsPage() {
         size="sm"
       >
         <div className="space-y-4">
-          <div className="flex items-center gap-3 rounded-xl bg-rose-500/10 p-4">
+          <div
+            className="glass-pill flex items-center gap-3 rounded-xl p-4"
+            style={{ backgroundColor: "var(--danger-soft)" }}
+          >
             <AlertTriangle className="h-5 w-5 shrink-0 text-rose-500" />
             <p className="text-sm text-foreground/70">
               Ця дія видалить усі витрати, користувацькі категорії та скине

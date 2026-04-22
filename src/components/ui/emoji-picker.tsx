@@ -280,7 +280,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
         ref={triggerRef}
         type="button"
         onClick={() => setOpen(!open)}
-        className="glass-card flex h-11 w-11 items-center justify-center rounded-xl text-xl transition-all hover:scale-110 active:scale-95 sm:h-12 sm:w-12 sm:text-2xl"
+        className="glass-pill flex h-11 w-11 items-center justify-center rounded-xl text-xl transition-all hover:-translate-y-0.5 active:scale-95 sm:h-12 sm:w-12 sm:text-2xl"
       >
         {value || "📦"}
       </button>
@@ -300,7 +300,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
 
             <div
               data-allow-modal-outside="true"
-              className="fixed pointer-events-auto rounded-2xl border border-white/15 bg-surface p-4 shadow-2xl backdrop-blur-2xl dark:border-white/10 dark:bg-surface/95 sm:p-3"
+              className="glass-panel fixed pointer-events-auto rounded-xl p-4 shadow-[0_28px_80px_rgba(18,32,57,0.28)] sm:p-3"
               style={{ ...panelStyle, zIndex: 101 }}
               onClick={(e) => e.stopPropagation()}
               onWheelCapture={(e) => {
@@ -315,7 +315,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
                 placeholder="Шукати..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="mb-3 w-full rounded-xl bg-foreground/5 px-3 py-2.5 text-sm outline-none placeholder:text-foreground/30 focus:ring-2 focus:ring-rose-500/30"
+                className="input-glass mb-3 w-full text-sm"
               />
               <div
                 ref={listRef}
@@ -339,7 +339,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
                             }}
                             className={`flex h-9 w-9 items-center justify-center rounded-lg text-lg transition-all hover:bg-foreground/10 sm:h-8 sm:w-8 ${
                               value === emoji
-                                ? "bg-rose-500/20 ring-2 ring-rose-500/40"
+                                ? "bg-rose-500/18 ring-2 ring-rose-400/38"
                                 : ""
                             }`}
                           >

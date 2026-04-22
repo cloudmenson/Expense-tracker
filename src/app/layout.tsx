@@ -21,8 +21,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf9f9" },
-    { media: "(prefers-color-scheme: dark)", color: "#12090f" },
+    { media: "(prefers-color-scheme: light)", color: "#f4d8de" },
+    { media: "(prefers-color-scheme: dark)", color: "#08131f" },
   ],
 };
 
@@ -84,7 +84,7 @@ export default function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <body className="min-h-dvh overflow-x-hidden bg-background text-foreground flex flex-col">
+      <body className="flex min-h-dvh flex-col overflow-x-hidden bg-background text-foreground">
         <div className="ambient-bg" />
         <ClientProviders>{children}</ClientProviders>
       </body>

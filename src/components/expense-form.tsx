@@ -172,14 +172,14 @@ export function ExpenseForm({
         >
           {/* Mode toggle */}
           {!expense && (
-            <div className="flex gap-1 rounded-xl bg-foreground/5 p-1">
+            <div className="glass-pill flex gap-1 rounded-xl p-1.5">
               <button
                 type="button"
                 onClick={() => setIsList(false)}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${
                   !isList
-                    ? "bg-surface text-foreground shadow-sm"
-                    : "text-foreground/50 hover:text-foreground"
+                    ? "glass-card text-foreground shadow-[0_12px_26px_rgba(18,32,57,0.12)]"
+                    : "text-foreground/55 hover:text-foreground"
                 }`}
               >
                 <ShoppingBag className="h-4 w-4" />
@@ -188,10 +188,10 @@ export function ExpenseForm({
               <button
                 type="button"
                 onClick={() => setIsList(true)}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
+                className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all ${
                   isList
-                    ? "bg-surface text-foreground shadow-sm"
-                    : "text-foreground/50 hover:text-foreground"
+                    ? "glass-card text-foreground shadow-[0_12px_26px_rgba(18,32,57,0.12)]"
+                    : "text-foreground/55 hover:text-foreground"
                 }`}
               >
                 <ShoppingCart className="h-4 w-4" />
@@ -253,7 +253,7 @@ export function ExpenseForm({
                     <button
                       type="button"
                       onClick={() => removeItem(i)}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
+                      className="glass-pill flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-foreground/36 transition-colors hover:bg-rose-500/12 hover:text-rose-500"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -308,8 +308,8 @@ export function ExpenseForm({
                   onPointerCancel={onCatPressEnd}
                   className={`no-select-callout group relative flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
                     form.categoryId === cat.id
-                      ? "bg-rose-500/20 ring-2 ring-rose-500/40"
-                      : "bg-foreground/5 hover:bg-foreground/10"
+                      ? "glass-card ring-2 ring-rose-400/30"
+                      : "glass-pill hover:bg-white/14"
                   }`}
                 >
                   <span className="text-xl transition-transform group-hover:animate-emoji-bounce">
@@ -325,9 +325,9 @@ export function ExpenseForm({
                 type="button"
                 onContextMenu={(e) => e.preventDefault()}
                 onClick={() => setShowCreateCategory(true)}
-                className="no-select-callout group relative flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-rose-500/30 bg-rose-500/6 p-2 text-center transition-all hover:scale-110 hover:bg-rose-500/10 active:scale-95"
+                className="no-select-callout group relative flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-rose-400/28 bg-rose-500/8 p-2 text-center transition-all hover:scale-110 hover:bg-rose-500/12 active:scale-95"
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-linear-[135deg,#e11d48_0%,#f472b6_100%] text-white shadow-sm transition-transform group-hover:scale-110">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-linear-[135deg,#e11d48_0%,#f472b6_100%] text-white shadow-sm transition-transform group-hover:scale-110">
                   <Plus className="h-4 w-4" />
                 </span>
               </button>
@@ -363,8 +363,8 @@ export function ExpenseForm({
                     onClick={() => set("paidBy", p)}
                     className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                       form.paidBy === p
-                        ? "bg-rose-500/15 text-rose-600 ring-2 ring-rose-500/40 dark:text-pink-400"
-                        : "bg-foreground/5 text-foreground/60 hover:bg-foreground/10"
+                        ? "glass-card text-rose-600 ring-2 ring-rose-400/30 dark:text-pink-300"
+                        : "glass-pill text-foreground/60 hover:bg-white/14"
                     }`}
                   >
                     <span className="flex items-center justify-center gap-2">

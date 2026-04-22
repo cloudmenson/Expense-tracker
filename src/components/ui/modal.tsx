@@ -47,7 +47,7 @@ export function Modal({
     >
       <DialogPrimitive.Portal>
         {/* Backdrop */}
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm transition-opacity duration-200 data-[state=open]:opacity-100 data-[state=closed]:opacity-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-slate-950/28 backdrop-blur-md transition-opacity duration-200 data-[state=open]:opacity-100 data-[state=closed]:opacity-0 dark:bg-black/45" />
 
         {/* Panel — bottom sheet on mobile, centered card on sm+ */}
         <DialogPrimitive.Content
@@ -76,15 +76,14 @@ export function Modal({
           }}
           className={cn(
             "fixed z-50 flex w-full flex-col",
-            "border border-white/15 bg-surface shadow-2xl backdrop-blur-2xl",
-            "dark:border-white/10 dark:bg-surface/95",
+            "glass-panel shadow-[0_34px_110px_rgba(18,32,57,0.3)]",
             // Mobile: bottom sheet
-            "bottom-0 left-0 right-0 rounded-t-2xl",
+            "bottom-0 left-0 right-0 rounded-t-xl",
             // Desktop: centered card
             "sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2",
             tall ? "sm:max-h-[96dvh]" : "sm:max-h-[90dvh]",
             allowOverflow ? "overflow-visible" : "overflow-hidden",
-            "sm:rounded-2xl",
+            "sm:rounded-xl",
             maxW,
             "data-[state=open]:slide-in-from-bottom-4",
             "sm:data-[state=open]:zoom-in-95",
@@ -98,7 +97,7 @@ export function Modal({
         >
           {/* Handle — mobile only */}
           <div className="flex justify-center pt-3 pb-1 sm:hidden">
-            <div className="h-1 w-10 rounded-full bg-foreground/15" />
+            <div className="h-1 w-10 rounded-xl bg-foreground/15" />
           </div>
 
           {/* Header */}
@@ -108,7 +107,7 @@ export function Modal({
             </DialogPrimitive.Title>
             <DialogPrimitive.Close
               onClick={onClose}
-              className="flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-foreground/5 active:bg-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/50"
+              className="glass-pill flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
             >
               <X className="h-4 w-4" />
               <span className="sr-only">Закрити</span>
@@ -116,7 +115,7 @@ export function Modal({
           </div>
 
           {/* Divider */}
-          <div className="mx-5 border-t border-foreground/5 sm:mx-6" />
+          <div className="mx-5 border-t border-white/12 sm:mx-6" />
 
           {/* Scrollable content */}
           <div

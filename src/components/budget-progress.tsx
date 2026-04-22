@@ -36,22 +36,27 @@ export function BudgetProgress({
     totalIncome > 0 ? Math.min((totalSpent / totalIncome) * 100, 100) : 0;
 
   return (
-    <div className="glass-card rounded-2xl p-5 backdrop-blur-xl">
+    <div className="glass-card rounded-xl p-5 backdrop-blur-xl">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-foreground/40">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/42">
             Доходи за місяць
           </p>
-          <p className="animate-count-up mt-1 text-2xl font-bold tracking-tight">
+          <p className="animate-count-up mt-1 text-2xl font-black tracking-tight sm:text-[1.8rem]">
             {formatMoney(totalIncome, currency)}
           </p>
         </div>
         <div
-          className={`rounded-xl px-2.5 py-1 text-xs font-semibold ${
+          className={`glass-pill rounded-xl px-3 py-1 text-xs font-semibold ${
             isOverBudget
-              ? "bg-rose-500/15 text-rose-500"
-              : "bg-emerald-500/15 text-emerald-500"
+              ? "text-rose-600 dark:text-rose-300"
+              : "text-emerald-700 dark:text-emerald-300"
           }`}
+          style={{
+            backgroundColor: isOverBudget
+              ? "var(--danger-soft)"
+              : "var(--success-soft)",
+          }}
         >
           {isOverBudget
             ? `Перевитрата ${formatMoney(Math.abs(remaining), currency)}`
@@ -69,9 +74,9 @@ export function BudgetProgress({
             {Math.round(totalProgress)}%
           </span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-foreground/10">
+        <div className="glass-pill h-2.5 overflow-hidden rounded-xl bg-white/20">
           <div
-            className={`h-full rounded-full transition-all ${
+            className={`h-full rounded-xl transition-all ${
               isOverBudget ? "bg-rose-500" : "bg-emerald-500"
             }`}
             style={{ width: `${totalProgress}%` }}
@@ -80,7 +85,7 @@ export function BudgetProgress({
       </div>
 
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
-        <div className="flex items-center gap-3 rounded-xl bg-foreground/5 px-3 py-2.5">
+        <div className="glass-pill flex items-center gap-3 rounded-xl px-3 py-2.5">
           <PersonAvatar
             name={person1Name}
             color={person1Color}
@@ -99,7 +104,7 @@ export function BudgetProgress({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3 rounded-xl bg-foreground/5 px-3 py-2.5">
+        <div className="glass-pill flex items-center gap-3 rounded-xl px-3 py-2.5">
           <PersonAvatar
             name={person2Name}
             color={person2Color}

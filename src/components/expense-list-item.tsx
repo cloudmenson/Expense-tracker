@@ -45,10 +45,10 @@ export function ExpenseListItem({
   return (
     <div
       onClick={() => onView?.(expense)}
-      className="glass-card group rounded-2xl p-4 transition-all hover:scale-[1.01] hover:shadow-md"
+      className="glass-card group rounded-xl p-4 transition-all hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(18,32,57,0.14)]"
       style={{
         borderLeft: `3px solid ${borderColor}`,
-        boxShadow: `0 4px 20px rgba(${r}, ${g}, ${b}, 0.08)`,
+        boxShadow: `0 18px 40px rgba(${r}, ${g}, ${b}, 0.12)`,
       }}
     >
       <div className="flex items-center gap-3">
@@ -56,8 +56,8 @@ export function ExpenseListItem({
         <div className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 sm:cursor-default">
           {/* Emoji */}
           <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg sm:h-11 sm:w-11 sm:text-xl"
-            style={{ backgroundColor: `${categoryColor}18` }}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] sm:h-12 sm:w-12 sm:text-xl"
+            style={{ backgroundColor: `${categoryColor}24` }}
           >
             {expense.emoji || category?.emoji || "📦"}
           </div>
@@ -70,11 +70,11 @@ export function ExpenseListItem({
               </p>
               {!hideCategoryBadge && (
                 <span
-                  className="shrink-0 rounded-lg border px-1.5 py-0.5 text-[10px] font-semibold leading-4 sm:px-2 sm:text-xs sm:leading-5"
+                  className="shrink-0 rounded-xl border px-2 py-0.5 text-[10px] font-semibold leading-4 sm:text-xs sm:leading-5"
                   style={{
-                    backgroundColor: `${categoryColor}26`,
-                    borderColor: `${categoryColor}55`,
-                    boxShadow: `0 2px 10px ${categoryColor}22`,
+                    backgroundColor: `${categoryColor}1f`,
+                    borderColor: `${categoryColor}48`,
+                    boxShadow: `0 10px 24px ${categoryColor}1a`,
                     color: categoryColor,
                   }}
                 >
@@ -98,7 +98,7 @@ export function ExpenseListItem({
         </div>
 
         {/* Amount */}
-        <p className="shrink-0 text-sm font-bold tabular-nums sm:text-base">
+        <p className="glass-pill shrink-0 rounded-xl px-3 py-1.5 text-sm font-bold tabular-nums sm:text-base">
           {formatMoney(expense.amount, currency)}
         </p>
       </div>

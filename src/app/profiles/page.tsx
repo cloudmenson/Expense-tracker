@@ -228,7 +228,7 @@ export default function ProfilesPage() {
         {/* Cards skeleton */}
         <div className="grid gap-3 sm:grid-cols-2">
           {[0, 1].map((i) => (
-            <div key={i} className="glass-card rounded-2xl p-4">
+            <div key={i} className="glass-card rounded-xl p-4">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 animate-pulse rounded-xl bg-foreground/8" />
                 <div className="flex-1 space-y-2">
@@ -273,7 +273,7 @@ export default function ProfilesPage() {
               type="button"
               onClick={() => openEdit(p)}
               disabled={isBusy}
-              className="glass-card text-left rounded-2xl p-4 transition-colors hover:bg-foreground/5"
+              className="glass-card rounded-xl p-4 text-left transition-colors hover:bg-white/10"
             >
               <div className="flex items-center gap-3">
                 <div
@@ -308,13 +308,13 @@ export default function ProfilesPage() {
       </div>
 
       {invitedProfiles.length > 0 && (
-        <div className="glass-card rounded-2xl p-4 sm:p-5">
+        <div className="glass-card rounded-xl p-4 sm:p-5">
           <h2 className="mb-3 text-base font-semibold">Очікують запрошення</h2>
           <div className="space-y-2">
             {invitedProfiles.map((p) => (
               <div
                 key={p.id}
-                className="flex items-center gap-3 rounded-xl bg-foreground/5 px-3 py-2"
+                className="glass-pill flex items-center gap-3 rounded-xl px-3 py-2"
               >
                 <Mail className="h-4 w-4 text-foreground/45" />
                 <div className="min-w-0 flex-1">
@@ -327,7 +327,7 @@ export default function ProfilesPage() {
                   type="button"
                   onClick={() => handleRemoveInvite(p.id)}
                   disabled={isBusy}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground/35 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
+                  className="glass-pill flex h-8 w-8 items-center justify-center rounded-xl text-foreground/35 transition-colors hover:bg-rose-500/12 hover:text-rose-500"
                 >
                   {savingId === p.id ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -377,7 +377,7 @@ export default function ProfilesPage() {
               </div>
 
               {/* Camera icon */}
-              <label className="absolute bottom-0 right-0 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-foreground text-background shadow-md transition-transform hover:scale-110 active:scale-95">
+              <label className="absolute bottom-0 right-0 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-xl bg-foreground text-background shadow-md transition-transform hover:scale-110 active:scale-95">
                 <input
                   type="file"
                   accept="image/*"
@@ -432,7 +432,7 @@ export default function ProfilesPage() {
                     style={{ backgroundColor: color }}
                   >
                     {active && (
-                      <span className="absolute inset-0 rounded-[20px] ring-2 ring-white/60 ring-offset-2 ring-offset-background" />
+                      <span className="absolute inset-0 rounded-[10px] ring-2 ring-white/60 ring-offset-2 ring-offset-background" />
                     )}
                   </button>
                 );

@@ -55,7 +55,7 @@ export default function UnlockPage() {
         tall
       >
         <div className="grid gap-6 md:grid-cols-[260px_minmax(0,1fr)] md:items-center">
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl">
+          <div className="overflow-hidden rounded-xl border border-white/10 bg-white/5 shadow-xl">
             <Image
               src="/images/japan.jpg"
               alt="Рожева троянда"

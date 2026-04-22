@@ -12,7 +12,7 @@ const recentExpenses = [
 
 export function DashboardPreview() {
   return (
-    <section className="surface-card rounded-[2rem] p-5 shadow-lg shadow-brand-soft/40 sm:p-7">
+    <section className="surface-card rounded-xl p-5 shadow-lg shadow-brand-soft/40 sm:p-7">
       <div className="flex items-center justify-between gap-4 border-b border-border pb-5">
         <div>
           <p className="text-sm font-medium text-muted">Апрель 2026</p>
@@ -20,7 +20,7 @@ export function DashboardPreview() {
             Предпросмотр дашборда
           </h2>
         </div>
-        <div className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white">
+        <div className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white">
           Черновик
         </div>
       </div>
@@ -29,7 +29,7 @@ export function DashboardPreview() {
         {summaryItems.map((item) => (
           <div
             key={item.label}
-            className="rounded-3xl border border-border bg-background/70 p-4"
+            className="rounded-xl border border-border bg-background/70 p-4"
           >
             <p className="text-sm text-muted">{item.label}</p>
             <p className="mt-2 text-2xl font-semibold tracking-tight">
@@ -39,7 +39,7 @@ export function DashboardPreview() {
         ))}
       </div>
 
-      <div className="mt-5 rounded-[1.5rem] border border-border bg-background/70 p-4">
+      <div className="mt-5 rounded-xl border border-border bg-background/70 p-4">
         <div className="flex items-center justify-between">
           <h3 className="text-base font-semibold">Последние записи</h3>
           <span className="text-sm text-muted">3 примера</span>
@@ -49,7 +49,7 @@ export function DashboardPreview() {
           {recentExpenses.map((expense) => (
             <div
               key={expense.title}
-              className="flex items-center justify-between gap-4 rounded-2xl border border-border px-4 py-3"
+              className="flex items-center justify-between gap-4 rounded-xl border border-border px-4 py-3"
             >
               <div>
                 <p className="font-medium">{expense.title}</p>

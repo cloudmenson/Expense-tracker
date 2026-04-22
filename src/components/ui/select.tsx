@@ -47,8 +47,7 @@ const SelectContent = React.forwardRef<
         sideOffset={sideOffset}
         className={cn(
           "relative z-200 min-w-32 overflow-hidden",
-          "rounded-2xl border border-white/15 bg-surface shadow-2xl",
-          "backdrop-blur-2xl dark:border-white/10",
+          "glass-panel rounded-xl shadow-[0_28px_80px_rgba(18,32,57,0.2)]",
           "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
           "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
           "data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2",
@@ -93,7 +92,7 @@ const SelectItem = React.forwardRef<
       "relative flex w-full cursor-pointer select-none items-center",
       "rounded-xl py-2.5 pl-9 pr-3 text-sm outline-none",
       "transition-colors",
-      "focus:bg-foreground/8 data-highlighted:bg-foreground/8",
+      "focus:bg-white/14 data-highlighted:bg-white/14",
       "data-[state=checked]:text-rose-600 dark:data-[state=checked]:text-pink-400",
       "data-disabled:pointer-events-none data-disabled:opacity-50",
       className,

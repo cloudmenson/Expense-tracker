@@ -52,7 +52,7 @@ export default function CategoriesPage() {
           {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
             <div
               key={i}
-              className="glass-card flex items-center gap-4 rounded-2xl p-4"
+              className="glass-card flex items-center gap-4 rounded-xl p-4"
             >
               <div className="h-12 w-12 shrink-0 animate-pulse rounded-xl bg-foreground/8" />
               <div className="flex-1 space-y-2">
@@ -101,7 +101,7 @@ export default function CategoriesPage() {
           return (
             <div
               key={cat.id}
-              className="glass-card group relative flex items-center gap-4 rounded-2xl p-4 transition-all hover:scale-[1.01] hover:shadow-md"
+              className="glass-card group relative flex items-center gap-4 rounded-xl p-4 transition-all hover:scale-[1.01] hover:shadow-md"
             >
               {/* Emoji */}
               <div

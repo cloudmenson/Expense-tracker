@@ -76,7 +76,7 @@ export function ImageCropModal({
     >
       <div className="space-y-4">
         {/* Crop area */}
-        <div className="relative h-72 w-full overflow-hidden rounded-2xl bg-black">
+        <div className="relative h-72 w-full overflow-hidden rounded-xl bg-black">
           <Cropper
             image={imageSrc}
             crop={crop}

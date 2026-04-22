@@ -63,7 +63,7 @@ export default function TrashPage() {
           {[0, 1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="glass-card flex items-center gap-3 rounded-2xl p-3 sm:p-4"
+              className="glass-card flex items-center gap-3 rounded-xl p-3 sm:p-4"
             >
               <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl bg-foreground/8" />
               <div className="flex-1 space-y-2">
@@ -93,7 +93,7 @@ export default function TrashPage() {
             return (
               <div
                 key={item.id}
-                className="glass-card flex items-center gap-3 rounded-2xl p-3 sm:p-4"
+                className="glass-card flex items-center gap-3 rounded-xl p-3 sm:p-4"
               >
                 {/* Icon / emoji */}
                 <div

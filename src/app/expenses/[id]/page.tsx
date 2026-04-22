@@ -193,7 +193,7 @@ export default function CategoryExpensesPage() {
         >
           <SlidersHorizontal className="h-4 w-4" />
           {activeFilterCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white">
+            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-xl bg-rose-500 text-[9px] font-bold text-white">
               {activeFilterCount}
             </span>
           )}
@@ -202,7 +202,7 @@ export default function CategoryExpensesPage() {
 
       {/* ── Expandable filter panel ── */}
       {showFilters && (
-        <div className="glass-card space-y-4 rounded-2xl p-4">
+        <div className="glass-card space-y-4 rounded-xl p-4">
           {/* Person filter */}
           <div>
             <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
@@ -211,7 +211,7 @@ export default function CategoryExpensesPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setSelectedPerson("all")}
-                className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+                className={`rounded-xl px-4 py-1.5 text-xs font-semibold transition-all ${
                   selectedPerson === "all"
                     ? "bg-foreground text-background shadow-sm"
                     : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
@@ -222,7 +222,7 @@ export default function CategoryExpensesPage() {
 
               <button
                 onClick={() => setSelectedPerson("person1")}
-                className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
                   selectedPerson === "person1"
                     ? "shadow-sm ring-1 ring-foreground/10"
                     : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
@@ -244,7 +244,7 @@ export default function CategoryExpensesPage() {
 
               <button
                 onClick={() => setSelectedPerson("person2")}
-                className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
                   selectedPerson === "person2"
                     ? "shadow-sm ring-1 ring-foreground/10"
                     : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
@@ -274,7 +274,7 @@ export default function CategoryExpensesPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowCalendar(true)}
-                className={`flex items-center gap-1.5 rounded-full py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 rounded-xl py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
                   hasDateFilter
                     ? "shadow-sm ring-1 ring-foreground/10"
                     : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
@@ -286,7 +286,7 @@ export default function CategoryExpensesPage() {
                 }
               >
                 <span
-                  className="flex h-5 w-5 items-center justify-center rounded-full text-white"
+                  className="flex h-5 w-5 items-center justify-center rounded-xl text-white"
                   style={{ backgroundColor: "#e11d48" }}
                 >
                   <CalendarDays className="h-3 w-3" />
@@ -299,7 +299,7 @@ export default function CategoryExpensesPage() {
                     setDateRange(undefined);
                     setShowCalendar(false);
                   }}
-                  className="flex h-7 w-7 items-center justify-center rounded-full bg-foreground/5 text-foreground/40 transition-colors hover:bg-foreground/10"
+                  className="flex h-7 w-7 items-center justify-center rounded-xl bg-foreground/5 text-foreground/40 transition-colors hover:bg-foreground/10"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>

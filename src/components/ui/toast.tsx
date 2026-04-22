@@ -47,13 +47,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-xl ${
+            className={`glass-panel flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium shadow-xl ${
               t.type === "success"
-                ? "bg-emerald-600 text-white"
+                ? "text-emerald-900 dark:text-emerald-100"
                 : t.type === "error"
-                  ? "bg-red-500 text-white"
-                  : "bg-foreground text-background"
+                  ? "text-rose-900 dark:text-rose-100"
+                  : "text-foreground"
             }`}
+            style={{
+              backgroundColor:
+                t.type === "success"
+                  ? "var(--success-soft)"
+                  : t.type === "error"
+                    ? "var(--danger-soft)"
+                    : "color-mix(in srgb, var(--glass-bg-strong) 94%, transparent)",
+            }}
           >
             {t.type === "success" ? (
               <CheckCircle2 className="h-4 w-4 shrink-0" />

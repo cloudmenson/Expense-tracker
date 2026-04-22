@@ -94,7 +94,7 @@ export default function DashboardPage() {
         {/* Stat cards */}
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="glass-card space-y-3 rounded-2xl p-4">
+            <div key={i} className="glass-card space-y-3 rounded-xl p-4">
               <div className="flex items-center justify-between">
                 <div className="h-4 w-28 animate-pulse rounded-lg bg-foreground/8" />
                 <div className="h-9 w-9 animate-pulse rounded-xl bg-foreground/8" />
@@ -104,17 +104,17 @@ export default function DashboardPage() {
           ))}
         </div>
         {/* Budget progress */}
-        <div className="glass-card space-y-4 rounded-2xl p-4 sm:p-6">
+        <div className="glass-card space-y-4 rounded-xl p-4 sm:p-6">
           <div className="h-5 w-32 animate-pulse rounded-lg bg-foreground/8" />
           <div className="space-y-3">
-            <div className="h-4 w-full animate-pulse rounded-full bg-foreground/8" />
-            <div className="h-4 w-full animate-pulse rounded-full bg-foreground/8" />
+            <div className="h-4 w-full animate-pulse rounded-xl bg-foreground/8" />
+            <div className="h-4 w-full animate-pulse rounded-xl bg-foreground/8" />
           </div>
         </div>
         {/* Charts */}
         <div className="grid gap-4 lg:grid-cols-2">
           {[0, 1].map((i) => (
-            <div key={i} className="glass-card rounded-2xl p-4 sm:p-6">
+            <div key={i} className="glass-card rounded-xl p-4 sm:p-6">
               <div className="mb-4 h-5 w-36 animate-pulse rounded-lg bg-foreground/8" />
               <div className="h-44 w-full animate-pulse rounded-xl bg-foreground/5" />
             </div>
@@ -129,7 +129,7 @@ export default function DashboardPage() {
           {[0, 1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="glass-card flex items-center gap-3 rounded-2xl px-4 py-3.5"
+              className="glass-card flex items-center gap-3 rounded-xl px-4 py-3.5"
             >
               <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl bg-foreground/8" />
               <div className="flex-1 space-y-2">

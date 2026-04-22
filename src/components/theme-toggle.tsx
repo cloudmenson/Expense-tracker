@@ -11,7 +11,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(next)}
-      className="glass-card flex h-10 w-10 items-center justify-center rounded-xl transition-all hover:scale-105 active:scale-95"
+      className="glass-pill flex h-11 w-11 items-center justify-center rounded-xl transition-all hover:-translate-y-0.5 active:scale-95"
       aria-label="Переключити тему"
     >
       <Icon className="h-4.5 w-4.5 text-foreground/70" />

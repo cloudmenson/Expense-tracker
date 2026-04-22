@@ -17,9 +17,9 @@ import {
 import type { Category } from "@/types/expense";
 
 const tooltipStyle = {
-  background: "var(--surface)",
-  backdropFilter: "blur(16px)",
-  border: "1px solid var(--border)",
+  background: "color-mix(in srgb, var(--glass-bg-strong) 96%, transparent)",
+  backdropFilter: "blur(24px) saturate(145%)",
+  border: "1px solid var(--glass-border)",
   borderRadius: "12px",
   fontSize: "12px",
   color: "var(--foreground)",
@@ -43,14 +43,17 @@ export function MonthlyBarChart({
   person2Color = "#3b82f6",
 }: MonthlyChartProps) {
   return (
-    <div className="widget-no-outline glass-card rounded-2xl p-5">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
+    <div className="widget-no-outline glass-card rounded-xl p-5">
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/42">
         Витрати по місяцях
       </p>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} barGap={2}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(255,255,255,0.14)"
+            />
             <XAxis
               dataKey="month"
               tick={{ fontSize: 11, fill: "var(--foreground)" }}
@@ -65,11 +68,7 @@ export function MonthlyBarChart({
             />
             <Tooltip
               contentStyle={{
-                background: "rgba(255,255,255,0.9)",
-                backdropFilter: "blur(16px)",
-                border: "1px solid rgba(0,0,0,0.08)",
-                borderRadius: "12px",
-                fontSize: "12px",
+                ...tooltipStyle,
               }}
             />
             <Bar
@@ -102,8 +101,8 @@ interface CategoryPieProps {
 
 export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
   return (
-    <div className="widget-no-outline glass-card rounded-2xl p-5">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
+    <div className="widget-no-outline glass-card rounded-xl p-5">
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/42">
         За категоріями
       </p>
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
@@ -159,8 +158,8 @@ interface TrendChartProps {
 
 export function SpendingTrendChart({ data }: TrendChartProps) {
   return (
-    <div className="widget-no-outline glass-card rounded-2xl p-5">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
+    <div className="widget-no-outline glass-card rounded-xl p-5">
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/42">
         Тренд витрат
       </p>
       <div className="h-48">
@@ -172,7 +171,10 @@ export function SpendingTrendChart({ data }: TrendChartProps) {
                 <stop offset="95%" stopColor="#e11d48" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(255,255,255,0.14)"
+            />
             <XAxis
               dataKey="date"
               tick={{ fontSize: 10, fill: "var(--foreground)" }}
@@ -219,8 +221,8 @@ export function PersonCompareChart({
   person2Color = "#3b82f6",
 }: PersonCompareProps) {
   return (
-    <div className="widget-no-outline glass-card rounded-2xl p-5">
-      <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-foreground/40">
+    <div className="widget-no-outline glass-card rounded-xl p-5">
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/42">
         Порівняння витрат
       </p>
       <div className="h-64">
@@ -228,7 +230,7 @@ export function PersonCompareChart({
           <BarChart data={data} layout="vertical" barGap={2}>
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="rgba(0,0,0,0.06)"
+              stroke="rgba(255,255,255,0.14)"
               horizontal={false}
             />
             <XAxis

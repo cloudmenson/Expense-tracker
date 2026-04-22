@@ -69,7 +69,7 @@ export function SplashScreen({ onFinish }: { onFinish: () => void }) {
         <div className="relative">
           {/* Soft outer glow ring */}
           <div
-            className="absolute rounded-3xl"
+            className="absolute rounded-xl"
             style={{
               inset: "-14px",
               background:
@@ -81,7 +81,7 @@ export function SplashScreen({ onFinish }: { onFinish: () => void }) {
             }}
           />
           <HeartLogo
-            wrapperClass="relative h-[88px] w-[88px] rounded-3xl shadow-2xl shadow-rose-600/25"
+            wrapperClass="relative h-[88px] w-[88px] rounded-xl shadow-2xl shadow-rose-600/25"
             svgSize={46}
           />
         </div>
