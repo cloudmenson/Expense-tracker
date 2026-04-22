@@ -43,8 +43,8 @@ export function MonthlyBarChart({
   person2Color = "#3b82f6",
 }: MonthlyChartProps) {
   return (
-    <div className="widget-no-outline glass-card rounded-xl p-5">
-      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/42">
+    <div className="widget-no-outline glass-card rounded-2xl p-5">
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/45">
         Витрати по місяцях
       </p>
       <div className="h-64">
@@ -101,8 +101,8 @@ interface CategoryPieProps {
 
 export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
   return (
-    <div className="widget-no-outline glass-card rounded-xl p-5">
-      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/42">
+    <div className="widget-no-outline glass-card rounded-2xl p-5">
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/45">
         За категоріями
       </p>
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
@@ -158,8 +158,8 @@ interface TrendChartProps {
 
 export function SpendingTrendChart({ data }: TrendChartProps) {
   return (
-    <div className="widget-no-outline glass-card rounded-xl p-5">
-      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/42">
+    <div className="widget-no-outline glass-card rounded-2xl p-5">
+      <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/45">
         Тренд витрат
       </p>
       <div className="h-48">

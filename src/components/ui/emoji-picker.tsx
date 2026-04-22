@@ -300,7 +300,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
 
             <div
               data-allow-modal-outside="true"
-              className="glass-panel fixed pointer-events-auto rounded-xl p-4 shadow-[0_28px_80px_rgba(18,32,57,0.28)] sm:p-3"
+              className="glass-panel fixed pointer-events-auto rounded-2xl p-4 sm:p-3"
               style={{ ...panelStyle, zIndex: 101 }}
               onClick={(e) => e.stopPropagation()}
               onWheelCapture={(e) => {

@@ -45,10 +45,9 @@ export function ExpenseListItem({
   return (
     <div
       onClick={() => onView?.(expense)}
-      className="glass-card group rounded-xl p-4 transition-all hover:-translate-y-0.5 hover:shadow-[0_24px_60px_rgba(18,32,57,0.14)]"
+      className="glass-card group rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5"
       style={{
-        borderLeft: `3px solid ${borderColor}`,
-        boxShadow: `0 18px 40px rgba(${r}, ${g}, ${b}, 0.12)`,
+        borderLeft: `3px solid ${borderColor}40`,
       }}
     >
       <div className="flex items-center gap-3">
@@ -56,8 +55,8 @@ export function ExpenseListItem({
         <div className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 sm:cursor-default">
           {/* Emoji */}
           <div
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] sm:h-12 sm:w-12 sm:text-xl"
-            style={{ backgroundColor: `${categoryColor}24` }}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg sm:h-12 sm:w-12 sm:text-xl"
+            style={{ backgroundColor: `${categoryColor}18` }}
           >
             {expense.emoji || category?.emoji || "📦"}
           </div>
@@ -69,15 +68,7 @@ export function ExpenseListItem({
                 {expense.title}
               </p>
               {!hideCategoryBadge && (
-                <span
-                  className="shrink-0 rounded-xl border px-2 py-0.5 text-[10px] font-semibold leading-4 sm:text-xs sm:leading-5"
-                  style={{
-                    backgroundColor: `${categoryColor}1f`,
-                    borderColor: `${categoryColor}48`,
-                    boxShadow: `0 10px 24px ${categoryColor}1a`,
-                    color: categoryColor,
-                  }}
-                >
+                <span className="shrink-0 rounded-lg border border-foreground/10 bg-foreground/6 px-2 py-0.5 text-[10px] font-semibold leading-4 text-foreground/45 sm:text-xs sm:leading-5">
                   {category?.name ?? "Інше"}
                 </span>
               )}

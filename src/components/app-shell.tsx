@@ -117,14 +117,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       {/* ── Desktop sidebar ── */}
-      <aside className="glass-panel fixed inset-y-4 left-4 z-30 hidden w-[17rem] flex-col rounded-xl p-3 lg:flex">
+      <aside className="glass-panel fixed inset-y-4 left-4 z-30 hidden w-[17rem] flex-col rounded-2xl p-3 lg:flex">
         <div className="flex h-16 items-center gap-3 px-4">
           <HeartLogo wrapperClass="h-9 w-9 rounded-xl" svgSize={20} />
-          <span className="text-sm font-bold tracking-[0.24em] uppercase text-foreground/80">
+          <span className="text-xs font-bold tracking-[0.22em] uppercase text-foreground/70">
             Budget&nbsp;for&nbsp;Two
           </span>
         </div>
-        <nav className="mt-3 flex flex-1 flex-col gap-2 px-1">
+        <nav className="mt-3 flex flex-1 flex-col gap-1.5 px-1">
           {NAV_ITEMS.map((item) => {
             const active =
               item.href === "/"
@@ -134,16 +134,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
+                className={`group flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-150 ${
                   active
-                    ? "glass-pill text-foreground shadow-[0_18px_34px_rgba(239,91,143,0.16)]"
-                    : "text-foreground/62 hover:bg-white/10 hover:text-foreground dark:hover:bg-white/6"
+                    ? "glass-pill text-foreground"
+                    : "text-foreground/42 hover:text-foreground/80"
                 }`}
               >
                 <item.icon
-                  className={`h-4.5 w-4.5 transition-colors ${active ? "text-rose-500 dark:text-pink-300" : "text-foreground/38 group-hover:text-foreground/72"}`}
+                  className={`h-4 w-4 shrink-0 transition-colors ${active ? "text-foreground/80" : "text-foreground/30 group-hover:text-foreground/60"}`}
+                  strokeWidth={active ? 2 : 1.75}
                 />
-                {item.label}
+                <span className={active ? "font-semibold" : ""}>
+                  {item.label}
+                </span>
               </Link>
             );
           })}
@@ -154,11 +157,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* ── Mobile header (fixed) ── */}
-      <header className="glass-panel fixed inset-x-3 top-[max(10px,env(safe-area-inset-top))] z-40 flex items-center rounded-xl px-4 py-3 lg:hidden">
+      <header className="glass-panel fixed inset-x-3 top-[max(10px,env(safe-area-inset-top))] z-40 flex items-center rounded-2xl px-4 py-3 lg:hidden">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <HeartLogo wrapperClass="h-8 w-8 rounded-lg" svgSize={18} />
-            <span className="text-xs font-bold uppercase tracking-[0.24em] text-foreground/80">
+            <HeartLogo wrapperClass="h-8 w-8 rounded-xl" svgSize={18} />
+            <span className="text-[10px] font-bold uppercase tracking-[0.26em] text-foreground/65">
               Budget for Two
             </span>
           </div>
@@ -168,7 +171,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── Content ── */}
       <main
-        className="mobile-scrollbar-hidden flex-1 pt-[calc(84px+max(12px,env(safe-area-inset-top)))] pb-[calc(94px+env(safe-area-inset-bottom))] lg:pl-[calc(17rem+2rem)] lg:pt-0 lg:pb-0"
+        className="mobile-scrollbar-hidden flex-1 pt-[calc(84px+max(12px,env(safe-area-inset-top)))] pb-[calc(112px+env(safe-area-inset-bottom))] lg:pl-[calc(17rem+2rem)] lg:pt-0 lg:pb-0"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -189,8 +192,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* ── Mobile bottom nav (island) ── */}
-      <nav className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+10px)] z-40 px-3 lg:hidden">
-        <div className="glass-panel mx-auto flex h-16 w-full max-w-sm items-stretch rounded-xl px-1.5">
+      <nav className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+14px)] z-40 flex justify-center px-6 lg:hidden">
+        <div className="nav-island relative flex h-[72px] items-center gap-2 rounded-[36px] px-3">
           {NAV_ITEMS.map((item) => {
             const active =
               item.href === "/"
@@ -200,19 +203,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group relative flex flex-1 touch-manipulation select-none items-center justify-center rounded-xl transition-all active:opacity-70 ${
-                  active ? "glass-pill" : ""
+                className={`group relative flex h-13 w-13 touch-manipulation select-none items-center justify-center rounded-[24px] transition-all duration-200 active:scale-95 ${
+                  active ? "nav-active-item" : ""
                 }`}
               >
-                {active && (
-                  <span className="absolute inset-x-5 top-1.5 h-1 rounded-xl bg-linear-[135deg,var(--brand)_0%,var(--brand-strong)_100%]" />
-                )}
                 <item.icon
-                  className={`h-6 w-6 ${
+                  className={`h-[22px] w-[22px] transition-colors ${
                     active
-                      ? "text-rose-500 dark:text-pink-300"
-                      : "text-foreground/35 group-hover:text-foreground/65"
+                      ? "text-white dark:text-white"
+                      : "text-foreground/55 group-hover:text-foreground/80 dark:text-white/55 dark:group-hover:text-white/80"
                   }`}
+                  strokeWidth={active ? 2.25 : 2}
                 />
               </Link>
             );

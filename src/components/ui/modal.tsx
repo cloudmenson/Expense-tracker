@@ -76,14 +76,14 @@ export function Modal({
           }}
           className={cn(
             "fixed z-50 flex w-full flex-col",
-            "glass-panel shadow-[0_34px_110px_rgba(18,32,57,0.3)]",
+            "glass-panel shadow-[0_40px_120px_rgba(0,0,0,0.4)]",
             // Mobile: bottom sheet
-            "bottom-0 left-0 right-0 rounded-t-xl",
+            "bottom-0 left-0 right-0 rounded-t-2xl",
             // Desktop: centered card
             "sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2",
             tall ? "sm:max-h-[96dvh]" : "sm:max-h-[90dvh]",
             allowOverflow ? "overflow-visible" : "overflow-hidden",
-            "sm:rounded-xl",
+            "sm:rounded-2xl",
             maxW,
             "data-[state=open]:slide-in-from-bottom-4",
             "sm:data-[state=open]:zoom-in-95",
@@ -107,7 +107,7 @@ export function Modal({
             </DialogPrimitive.Title>
             <DialogPrimitive.Close
               onClick={onClose}
-              className="glass-pill flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-foreground/6 ring-1 ring-foreground/8 transition-colors hover:bg-foreground/10 focus-visible:outline-none"
             >
               <X className="h-4 w-4" />
               <span className="sr-only">Закрити</span>
@@ -115,7 +115,7 @@ export function Modal({
           </div>
 
           {/* Divider */}
-          <div className="mx-5 border-t border-white/12 sm:mx-6" />
+          <div className="mx-5 border-t border-foreground/8 sm:mx-6" />
 
           {/* Scrollable content */}
           <div

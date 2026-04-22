@@ -9,7 +9,6 @@ interface StatCardProps {
   label: string;
   labelColor?: string;
   value: string;
-  /** When provided together with currency, the value is animated with CountUp */
   numericValue?: number;
   currency?: string;
   sub?: string;
@@ -17,7 +16,6 @@ interface StatCardProps {
   color?: string;
   trend?: number;
   animateValue?: boolean;
-  /** When provided, renders a person avatar instead of the icon */
   avatarImage?: string;
   avatarColor?: string;
   avatarName?: string;
@@ -38,85 +36,63 @@ export function StatCard({
   avatarColor,
   avatarName,
 }: StatCardProps) {
-  const animated = useCountUp({
-    target: numericValue ?? 0,
-    duration: 1200,
-  });
+  const animated = useCountUp({ target: numericValue ?? 0, duration: 1200 });
   const numericDisplay = animateValue ? animated : (numericValue ?? 0);
   const displayValue =
     numericValue !== undefined && currency
       ? formatMoney(numericDisplay, currency)
       : value;
-  const colorClasses: Record<string, string> = {
-    emerald:
-      "from-rose-500/25 via-rose-500/15 to-pink-500/15 text-rose-600 dark:text-pink-300",
-    rose: "from-rose-500/25 via-rose-500/15 to-pink-500/15 text-rose-600 dark:text-rose-300",
-    violet:
-      "from-violet-500/25 via-violet-500/15 to-purple-500/15 text-violet-600 dark:text-violet-300",
-    sky: "from-sky-500/25 via-sky-500/15 to-cyan-500/15 text-sky-600 dark:text-sky-300",
-    amber:
-      "from-amber-500/25 via-amber-500/15 to-yellow-500/15 text-amber-600 dark:text-amber-300",
-  };
-  const iconBg = colorClasses[color] || colorClasses.emerald;
+
+  void color;
 
   return (
-    <div className="glass-card group rounded-xl p-5 transition-all hover:-translate-y-1 hover:shadow-[0_30px_70px_rgba(18,32,57,0.16)]">
+    <div className="glass-card group rounded-2xl p-5 transition-all duration-200 hover:-translate-y-0.5">
       <div className="flex items-start justify-between">
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <p
-            className="text-[11px] font-semibold uppercase tracking-[0.24em]"
-            style={{ color: labelColor ?? "var(--foreground)", opacity: 0.75 }}
+            className="text-[11px] font-semibold uppercase tracking-[0.22em]"
+            style={{ color: labelColor ?? "var(--foreground)", opacity: 0.5 }}
           >
             {label}
           </p>
           <p className="text-2xl font-black tracking-tight sm:text-[1.8rem]">
             {displayValue}
           </p>
-          {sub && <p className="text-xs text-foreground/55">{sub}</p>}
+          {sub && <p className="text-xs text-foreground/45">{sub}</p>}
         </div>
         {avatarImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={avatarImage}
             alt={avatarName ?? label}
-            className="h-11 w-11 rounded-full object-cover ring-2 ring-white/20"
+            className="h-10 w-10 rounded-full object-cover ring-1 ring-foreground/10"
           />
         ) : avatarColor ? (
           <div
-            className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white ring-2 ring-white/20"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold text-white ring-1 ring-foreground/10"
             style={{ backgroundColor: avatarColor }}
           >
             {avatarName?.trim().charAt(0).toUpperCase() ?? "?"}
           </div>
         ) : Icon ? (
-          <div
-            className={`flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br ${iconBg}`}
-          >
-            <Icon className="h-5 w-5" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/6 ring-1 ring-foreground/8 text-foreground/50">
+            <Icon className="h-4.5 w-4.5" />
           </div>
         ) : null}
       </div>
       {trend !== undefined && (
-        <div className="mt-3 flex items-center gap-1.5 text-xs font-medium">
-          <div
-            className={`glass-pill flex items-center gap-1 rounded-xl px-2.5 py-1 ${
-              trend >= 0
-                ? "text-rose-600 dark:text-rose-300"
-                : "text-teal-700 dark:text-teal-300"
-            }`}
-            style={{
-              backgroundColor:
-                trend >= 0 ? "var(--brand-soft)" : "var(--success-soft)",
-            }}
-          >
+        <div className="mt-3 flex items-center gap-1.5">
+          <div className="flex items-center gap-1 rounded-lg bg-foreground/6 px-2 py-1 text-[11px] font-semibold text-foreground/50">
             {trend >= 0 ? (
-              <TrendingUp className="h-3.5 w-3.5" />
+              <TrendingUp className="h-3 w-3" />
             ) : (
-              <TrendingDown className="h-3.5 w-3.5" />
+              <TrendingDown className="h-3 w-3" />
             )}
             <span>{Math.abs(trend).toFixed(1)}%</span>
           </div>
-          <span className="text-foreground/40">vs прошлий місяц</span>
+          <span className="text-[11px] text-foreground/32">
+            vs прошлий місяць
+          </span>
         </div>
       )}
     </div>

@@ -58,7 +58,7 @@ export function ExpenseDetail({
       {/* Info rows */}
       <div className="space-y-3">
         {/* Category */}
-        <div className="flex items-center justify-between rounded-xl bg-foreground/3 px-4 py-3">
+        <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
           <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
             Категорія
           </span>
@@ -72,7 +72,7 @@ export function ExpenseDetail({
         </div>
 
         {/* Date */}
-        <div className="flex items-center justify-between rounded-xl bg-foreground/3 px-4 py-3">
+        <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
           <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
             Дата
           </span>
@@ -80,7 +80,7 @@ export function ExpenseDetail({
         </div>
 
         {/* Paid by */}
-        <div className="flex items-center justify-between rounded-xl bg-foreground/3 px-4 py-3">
+        <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
           <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
             Хто платив
           </span>
@@ -97,7 +97,7 @@ export function ExpenseDetail({
 
         {/* Note */}
         {expense.note && (
-          <div className="rounded-xl bg-foreground/3 px-4 py-3">
+          <div className="glass-pill rounded-xl px-4 py-3">
             <span className="mb-1 block text-xs font-medium uppercase tracking-wider text-foreground/40">
               Нотатка
             </span>
@@ -107,7 +107,7 @@ export function ExpenseDetail({
 
         {/* Items (shopping list) */}
         {expense.items && expense.items.length > 0 && (
-          <div className="rounded-xl bg-foreground/3 px-4 py-3">
+          <div className="glass-pill rounded-xl px-4 py-3">
             <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-foreground/40">
               Товари ({expense.items.length})
             </span>
