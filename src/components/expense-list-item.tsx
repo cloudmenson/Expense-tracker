@@ -68,7 +68,14 @@ export function ExpenseListItem({
                 {expense.title}
               </p>
               {!hideCategoryBadge && (
-                <span className="shrink-0 rounded-lg border border-foreground/10 bg-foreground/6 px-2 py-0.5 text-[10px] font-semibold leading-4 text-foreground/45 sm:text-xs sm:leading-5">
+                <span
+                  className="shrink-0 rounded-lg border px-2 py-0.5 text-[10px] font-semibold leading-4 sm:text-xs sm:leading-5"
+                  style={{
+                    backgroundColor: `${categoryColor}20`,
+                    borderColor: `${categoryColor}60`,
+                    color: categoryColor,
+                  }}
+                >
                   {category?.name ?? "Інше"}
                 </span>
               )}
