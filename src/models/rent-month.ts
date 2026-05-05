@@ -1,8 +1,7 @@
 import mongoose, { Schema } from "mongoose";
-import type { UtilityKind } from "@/models/tariff";
 
 export interface IRentReading {
-  kind: UtilityKind | string;
+  kind: string;
   previous: number;
   current: number;
   photo?: string;
