@@ -8,14 +8,13 @@ import {
   ShoppingBag,
   CalendarDays,
 } from "lucide-react";
-import { DayPicker } from "react-day-picker";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
-import "react-day-picker/style.css";
 import { useExpenseStore } from "@/lib/store";
 import { PersonAvatar } from "@/components/person-avatar";
 import { EmojiPicker } from "@/components/ui/emoji-picker";
 import { Modal } from "@/components/ui/modal";
+import { DatePickerModal } from "@/components/ui/date-picker-modal";
 import { CategoryForm } from "@/components/category-form";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
@@ -456,28 +455,12 @@ export function ExpenseForm({
         <CategoryForm onDone={() => setShowCreateCategory(false)} />
       </Modal>
 
-      <Modal
+      <DatePickerModal
         open={showDatePicker}
         onClose={() => setShowDatePicker(false)}
-        title="Оберіть дату"
-        size="sm"
-      >
-        <div className="flex justify-center">
-          <DayPicker
-            mode="single"
-            selected={parseISO(form.date)}
-            onSelect={(date) => {
-              if (date) {
-                set("date", format(date, "yyyy-MM-dd"));
-                setShowDatePicker(false);
-              }
-            }}
-            locale={uk}
-            weekStartsOn={1}
-            defaultMonth={parseISO(form.date)}
-          />
-        </div>
-      </Modal>
+        value={form.date}
+        onChange={(iso) => set("date", iso)}
+      />
     </>
   );
 }

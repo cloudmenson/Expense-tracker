@@ -18,6 +18,7 @@ import { ExpenseListItem } from "@/components/expense-list-item";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
 import { Modal } from "@/components/ui/modal";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useToast } from "@/components/ui/toast";
 import type { Expense } from "@/types/expense";
@@ -309,51 +310,38 @@ export default function DashboardPage() {
       </Modal>
 
       {/* Delete confirmation modal */}
-      <Modal
+      <ConfirmModal
         open={!!expenseToDelete}
         onClose={() => setExpenseToDelete(null)}
         title="Видалити витрату"
-        size="sm"
-      >
-        <p className="mb-6 text-sm text-foreground/60">
-          Ви впевнені, що хочете видалити{" "}
-          <span className="font-semibold text-foreground">
-            {expenseToDelete?.emoji || "📦"} {expenseToDelete?.title}
-          </span>{" "}
-          на суму{" "}
-          <span className="font-semibold text-foreground">
-            {formatMoney(expenseToDelete?.amount ?? 0, settings.currency)}
-          </span>
-          ?
-        </p>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={() => setExpenseToDelete(null)}
-            disabled={_mutating}
-            className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
-          >
-            Скасувати
-          </button>
-          <button
-            onClick={async () => {
-              if (_mutating) return;
-              if (!expenseToDelete) return;
-              const result = await deleteExpense(expenseToDelete.id);
-              toast(
-                result.ok
-                  ? "Витрату видалено"
-                  : (result.error ?? "Не вдалося видалити витрату"),
-                result.ok ? "success" : "error",
-              );
-              if (result.ok) setExpenseToDelete(null);
-            }}
-            disabled={_mutating}
-            className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
-          >
-            {_mutating ? "Зачекайте..." : "Видалити"}
-          </button>
-        </div>
-      </Modal>
+        busy={_mutating}
+        description={
+          expenseToDelete && (
+            <>
+              Ви впевнені, що хочете видалити{" "}
+              <span className="font-semibold text-foreground">
+                {expenseToDelete.emoji || "📦"} {expenseToDelete.title}
+              </span>{" "}
+              на суму{" "}
+              <span className="font-semibold text-foreground">
+                {formatMoney(expenseToDelete.amount, settings.currency)}
+              </span>
+              ?
+            </>
+          )
+        }
+        onConfirm={async () => {
+          if (!expenseToDelete) return;
+          const result = await deleteExpense(expenseToDelete.id);
+          toast(
+            result.ok
+              ? "Витрату видалено"
+              : (result.error ?? "Не вдалося видалити витрату"),
+            result.ok ? "success" : "error",
+          );
+          if (result.ok) setExpenseToDelete(null);
+        }}
+      />
 
       {/* View-only detail modal */}
       <Modal

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Trash2, RotateCcw, X, AlertTriangle } from "lucide-react";
+import { Trash2, RotateCcw, X } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
-import { Modal } from "@/components/ui/modal";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useToast } from "@/components/ui/toast";
 import { formatMoney } from "@/lib/utils";
@@ -164,93 +164,63 @@ export default function TrashPage() {
       )}
 
       {/* Confirm clear all */}
-      <Modal
+      <ConfirmModal
         open={confirmClear}
         onClose={() => setConfirmClear(false)}
         title="Очистити кошик?"
-        size="sm"
-      >
-        <div className="mb-6 flex items-start gap-3 rounded-xl bg-rose-500/10 px-4 py-3">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
-          <p className="text-sm text-foreground/70">
+        confirmLabel="Очистити"
+        busy={_mutating}
+        description={
+          <>
             Всі{" "}
             <span className="font-semibold text-foreground">
               {trashItems.length}
             </span>{" "}
             елементів будуть видалені назавжди. Цю дію не можна скасувати.
-          </p>
-        </div>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={() => setConfirmClear(false)}
-            disabled={_mutating}
-            className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
-          >
-            Скасувати
-          </button>
-          <button
-            onClick={async () => {
-              if (_mutating) return;
-              const result = await clearTrash();
-              toast(
-                result.ok
-                  ? "Кошик очищено"
-                  : (result.error ?? "Не вдалося очистити кошик"),
-                result.ok ? "success" : "error",
-              );
-              if (result.ok) setConfirmClear(false);
-            }}
-            disabled={_mutating}
-            className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
-          >
-            {_mutating ? "Зачекайте..." : "Очистити"}
-          </button>
-        </div>
-      </Modal>
+          </>
+        }
+        onConfirm={async () => {
+          const result = await clearTrash();
+          toast(
+            result.ok
+              ? "Кошик очищено"
+              : (result.error ?? "Не вдалося очистити кошик"),
+            result.ok ? "success" : "error",
+          );
+          if (result.ok) setConfirmClear(false);
+        }}
+      />
 
       {/* Confirm permanent delete */}
-      <Modal
+      <ConfirmModal
         open={!!confirmDelete}
         onClose={() => setConfirmDelete(null)}
         title="Видалити назавжди?"
-        size="sm"
-      >
-        <p className="mb-6 text-sm text-foreground/60">
-          Видалити{" "}
-          <span className="font-semibold text-foreground">
-            {(confirmDelete?.data as Expense & Category)?.name ??
-              (confirmDelete?.data as Expense)?.title}
-          </span>{" "}
-          назавжди? Відновити буде неможливо.
-        </p>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={() => setConfirmDelete(null)}
-            disabled={_mutating}
-            className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
-          >
-            Скасувати
-          </button>
-          <button
-            onClick={async () => {
-              if (_mutating) return;
-              if (!confirmDelete) return;
-              const result = await deleteFromTrash(confirmDelete.id);
-              toast(
-                result.ok
-                  ? "Елемент видалено назавжди"
-                  : (result.error ?? "Не вдалося видалити елемент"),
-                result.ok ? "success" : "error",
-              );
-              if (result.ok) setConfirmDelete(null);
-            }}
-            disabled={_mutating}
-            className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
-          >
-            {_mutating ? "Зачекайте..." : "Видалити"}
-          </button>
-        </div>
-      </Modal>
+        busy={_mutating}
+        description={
+          confirmDelete && (
+            <>
+              Видалити{" "}
+              <span className="font-semibold text-foreground">
+                {(confirmDelete.data as Expense & Category)?.name ??
+                  (confirmDelete.data as Expense)?.title}
+              </span>{" "}
+              назавжди? Відновити буде неможливо.
+            </>
+          )
+        }
+        onConfirm={async () => {
+          if (!confirmDelete) return;
+          const result = await deleteFromTrash(confirmDelete.id);
+          toast(
+            result.ok
+              ? "Елемент видалено назавжди"
+              : (result.error ?? "Не вдалося видалити елемент"),
+            result.ok ? "success" : "error",
+          );
+          if (result.ok) setConfirmDelete(null);
+        }}
+      />
     </div>
   );
 }

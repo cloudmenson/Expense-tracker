@@ -9,6 +9,7 @@ import {
   Settings,
   Cat,
   UsersRound,
+  Home,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { HeartLogo } from "@/components/heart-logo";
@@ -20,6 +21,12 @@ const NAV_ITEMS = [
     label: "Витрати",
     mobileLabel: "Витрати",
     icon: Receipt,
+  },
+  {
+    href: "/rental",
+    label: "Оренда",
+    mobileLabel: "Оренда",
+    icon: Home,
   },
   {
     href: "/profiles",
@@ -134,14 +141,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-150 ${
+                className={`group flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium outline-none transition-colors duration-150 focus:outline-none focus-visible:outline-none ${
                   active
                     ? "glass-pill text-foreground"
                     : "text-foreground/42 hover:text-foreground/80"
                 }`}
               >
                 <item.icon
-                  className={`h-4 w-4 shrink-0 transition-colors ${active ? "text-foreground/80" : "text-foreground/30 group-hover:text-foreground/60"}`}
+                  className={`h-5 w-5 shrink-0 transition-colors ${active ? "text-foreground/80" : "text-foreground/30 group-hover:text-foreground/60"}`}
                   strokeWidth={active ? 2 : 1.75}
                 />
                 <span className={active ? "font-semibold" : ""}>
@@ -203,15 +210,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group relative flex h-13 w-13 touch-manipulation select-none items-center justify-center rounded-[24px] transition-all duration-200 active:scale-95 ${
+                className={`group relative flex h-13 w-13 touch-manipulation select-none items-center justify-center rounded-[24px] outline-none transition-colors duration-200 focus:outline-none focus-visible:outline-none active:scale-95 ${
                   active ? "nav-active-item" : ""
                 }`}
               >
                 <item.icon
                   className={`h-[22px] w-[22px] transition-colors ${
                     active
-                      ? "text-white dark:text-white"
-                      : "text-foreground/55 group-hover:text-foreground/80 dark:text-white/55 dark:group-hover:text-white/80"
+                      ? "text-foreground dark:text-white"
+                      : "text-foreground/65 group-hover:text-foreground dark:text-white/55 dark:group-hover:text-white/80"
                   }`}
                   strokeWidth={active ? 2.25 : 2}
                 />

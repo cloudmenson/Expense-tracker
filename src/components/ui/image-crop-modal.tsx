@@ -11,11 +11,26 @@ interface ImageCropModalProps {
   imageSrc: string;
   onCancel: () => void;
   onConfirm: (croppedDataUrl: string) => void;
+  /** Crop aspect ratio. Default 1 (square). Use undefined for free aspect. */
+  aspect?: number;
+  /** Output longest-edge size in pixels. Default 256. */
+  outputSize?: number;
+  /** Crop shape: "round" (default) or "rect". */
+  cropShape?: "round" | "rect";
+  /** Modal title. */
+  title?: string;
+  /** Output mime type, default image/webp. */
+  outputType?: "image/webp" | "image/jpeg" | "image/png";
+  /** Output quality 0..1. */
+  outputQuality?: number;
 }
 
 async function getCroppedImg(
   imageSrc: string,
   pixelCrop: Area,
+  outputSize: number,
+  outputType: string,
+  outputQuality: number,
 ): Promise<string> {
   const img = new window.Image();
   await new Promise<void>((resolve, reject) => {
@@ -24,10 +39,21 @@ async function getCroppedImg(
     img.src = imageSrc;
   });
 
+  // Preserve crop aspect ratio in the output canvas
+  const ratio = pixelCrop.width / pixelCrop.height;
+  let outW: number;
+  let outH: number;
+  if (ratio >= 1) {
+    outW = outputSize;
+    outH = Math.round(outputSize / ratio);
+  } else {
+    outH = outputSize;
+    outW = Math.round(outputSize * ratio);
+  }
+
   const canvas = document.createElement("canvas");
-  const size = 256;
-  canvas.width = size;
-  canvas.height = size;
+  canvas.width = outW;
+  canvas.height = outH;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("canvas_failed");
 
@@ -39,11 +65,11 @@ async function getCroppedImg(
     pixelCrop.height,
     0,
     0,
-    size,
-    size,
+    outW,
+    outH,
   );
 
-  return canvas.toDataURL("image/webp", 0.88);
+  return canvas.toDataURL(outputType, outputQuality);
 }
 
 export function ImageCropModal({
@@ -51,6 +77,12 @@ export function ImageCropModal({
   imageSrc,
   onCancel,
   onConfirm,
+  aspect = 1,
+  outputSize = 256,
+  cropShape = "round",
+  title = "Обрізати фото",
+  outputType = "image/webp",
+  outputQuality = 0.88,
 }: ImageCropModalProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -62,7 +94,13 @@ export function ImageCropModal({
 
   const handleConfirm = async () => {
     if (!croppedAreaPixels) return;
-    const dataUrl = await getCroppedImg(imageSrc, croppedAreaPixels);
+    const dataUrl = await getCroppedImg(
+      imageSrc,
+      croppedAreaPixels,
+      outputSize,
+      outputType,
+      outputQuality,
+    );
     onConfirm(dataUrl);
   };
 
@@ -70,7 +108,7 @@ export function ImageCropModal({
     <Modal
       open={open}
       onClose={onCancel}
-      title="Обрізати фото"
+      title={title}
       size="sm"
       closeOnOverlay={false}
     >
@@ -81,8 +119,8 @@ export function ImageCropModal({
             image={imageSrc}
             crop={crop}
             zoom={zoom}
-            aspect={1}
-            cropShape="round"
+            aspect={aspect}
+            cropShape={cropShape}
             showGrid={false}
             onCropChange={setCrop}
             onZoomChange={setZoom}
@@ -104,7 +142,8 @@ export function ImageCropModal({
             step={0.01}
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
-            className="flex-1 accent-rose-500"
+            className="flex-1"
+            style={{ accentColor: "var(--brand)" }}
           />
           <span className="text-xs text-foreground/40">＋</span>
         </div>

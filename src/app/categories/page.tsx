@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
 import { CategoryForm } from "@/components/category-form";
 import { Modal } from "@/components/ui/modal";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { useToast } from "@/components/ui/toast";
 import type { Category } from "@/types/expense";
 
@@ -172,47 +173,34 @@ export default function CategoriesPage() {
       </Modal>
 
       {/* Delete confirmation modal */}
-      <Modal
+      <ConfirmModal
         open={!!categoryToDelete}
         onClose={() => setCategoryToDelete(null)}
         title="Видалити категорію"
-        size="sm"
-      >
-        <p className="mb-6 text-sm text-foreground/60">
-          Ви впевнені, що хочете видалити категорію{" "}
-          <span className="font-semibold text-foreground">
-            {categoryToDelete?.emoji} {categoryToDelete?.name}
-          </span>
-          ?
-        </p>
-        <div className="flex justify-end gap-3">
-          <button
-            onClick={() => setCategoryToDelete(null)}
-            disabled={_mutating}
-            className="rounded-xl border border-foreground/10 bg-foreground/5 px-4 py-2 text-sm font-medium text-foreground/60 transition-colors hover:bg-foreground/10"
-          >
-            Скасувати
-          </button>
-          <button
-            onClick={async () => {
-              if (_mutating) return;
-              if (!categoryToDelete) return;
-              const result = await deleteCategory(categoryToDelete.id);
-              toast(
-                result.ok
-                  ? "Категорію видалено"
-                  : (result.error ?? "Не вдалося видалити категорію"),
-                result.ok ? "success" : "error",
-              );
-              if (result.ok) setCategoryToDelete(null);
-            }}
-            disabled={_mutating}
-            className="rounded-xl bg-rose-500 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-rose-600"
-          >
-            {_mutating ? "Зачекайте..." : "Видалити"}
-          </button>
-        </div>
-      </Modal>
+        busy={_mutating}
+        description={
+          categoryToDelete && (
+            <>
+              Ви впевнені, що хочете видалити категорію{" "}
+              <span className="font-semibold text-foreground">
+                {categoryToDelete.emoji} {categoryToDelete.name}
+              </span>
+              ?
+            </>
+          )
+        }
+        onConfirm={async () => {
+          if (!categoryToDelete) return;
+          const result = await deleteCategory(categoryToDelete.id);
+          toast(
+            result.ok
+              ? "Категорію видалено"
+              : (result.error ?? "Не вдалося видалити категорію"),
+            result.ok ? "success" : "error",
+          );
+          if (result.ok) setCategoryToDelete(null);
+        }}
+      />
     </div>
   );
 }
