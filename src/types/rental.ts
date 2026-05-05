@@ -15,15 +15,6 @@ export const UTILITY_LABELS: Record<UtilityKind, string> = {
   rent: "Квартплата",
 };
 
-export const UTILITY_DEFAULT_UNIT: Record<UtilityKind, string> = {
-  gas: "м³",
-  cold_water: "м³",
-  hot_water: "м³",
-  electricity: "кВт·год",
-  internet: "грн/міс",
-  rent: "грн/міс",
-};
-
 export const METERED_KINDS: UtilityKind[] = [
   "gas",
   "cold_water",
@@ -65,16 +56,6 @@ export type ContactDraft = Omit<
   "id" | "createdAt" | "updatedAt" | "order"
 > & { order?: number };
 
-export interface Tariff {
-  id: string;
-  kind: UtilityKind;
-  pricePerUnit: number;
-  unitLabel: string;
-  effectiveFrom: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface RentReading {
   kind: UtilityKind | string;
   previous: number;
@@ -98,25 +79,5 @@ export interface RentMonth {
 
 export interface RentalBootstrap {
   contacts: Contact[];
-  tariffs: Tariff[];
   months: RentMonth[];
-}
-
-export interface ReadingComputation {
-  kind: string;
-  consumed: number;
-  pricePerUnit: number;
-  unitLabel: string;
-  expectedCost: number;
-}
-
-export interface MonthComputation {
-  month: string;
-  rentAmount: number;
-  fixedCosts: number;
-  meteredCosts: number;
-  expectedTotal: number;
-  charged: number;
-  diff: number;
-  readings: ReadingComputation[];
 }
