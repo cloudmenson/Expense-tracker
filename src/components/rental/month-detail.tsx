@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  ArrowDown,
-  ArrowUp,
   Trash2,
   Loader2,
   CalendarDays,
@@ -19,8 +17,7 @@ import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { DatePickerModal } from "@/components/ui/date-picker-modal";
 import { PhotoUpload } from "@/components/ui/photo-upload";
 import { ImagePreviewModal } from "@/components/ui/image-preview-modal";
-import { TariffFormModal } from "@/components/rental/tariff-form-modal";
-import { computeMonth, findTariff } from "@/lib/rental-calc";
+import { computeMonth } from "@/lib/rental-calc";
 import {
   METERED_KINDS,
   FIXED_KINDS,
@@ -42,7 +39,7 @@ interface Props {
 }
 
 export function MonthDetail({ month, onBack }: Props) {
-  const { tariffs, updateMonth, deleteMonth } = useRentalStore();
+  const { updateMonth, deleteMonth } = useRentalStore();
 
   const initialReadings: RentReading[] = ALL_KINDS.map((kind) => {
     const existing = month.readings.find((r) => r.kind === kind);
@@ -62,9 +59,6 @@ export function MonthDetail({ month, onBack }: Props) {
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [editingTariffKind, setEditingTariffKind] = useState<UtilityKind | null>(
-    null,
-  );
 
   useEffect(() => {
     setReadings(initialReadings);
@@ -82,15 +76,13 @@ export function MonthDetail({ month, onBack }: Props) {
       rs.map((r) => (r.kind === kind ? { ...r, ...patch } : r)),
     );
 
-  const draftMonth: RentMonth = {
+  const totals = computeMonth({
     ...month,
     readings,
     rentAmount: parseFloat(rentAmount) || 0,
     charged: parseFloat(charged) || 0,
-  };
-  const comp = computeMonth(draftMonth, tariffs);
-  const tone =
-    comp.diff > 0.5 ? "danger" : comp.diff < -0.5 ? "success" : "neutral";
+    paid: parseFloat(paid) || 0,
+  });
 
   const onSave = async () => {
     setSaving(true);
@@ -135,164 +127,115 @@ export function MonthDetail({ month, onBack }: Props) {
             className="text-3xl font-black tabular-nums sm:text-[2.5rem]"
             style={{ color: "var(--brand-deep)" }}
           >
-            {comp.expectedTotal.toLocaleString("uk-UA", {
+            {totals.total.toLocaleString("uk-UA", {
               maximumFractionDigits: 0,
             })}{" "}
             ₴
           </p>
-          <span className="text-xs text-foreground/45">за тарифами</span>
+          <span className="text-xs text-foreground/45">до сплати</span>
         </div>
 
-        {comp.charged > 0 && (
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <div className="glass-pill rounded-xl px-3 py-2">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/45">
-                Виставив ріелтор
-              </p>
-              <p className="mt-0.5 text-base font-bold tabular-nums">
-                {comp.charged.toLocaleString("uk-UA")} ₴
-              </p>
-            </div>
-            <div
-              className="rounded-xl px-3 py-2"
-              style={{
-                backgroundColor:
-                  tone === "danger"
-                    ? "rgba(199,90,74,0.14)"
-                    : tone === "success"
-                      ? "rgba(111,148,98,0.14)"
-                      : "var(--brand-soft)",
-              }}
-            >
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/45">
-                {tone === "danger"
-                  ? "Накручено"
-                  : tone === "success"
-                    ? "Менше нарахували"
-                    : "Збігається"}
-              </p>
-              <p
-                className={`mt-0.5 inline-flex items-center gap-1 text-base font-bold tabular-nums ${
-                  tone === "danger"
-                    ? "text-rose-600 dark:text-rose-300"
-                    : tone === "success"
-                      ? "text-emerald-700 dark:text-emerald-300"
-                      : ""
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          <div className="glass-pill rounded-xl px-3 py-2">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/45">
+              Квартплата
+            </p>
+            <p className="mt-0.5 text-base font-bold tabular-nums">
+              {totals.rentAmount.toLocaleString("uk-UA")} ₴
+            </p>
+          </div>
+          <div className="glass-pill rounded-xl px-3 py-2">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/45">
+              Комуналка
+            </p>
+            <p className="mt-0.5 text-base font-bold tabular-nums">
+              {totals.charged.toLocaleString("uk-UA")} ₴
+            </p>
+          </div>
+        </div>
+
+        {totals.paid > 0 && (
+          <div
+            className="mt-3 rounded-xl px-3 py-2"
+            style={{
+              backgroundColor:
+                totals.unpaid > 0.5
+                  ? "rgba(217,152,69,0.16)"
+                  : "rgba(111,148,98,0.16)",
+            }}
+          >
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold uppercase tracking-wider text-foreground/55">
+                {totals.unpaid > 0.5 ? "Залишилось доплатити" : "Оплачено"}
+              </span>
+              <span
+                className={`font-bold tabular-nums ${
+                  totals.unpaid > 0.5
+                    ? "text-amber-700 dark:text-amber-300"
+                    : "text-emerald-700 dark:text-emerald-300"
                 }`}
               >
-                {tone === "danger" ? (
-                  <ArrowUp className="h-4 w-4" />
-                ) : tone === "success" ? (
-                  <ArrowDown className="h-4 w-4" />
-                ) : null}
-                {comp.diff > 0 ? "+" : ""}
-                {comp.diff.toLocaleString("uk-UA", {
-                  maximumFractionDigits: 0,
-                })}{" "}
-                ₴
-              </p>
+                {totals.unpaid > 0.5
+                  ? `${totals.unpaid.toLocaleString("uk-UA", { maximumFractionDigits: 0 })} ₴`
+                  : `${totals.paid.toLocaleString("uk-UA", { maximumFractionDigits: 0 })} ₴`}
+              </span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Metered readings */}
+      {/* Metered readings — just numbers + photos, no cost calc */}
       <div className="glass-card rounded-2xl p-4 sm:p-5">
-        <h3 className="mb-3 text-base font-semibold">Лічильники</h3>
+        <h3 className="mb-1 text-base font-semibold">Лічильники</h3>
+        <p className="mb-3 text-xs text-foreground/55">
+          Показники й фото для історії — без розрахунків.
+        </p>
         <div className="space-y-3">
           {METERED_KINDS.map((kind) => {
             const r = readings.find((rr) => rr.kind === kind)!;
-            const tariff = findTariff(tariffs, kind, month.month);
             const consumed = Math.max(0, r.current - r.previous);
-            const cost = tariff ? consumed * tariff.pricePerUnit : 0;
             return (
               <ReadingRow
                 key={kind}
                 kind={kind}
                 reading={r}
                 consumed={consumed}
-                cost={cost}
-                tariffLabel={
-                  tariff
-                    ? `${tariff.pricePerUnit.toLocaleString("uk-UA", { maximumFractionDigits: 4 })} ₴ / ${tariff.unitLabel}`
-                    : "тариф не задано"
-                }
                 onChange={(patch) => updateReading(kind, patch)}
                 onPreviewPhoto={setPreviewSrc}
-                onEditTariff={() => setEditingTariffKind(kind)}
               />
             );
           })}
         </div>
       </div>
 
-      {/* Fixed (rent + internet) */}
+      {/* Bills */}
       <div className="glass-card rounded-2xl p-4 sm:p-5">
-        <h3 className="mb-3 text-base font-semibold">Фіксовані</h3>
-        <div className="space-y-3">
-          <FixedRow
+        <h3 className="mb-3 text-base font-semibold">Суми за місяць</h3>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <FixedAmount
             kind="rent"
-            label="Квартплата за цей місяць"
+            label="Квартплата"
             value={rentAmount}
             onChange={setRentAmount}
             placeholder="11000"
           />
-          {FIXED_KINDS.filter((k) => k !== "rent").map((kind) => {
-            const r = readings.find((rr) => rr.kind === kind)!;
-            const tariff = findTariff(tariffs, kind, month.month);
-            const hint = tariff
-              ? `тариф ${tariff.pricePerUnit.toLocaleString("uk-UA")} ₴/міс`
-              : "";
-            return (
-              <FixedRow
-                key={kind}
-                kind={kind}
-                label={UTILITY_LABELS[kind]}
-                onEditTariff={() => setEditingTariffKind(kind)}
-                value={r.current ? String(r.current) : ""}
-                onChange={(v) =>
-                  updateReading(kind, {
-                    previous: 0,
-                    current: parseFloat(v) || 0,
-                  })
-                }
-                placeholder={tariff ? String(tariff.pricePerUnit) : "Сума"}
-                hint={hint}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Invoice + payment */}
-      <div className="glass-card rounded-2xl p-4 sm:p-5">
-        <h3 className="mb-3 text-base font-semibold">Розрахунок ріелтора</h3>
-        <div className="grid gap-3 sm:grid-cols-2">
+          <FixedAmount
+            kind="rent"
+            customIconKind="internet"
+            label="Комуналка від ріелтора"
+            value={charged}
+            onChange={setCharged}
+            placeholder="0"
+          />
+          <FixedAmount
+            kind="rent"
+            customIconKind="electricity"
+            label="Оплачено"
+            value={paid}
+            onChange={setPaid}
+            placeholder="0"
+          />
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/50">
-              Сума, яку виставили
-            </label>
-            <Input
-              type="number"
-              inputMode="decimal"
-              value={charged}
-              onChange={(e) => setCharged(e.target.value)}
-              placeholder="0"
-            />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/50">
-              Оплачено
-            </label>
-            <Input
-              type="number"
-              inputMode="decimal"
-              value={paid}
-              onChange={(e) => setPaid(e.target.value)}
-              placeholder="0"
-            />
-          </div>
-          <div className="sm:col-span-2">
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/50">
               Дата оплати
             </label>
@@ -303,9 +246,11 @@ export function MonthDetail({ month, onBack }: Props) {
             >
               <CalendarDays className="h-4 w-4 shrink-0 field-icon" />
               <span className="flex-1 text-sm">
-                {paidAt
-                  ? format(parseISO(paidAt), "d MMMM yyyy", { locale: uk })
-                  : <span className="text-foreground/40">Не вказана</span>}
+                {paidAt ? (
+                  format(parseISO(paidAt), "d MMMM yyyy", { locale: uk })
+                ) : (
+                  <span className="text-foreground/40">Не вказана</span>
+                )}
               </span>
               {paidAt && (
                 <span
@@ -371,16 +316,6 @@ export function MonthDetail({ month, onBack }: Props) {
         title="Дата оплати"
       />
 
-      {editingTariffKind && (
-        <TariffFormModal
-          open={true}
-          onClose={() => setEditingTariffKind(null)}
-          kind={editingTariffKind}
-          tariff={findTariff(tariffs, editingTariffKind, month.month) ?? null}
-          defaultEffectiveFrom={month.month}
-        />
-      )}
-
       <ConfirmModal
         open={confirmDelete}
         onClose={() => setConfirmDelete(false)}
@@ -399,20 +334,14 @@ function ReadingRow({
   kind,
   reading,
   consumed,
-  cost,
-  tariffLabel,
   onChange,
   onPreviewPhoto,
-  onEditTariff,
 }: {
   kind: UtilityKind;
   reading: RentReading;
   consumed: number;
-  cost: number;
-  tariffLabel: string;
   onChange: (patch: Partial<RentReading>) => void;
   onPreviewPhoto: (src: string) => void;
-  onEditTariff: () => void;
 }) {
   const Icon = UTILITY_ICON[kind];
   const tint = UTILITY_TINT[kind];
@@ -426,24 +355,13 @@ function ReadingRow({
           >
             <Icon className="h-4 w-4" />
           </div>
-          <div>
-            <p className="text-sm font-semibold">{UTILITY_LABELS[kind]}</p>
-            <button
-              type="button"
-              onClick={onEditTariff}
-              className="text-[10px] text-foreground/45 underline-offset-2 transition-colors hover:text-brand-deep hover:underline"
-            >
-              {tariffLabel}
-            </button>
-          </div>
+          <p className="text-sm font-semibold">{UTILITY_LABELS[kind]}</p>
         </div>
         <div className="text-right">
           <p className="text-sm font-bold tabular-nums">
             {consumed.toLocaleString("uk-UA", { maximumFractionDigits: 1 })}
           </p>
-          <p className="text-[10px] text-foreground/45 tabular-nums">
-            = {cost.toFixed(2)} ₴
-          </p>
+          <p className="text-[10px] text-foreground/45">витрачено</p>
         </div>
       </div>
 
@@ -497,25 +415,24 @@ function ReadingRow({
   );
 }
 
-function FixedRow({
+function FixedAmount({
   kind,
+  customIconKind,
   label,
   value,
   onChange,
   placeholder,
-  hint,
-  onEditTariff,
 }: {
   kind: UtilityKind;
+  customIconKind?: UtilityKind;
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
-  hint?: string;
-  onEditTariff?: () => void;
 }) {
-  const Icon = UTILITY_ICON[kind];
-  const tint = UTILITY_TINT[kind];
+  const iconKind = customIconKind ?? kind;
+  const Icon = UTILITY_ICON[iconKind];
+  const tint = UTILITY_TINT[iconKind];
   return (
     <div>
       <label className="mb-1.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-foreground/55">
@@ -526,15 +443,6 @@ function FixedRow({
           <Icon className="h-3 w-3" />
         </span>
         {label}
-        {onEditTariff && (
-          <button
-            type="button"
-            onClick={onEditTariff}
-            className="text-foreground/40 normal-case tracking-normal underline-offset-2 transition-colors hover:text-brand-deep hover:underline"
-          >
-            ({hint || "тариф не задано"})
-          </button>
-        )}
       </label>
       <Input
         type="number"

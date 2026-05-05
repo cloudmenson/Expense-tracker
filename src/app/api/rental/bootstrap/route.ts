@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { ContactModel } from "@/models/contact";
-import { TariffModel } from "@/models/tariff";
 import { RentMonthModel } from "@/models/rent-month";
 
 const FAMILY = "default";
@@ -12,12 +11,9 @@ const toIso = (v: unknown) =>
 export async function GET() {
   await connectDB();
 
-  const [contactDocs, tariffDocs, monthDocs] = await Promise.all([
+  const [contactDocs, monthDocs] = await Promise.all([
     ContactModel.find({ familyId: FAMILY })
       .sort({ order: 1, createdAt: 1 })
-      .lean(),
-    TariffModel.find({ familyId: FAMILY })
-      .sort({ kind: 1, effectiveFrom: -1 })
       .lean(),
     RentMonthModel.find({ familyId: FAMILY }).sort({ month: -1 }).lean(),
   ]);
@@ -32,19 +28,6 @@ export async function GET() {
       role: String(raw.role ?? "landlord"),
       notes: String(raw.notes ?? ""),
       order: Number(raw.order ?? 0),
-      createdAt: toIso(raw.createdAt),
-      updatedAt: toIso(raw.updatedAt),
-    };
-  });
-
-  const tariffs = tariffDocs.map((t) => {
-    const raw = t as Record<string, unknown>;
-    return {
-      id: String(raw._id),
-      kind: raw.kind as string,
-      pricePerUnit: Number(raw.pricePerUnit ?? 0),
-      unitLabel: String(raw.unitLabel ?? ""),
-      effectiveFrom: String(raw.effectiveFrom ?? ""),
       createdAt: toIso(raw.createdAt),
       updatedAt: toIso(raw.updatedAt),
     };
@@ -74,5 +57,5 @@ export async function GET() {
     };
   });
 
-  return NextResponse.json({ contacts, tariffs, months });
+  return NextResponse.json({ contacts, months });
 }

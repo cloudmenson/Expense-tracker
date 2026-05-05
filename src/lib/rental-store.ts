@@ -4,10 +4,8 @@ import { create } from "zustand";
 import type {
   Contact,
   ContactDraft,
-  Tariff,
   RentMonth,
   RentReading,
-  UtilityKind,
 } from "@/types/rental";
 
 const BASE = "/api/rental";
@@ -26,7 +24,6 @@ async function fetcher<T>(url: string, init?: RequestInit): Promise<T> {
 
 interface RentalStore {
   contacts: Contact[];
-  tariffs: Tariff[];
   months: RentMonth[];
   hydrated: boolean;
   loading: boolean;
@@ -37,15 +34,6 @@ interface RentalStore {
   updateContact: (id: string, patch: Partial<ContactDraft>) => Promise<void>;
   deleteContact: (id: string) => Promise<void>;
 
-  createTariff: (input: {
-    kind: UtilityKind;
-    pricePerUnit: number;
-    unitLabel: string;
-    effectiveFrom: string;
-  }) => Promise<void>;
-  updateTariff: (id: string, patch: Partial<Tariff>) => Promise<void>;
-  deleteTariff: (id: string) => Promise<void>;
-
   createMonth: (month: string) => Promise<RentMonth | null>;
   updateMonth: (id: string, patch: Partial<RentMonth>) => Promise<void>;
   updateMonthReadings: (id: string, readings: RentReading[]) => Promise<void>;
@@ -54,7 +42,6 @@ interface RentalStore {
 
 export const useRentalStore = create<RentalStore>()((set, get) => ({
   contacts: [],
-  tariffs: [],
   months: [],
   hydrated: false,
   loading: false,
@@ -65,12 +52,10 @@ export const useRentalStore = create<RentalStore>()((set, get) => ({
     try {
       const data = await fetcher<{
         contacts: Contact[];
-        tariffs: Tariff[];
         months: RentMonth[];
       }>(`${BASE}/bootstrap`);
       set({
         contacts: data.contacts,
-        tariffs: data.tariffs,
         months: data.months,
         hydrated: true,
       });
@@ -101,29 +86,6 @@ export const useRentalStore = create<RentalStore>()((set, get) => ({
   deleteContact: async (id) => {
     await fetcher(`${BASE}/contacts/${id}`, { method: "DELETE" });
     set({ contacts: get().contacts.filter((c) => c.id !== id) });
-  },
-
-  createTariff: async (input) => {
-    const created = await fetcher<Tariff>(`${BASE}/tariffs`, {
-      method: "POST",
-      body: JSON.stringify(input),
-    });
-    set({ tariffs: [created, ...get().tariffs] });
-  },
-
-  updateTariff: async (id, patch) => {
-    const updated = await fetcher<Tariff>(`${BASE}/tariffs/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(patch),
-    });
-    set({
-      tariffs: get().tariffs.map((t) => (t.id === id ? updated : t)),
-    });
-  },
-
-  deleteTariff: async (id) => {
-    await fetcher(`${BASE}/tariffs/${id}`, { method: "DELETE" });
-    set({ tariffs: get().tariffs.filter((t) => t.id !== id) });
   },
 
   createMonth: async (month) => {
