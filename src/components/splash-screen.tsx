@@ -40,20 +40,20 @@ export function SplashScreen({ onFinish }: { onFinish: () => void }) {
           }`}
           style={{
             background:
-              "radial-gradient(circle, #e11d48 0%, #f472b6 45%, transparent 70%)",
+              "radial-gradient(circle, #d97757 0%, #e8956d 40%, #e0a86b 65%, transparent 75%)",
           }}
         />
         <div
           className={`absolute right-[20%] top-[20%] h-62.5 w-62.5 rounded-full blur-[100px] transition-all duration-1000 delay-200 ${
-            phase === "enter" ? "opacity-0" : "opacity-10"
+            phase === "enter" ? "opacity-0" : "opacity-15"
           }`}
-          style={{ background: "#f472b6" }}
+          style={{ background: "#e8956d" }}
         />
         <div
           className={`absolute bottom-[20%] left-[15%] h-50 w-50 rounded-full blur-[80px] transition-all duration-1000 delay-300 ${
-            phase === "enter" ? "opacity-0" : "opacity-8"
+            phase === "enter" ? "opacity-0" : "opacity-12"
           }`}
-          style={{ background: "#fb923c" }}
+          style={{ background: "#8aa17a" }}
         />
       </div>
 
@@ -69,11 +69,11 @@ export function SplashScreen({ onFinish }: { onFinish: () => void }) {
         <div className="relative">
           {/* Soft outer glow ring */}
           <div
-            className="absolute rounded-xl"
+            className="absolute rounded-3xl"
             style={{
               inset: "-14px",
               background:
-                "radial-gradient(circle, rgba(225,29,72,0.18) 0%, transparent 70%)",
+                "radial-gradient(circle, rgba(217,119,87,0.22) 0%, transparent 70%)",
               animation:
                 phase === "visible"
                   ? "splash-ping 3s ease-in-out infinite"
@@ -81,7 +81,7 @@ export function SplashScreen({ onFinish }: { onFinish: () => void }) {
             }}
           />
           <HeartLogo
-            wrapperClass="relative h-[88px] w-[88px] rounded-xl shadow-2xl shadow-rose-600/25"
+            wrapperClass="relative h-[88px] w-[88px] rounded-3xl"
             svgSize={46}
           />
         </div>

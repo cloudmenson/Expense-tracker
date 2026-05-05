@@ -49,7 +49,10 @@ export function ExpenseDetail({
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="text-lg font-bold">{expense.title}</h3>
-          <p className="mt-0.5 text-2xl font-extrabold text-rose-600 dark:text-pink-400">
+          <p
+            className="mt-0.5 text-2xl font-extrabold"
+            style={{ color: "var(--brand-deep)" }}
+          >
             {formatMoney(expense.amount, currency)}
           </p>
         </div>

@@ -87,9 +87,13 @@ export default function ExpensesPage() {
   }, [expenses, categories]);
 
   const monthOptions = useMemo(() => {
+    const currentMonth = format(new Date(), "yyyy-MM");
     const uniqueMonths = Array.from(
       new Set(expenses.map((e) => e.date.slice(0, 7))),
     );
+    if (!uniqueMonths.includes(currentMonth)) {
+      uniqueMonths.push(currentMonth);
+    }
     if (!uniqueMonths.includes(selectedMonth)) {
       uniqueMonths.push(selectedMonth);
     }
@@ -105,8 +109,6 @@ export default function ExpensesPage() {
     [monthlyExpenses],
   );
   const monthlyBudget = settings.person1Income + settings.person2Income;
-  const budgetRemaining = monthlyBudget - monthlyTotal;
-  const isOverBudget = budgetRemaining < 0;
   const budgetProgress =
     monthlyBudget > 0 ? Math.min((monthlyTotal / monthlyBudget) * 100, 100) : 0;
 
@@ -236,7 +238,10 @@ export default function ExpensesPage() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-foreground/40">
                   Сума за обраний місяць
                 </p>
-                <p className="mt-1 text-3xl font-black leading-none tracking-tight text-rose-500 dark:text-pink-300 sm:text-[2.7rem]">
+                <p
+                  className="mt-1 text-3xl font-black leading-none tracking-tight sm:text-[2.7rem]"
+                  style={{ color: "var(--brand-deep)" }}
+                >
                   {formatMoney(monthlyTotal, settings.currency)}
                 </p>
                 <p className="mt-1 text-xs text-foreground/45">
@@ -265,28 +270,21 @@ export default function ExpensesPage() {
                 Бюджет: {formatMoney(monthlyBudget, settings.currency)}
               </span>
               <span
-                className={`glass-pill rounded-xl px-3 py-1 font-semibold ${
-                  isOverBudget
-                    ? "text-rose-600 dark:text-rose-300"
-                    : "text-emerald-700 dark:text-emerald-300"
-                }`}
-                style={{
-                  backgroundColor: isOverBudget
-                    ? "var(--danger-soft)"
-                    : "var(--success-soft)",
-                }}
+                className="glass-pill rounded-xl px-3 py-1 font-semibold text-brand-deep"
+                style={{ backgroundColor: "var(--brand-soft)" }}
               >
-                {isOverBudget ? "Перевитрата" : "Залишок"}:{" "}
-                {formatMoney(Math.abs(budgetRemaining), settings.currency)}
+                Витрачено: {formatMoney(monthlyTotal, settings.currency)}
               </span>
             </div>
 
-            <div className="glass-pill h-2.5 overflow-hidden rounded-xl bg-white/20">
+            <div className="glass-pill h-2.5 overflow-hidden rounded-xl">
               <div
-                className={`h-full rounded-xl transition-all ${
-                  isOverBudget ? "bg-rose-500" : "bg-emerald-500"
-                }`}
-                style={{ width: `${budgetProgress}%` }}
+                className="h-full rounded-xl transition-all"
+                style={{
+                  width: `${budgetProgress}%`,
+                  background:
+                    "linear-gradient(90deg, var(--brand-strong), var(--brand))",
+                }}
               />
             </div>
           </div>

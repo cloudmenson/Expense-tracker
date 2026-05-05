@@ -231,10 +231,10 @@ export default function SettingsPage() {
             <button
               key={t}
               onClick={() => setTheme(t)}
-              className={`rounded-xl px-2 py-3 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
+              className={`rounded-2xl px-2 py-3 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
                 theme === t
-                  ? "glass-card text-rose-600 ring-2 ring-rose-400/30 dark:text-pink-300"
-                  : "glass-pill text-foreground/50 hover:bg-white/14"
+                  ? "glass-card text-brand-deep ring-2 ring-brand/35"
+                  : "glass-pill text-foreground/50 hover:bg-foreground/4"
               }`}
             >
               {t === "light" ? "☀️ Світла" : "🌙 Темна"}

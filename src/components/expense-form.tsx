@@ -224,7 +224,7 @@ export function ExpenseForm({
             <div className="space-y-3">
               <label className="block text-xs font-semibold uppercase tracking-wider text-foreground/40">
                 Товари ({items.length}) · Разом:{" "}
-                <span className="text-rose-600 dark:text-pink-400">
+                <span style={{ color: "var(--brand-deep)" }}>
                   {settings.currency} {listTotal.toLocaleString("en-US")}
                 </span>
               </label>
@@ -263,7 +263,8 @@ export function ExpenseForm({
               <button
                 type="button"
                 onClick={addItem}
-                className="flex items-center gap-2 text-sm font-medium text-rose-600 transition-colors hover:text-rose-500 dark:text-pink-400 dark:hover:text-pink-300"
+                className="flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80"
+                style={{ color: "var(--brand-deep)" }}
               >
                 <Plus className="h-4 w-4" />
                 Додати товар
@@ -306,10 +307,10 @@ export function ExpenseForm({
                   onPointerUp={onCatPressEnd}
                   onPointerLeave={onCatPressEnd}
                   onPointerCancel={onCatPressEnd}
-                  className={`no-select-callout group relative flex flex-col items-center gap-1 rounded-xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
+                  className={`no-select-callout group relative flex flex-col items-center gap-1 rounded-2xl p-2 text-center transition-all hover:scale-110 active:scale-95 ${
                     form.categoryId === cat.id
-                      ? "glass-card ring-2 ring-rose-400/30"
-                      : "glass-pill hover:bg-white/14"
+                      ? "glass-card ring-2 ring-brand/35"
+                      : "glass-pill hover:bg-foreground/4"
                   }`}
                 >
                   <span className="text-xl transition-transform group-hover:animate-emoji-bounce">
@@ -325,9 +326,19 @@ export function ExpenseForm({
                 type="button"
                 onContextMenu={(e) => e.preventDefault()}
                 onClick={() => setShowCreateCategory(true)}
-                className="no-select-callout group relative flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-rose-400/28 bg-rose-500/8 p-2 text-center transition-all hover:scale-110 hover:bg-rose-500/12 active:scale-95"
+                className="no-select-callout group relative flex flex-col items-center justify-center gap-1 rounded-2xl border border-dashed p-2 text-center transition-all hover:scale-110 active:scale-95"
+                style={{
+                  borderColor: "color-mix(in srgb, var(--brand) 38%, transparent)",
+                  backgroundColor: "var(--brand-soft)",
+                }}
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-linear-[135deg,#e11d48_0%,#f472b6_100%] text-white shadow-sm transition-transform group-hover:scale-110">
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-2xl text-white shadow-sm transition-transform group-hover:scale-110"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, var(--brand-strong) 0%, var(--brand) 60%, var(--brand-deep) 100%)",
+                  }}
+                >
                   <Plus className="h-4 w-4" />
                 </span>
               </button>
@@ -361,11 +372,12 @@ export function ExpenseForm({
                     key={p}
                     type="button"
                     onClick={() => set("paidBy", p)}
-                    className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
+                    className={`flex-1 rounded-2xl px-3 py-2.5 text-sm font-medium transition-all ${
                       form.paidBy === p
-                        ? "glass-card text-rose-600 ring-2 ring-rose-400/30 dark:text-pink-300"
-                        : "glass-pill text-foreground/60 hover:bg-white/14"
+                        ? "glass-card ring-2 ring-brand/35"
+                        : "glass-pill text-foreground/60 hover:bg-foreground/4"
                     }`}
+                    style={form.paidBy === p ? { color: "var(--brand-deep)" } : undefined}
                   >
                     <span className="flex items-center justify-center gap-2">
                       <PersonAvatar

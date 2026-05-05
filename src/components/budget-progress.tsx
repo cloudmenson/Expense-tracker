@@ -29,9 +29,6 @@ export function BudgetProgress({
   person2AvatarImage,
 }: BudgetProgressProps) {
   const totalIncome = person1Income + person2Income;
-  const remaining = totalIncome - totalSpent;
-  const isOverBudget = remaining < 0;
-
   const totalProgress =
     totalIncome > 0 ? Math.min((totalSpent / totalIncome) * 100, 100) : 0;
 
@@ -46,17 +43,18 @@ export function BudgetProgress({
             {formatMoney(totalIncome, currency)}
           </p>
         </div>
-        <div className="rounded-xl bg-foreground/6 px-3 py-1 text-xs font-semibold text-foreground/55 ring-1 ring-foreground/8">
-          {isOverBudget
-            ? `Перевитрата ${formatMoney(Math.abs(remaining), currency)}`
-            : `Залишок ${formatMoney(remaining, currency)}`}
+        <div
+          className="rounded-xl px-3 py-1 text-xs font-semibold text-brand-deep"
+          style={{ backgroundColor: "var(--brand-soft)" }}
+        >
+          Витрачено {formatMoney(totalSpent, currency)}
         </div>
       </div>
 
       <div className="mt-3">
         <div className="mb-1 flex items-center justify-between text-xs text-foreground/40">
           <span>
-            Витрачено {formatMoney(totalSpent, currency)} з{" "}
+            {formatMoney(totalSpent, currency)} з{" "}
             {formatMoney(totalIncome, currency)}
           </span>
           <span className="font-semibold text-foreground/55">
@@ -65,8 +63,12 @@ export function BudgetProgress({
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-foreground/8">
           <div
-            className="h-full rounded-full bg-foreground/30 transition-all"
-            style={{ width: `${totalProgress}%` }}
+            className="h-full rounded-full transition-all"
+            style={{
+              width: `${totalProgress}%`,
+              background:
+                "linear-gradient(90deg, var(--brand-strong), var(--brand))",
+            }}
           />
         </div>
       </div>

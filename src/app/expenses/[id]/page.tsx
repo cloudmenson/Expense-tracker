@@ -185,15 +185,18 @@ export default function CategoryExpensesPage() {
         </div>
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all ${
+          className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all ${
             showFilters || activeFilterCount > 0
-              ? "bg-rose-500/15 text-rose-600 dark:text-pink-400"
+              ? "bg-brand-soft text-brand-deep"
               : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
           }`}
         >
           <SlidersHorizontal className="h-4 w-4" />
           {activeFilterCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-xl bg-rose-500 text-[9px] font-bold text-white">
+            <span
+              className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
+              style={{ background: "var(--brand)" }}
+            >
               {activeFilterCount}
             </span>
           )}
