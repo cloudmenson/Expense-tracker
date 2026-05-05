@@ -1,14 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, Calendar, Receipt, ArrowDown, ArrowUp } from "lucide-react";
+import { Plus, Calendar, Receipt } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
 import { useRentalStore } from "@/lib/rental-store";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MonthPickerModal } from "@/components/ui/month-picker-modal";
-import { computeMonth, findTariff } from "@/lib/rental-calc";
+import { computeMonth } from "@/lib/rental-calc";
 import {
   METERED_KINDS,
   FIXED_KINDS,
@@ -21,8 +21,7 @@ const monthLabel = (m: string) =>
   format(parseISO(`${m}-01`), "LLLL yyyy", { locale: uk });
 
 export function MonthsSection() {
-  const { months, tariffs, createMonth, updateMonthReadings } =
-    useRentalStore();
+  const { months, createMonth, updateMonthReadings } = useRentalStore();
   const [openId, setOpenId] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -35,8 +34,6 @@ export function MonthsSection() {
   const existingMonths = useMemo(() => months.map((m) => m.month), [months]);
 
   const onCreateMonth = async (monthKey: string) => {
-    // Pick the month immediately preceding `monthKey` to seed previous readings,
-    // not just the most recent one in the list (in case user picks an old gap).
     const prevMonth =
       [...months]
         .filter((m) => m.month < monthKey)
@@ -69,8 +66,8 @@ export function MonthsSection() {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <p className="flex-1 text-sm text-foreground/55">
-          Кожен місяць — окремий запис із показаннями, фото лічильників і
-          розрахунком.
+          Кожен місяць — окремий запис із показниками лічильників, фото квитанції
+          та сумами оплат.
         </p>
         <Button variant="primary" onClick={() => setPickerOpen(true)}>
           <Plus className="h-4 w-4" /> Місяць
@@ -90,14 +87,7 @@ export function MonthsSection() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {sorted.map((m) => {
-            const comp = computeMonth(m, tariffs);
-            const showDiff = comp.charged > 0;
-            const tone =
-              comp.diff > 0.5
-                ? "danger"
-                : comp.diff < -0.5
-                  ? "success"
-                  : "neutral";
+            const totals = computeMonth(m);
             return (
               <button
                 key={m.id}
@@ -113,13 +103,14 @@ export function MonthsSection() {
                       className="mt-1 text-2xl font-black tabular-nums"
                       style={{ color: "var(--brand-deep)" }}
                     >
-                      {comp.expectedTotal.toLocaleString("uk-UA", {
+                      {totals.total.toLocaleString("uk-UA", {
                         maximumFractionDigits: 0,
                       })}{" "}
                       ₴
                     </p>
                     <p className="text-[11px] text-foreground/45">
-                      за тарифами
+                      {totals.rentAmount.toLocaleString("uk-UA")} +{" "}
+                      {totals.charged.toLocaleString("uk-UA")} ₴
                     </p>
                   </div>
                   {m.invoicePhoto ? (
@@ -136,59 +127,40 @@ export function MonthsSection() {
                   )}
                 </div>
 
-                {showDiff && (
-                  <div className="mt-3 flex items-center justify-between rounded-xl bg-foreground/5 px-3 py-2 text-xs">
-                    <span className="text-foreground/55">Виставив ріелтор</span>
-                    <span className="flex items-center gap-2 tabular-nums">
-                      <span className="font-semibold">
-                        {comp.charged.toLocaleString("uk-UA", {
-                          maximumFractionDigits: 0,
-                        })}{" "}
-                        ₴
-                      </span>
-                      <span
-                        className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                          tone === "danger"
-                            ? "text-rose-600 dark:text-rose-300"
-                            : tone === "success"
-                              ? "text-emerald-700 dark:text-emerald-300"
-                              : "text-foreground/55"
-                        }`}
-                        style={{
-                          backgroundColor:
-                            tone === "danger"
-                              ? "rgba(199,90,74,0.14)"
-                              : tone === "success"
-                                ? "rgba(111,148,98,0.14)"
-                                : "rgba(120,120,120,0.10)",
-                        }}
-                      >
-                        {tone === "danger" ? (
-                          <ArrowUp className="h-3 w-3" />
-                        ) : tone === "success" ? (
-                          <ArrowDown className="h-3 w-3" />
-                        ) : null}
-                        {comp.diff > 0 ? "+" : ""}
-                        {comp.diff.toLocaleString("uk-UA", {
-                          maximumFractionDigits: 0,
-                        })}{" "}
-                        ₴
-                      </span>
+                {totals.paid > 0 && (
+                  <div
+                    className="mt-3 flex items-center justify-between rounded-xl px-3 py-2 text-xs"
+                    style={{
+                      backgroundColor:
+                        totals.unpaid > 0.5
+                          ? "rgba(217,152,69,0.14)"
+                          : "rgba(111,148,98,0.14)",
+                    }}
+                  >
+                    <span className="text-foreground/55">
+                      {totals.unpaid > 0.5 ? "Залишилось" : "Оплачено"}
+                    </span>
+                    <span
+                      className={`font-bold tabular-nums ${
+                        totals.unpaid > 0.5
+                          ? "text-amber-700 dark:text-amber-300"
+                          : "text-emerald-700 dark:text-emerald-300"
+                      }`}
+                    >
+                      {totals.unpaid > 0.5
+                        ? `${totals.unpaid.toLocaleString("uk-UA", { maximumFractionDigits: 0 })} ₴`
+                        : `${totals.paid.toLocaleString("uk-UA", { maximumFractionDigits: 0 })} ₴`}
                     </span>
                   </div>
                 )}
 
                 <div className="mt-3 flex flex-wrap gap-1.5 text-[11px]">
                   {m.readings
-                    .filter((r) =>
-                      METERED_KINDS.includes(r.kind as UtilityKind),
-                    )
+                    .filter((r) => METERED_KINDS.includes(r.kind as UtilityKind))
                     .map((r) => {
                       const Icon = UTILITY_ICON[r.kind as UtilityKind];
                       const tint = UTILITY_TINT[r.kind as UtilityKind];
                       const consumed = Math.max(0, r.current - r.previous);
-                      const unit = findTariff(tariffs, r.kind, m.month)
-                        ?.unitLabel;
                       return (
                         <span
                           key={r.kind}
@@ -199,7 +171,6 @@ export function MonthsSection() {
                           {consumed.toLocaleString("uk-UA", {
                             maximumFractionDigits: 1,
                           })}
-                          {unit ? ` ${unit}` : ""}
                         </span>
                       );
                     })}
