@@ -7,8 +7,6 @@ import {
   LayoutDashboard,
   Receipt,
   Settings,
-  Cat,
-  UsersRound,
   Home,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -29,22 +27,10 @@ const NAV_ITEMS = [
     icon: Home,
   },
   {
-    href: "/profiles",
-    label: "Профілі",
-    mobileLabel: "Профілі",
-    icon: UsersRound,
-  },
-  {
     href: "/settings",
     label: "Налаштування",
     mobileLabel: "Налашт.",
     icon: Settings,
-  },
-  {
-    href: "/trash",
-    label: "Кошик",
-    mobileLabel: "Кошик",
-    icon: Cat,
   },
 ];
 

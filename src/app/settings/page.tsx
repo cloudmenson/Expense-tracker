@@ -12,7 +12,11 @@ import {
   BellOff,
   Sun,
   Moon,
+  UsersRound,
+  Cat,
+  ChevronRight,
 } from "lucide-react";
+import Link from "next/link";
 import {
   getPermission,
   getNotificationsEnabled,
@@ -201,6 +205,40 @@ export default function SettingsPage() {
         <p className="mt-1 text-sm text-foreground/50">
           Персоналізація та керування даними
         </p>
+      </div>
+
+      {/* Sections */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Link
+          href="/profiles"
+          className="glass-card flex items-center gap-3 rounded-xl p-4 transition-colors hover:bg-foreground/4"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground/8 text-foreground/75">
+            <UsersRound className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">Профілі</p>
+            <p className="text-xs text-foreground/55">
+              Імена, фото, доходи, кольори
+            </p>
+          </div>
+          <ChevronRight className="h-4 w-4 shrink-0 text-foreground/40" />
+        </Link>
+        <Link
+          href="/trash"
+          className="glass-card flex items-center gap-3 rounded-xl p-4 transition-colors hover:bg-foreground/4"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground/8 text-foreground/75">
+            <Cat className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">Кошик</p>
+            <p className="text-xs text-foreground/55">
+              Видалені витрати й категорії
+            </p>
+          </div>
+          <ChevronRight className="h-4 w-4 shrink-0 text-foreground/40" />
+        </Link>
       </div>
 
       {/* General settings */}

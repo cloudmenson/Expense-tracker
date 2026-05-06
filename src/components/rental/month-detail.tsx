@@ -299,7 +299,7 @@ export function MonthDetail({ month, onBack }: Props) {
         />
       </div>
 
-      <div className="sticky bottom-3 z-10 flex justify-end">
+      <div className="flex justify-end">
         <Button onClick={onSave} disabled={saving}>
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {saving ? "Збереження…" : "Зберегти зміни"}
