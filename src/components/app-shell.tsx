@@ -159,20 +159,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── Mobile header (fixed) ── */}
       <header className="glass-panel fixed inset-x-3 top-[max(10px,env(safe-area-inset-top))] z-40 flex items-center rounded-2xl px-4 py-3 lg:hidden">
-        <div className="flex w-full items-center justify-between">
-          <div className="flex items-center gap-2.5">
+        <div className="flex w-full items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2.5">
             <HeartLogo wrapperClass="h-8 w-8 rounded-xl" svgSize={18} />
-            <span className="text-[10px] font-bold uppercase tracking-[0.26em] text-foreground/65">
+            <span className="truncate text-[10px] font-bold uppercase tracking-[0.26em] text-foreground/65">
               Budget for Two
             </span>
           </div>
-          <ThemeToggle />
+          <div className="flex shrink-0 items-center gap-1.5">
+            <ThemeToggle />
+            <Link
+              href="/settings"
+              aria-label="Налаштування"
+              style={
+                pathname.startsWith("/settings")
+                  ? {
+                      background: "var(--foreground)",
+                      color: "var(--foreground-on-active)",
+                    }
+                  : undefined
+              }
+              className={`flex h-11 w-11 items-center justify-center rounded-xl outline-none active:scale-95 ${
+                pathname.startsWith("/settings")
+                  ? ""
+                  : "glass-pill text-foreground/70 hover:text-foreground"
+              }`}
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </header>
 
       {/* ── Content ── */}
       <main
-        className="mobile-scrollbar-hidden flex-1 pt-[calc(84px+max(10px,env(safe-area-inset-top)))] pb-[calc(96px+env(safe-area-inset-bottom))] lg:pt-0 lg:pb-0 lg:pl-76"
+        className="mobile-scrollbar-hidden flex-1 pt-[calc(84px+max(10px,env(safe-area-inset-top)))] pb-[calc(108px+env(safe-area-inset-bottom))] lg:pt-0 lg:pb-0 lg:pl-76"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -194,8 +215,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── Mobile bottom nav (island) ── */}
       <nav className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+12px)] z-40 flex justify-center px-3 lg:hidden">
-        <div className="nav-island relative flex h-[64px] max-w-full items-center gap-1 rounded-[32px] px-2 sm:gap-2 sm:px-3">
-          {NAV_ITEMS.map((item) => {
+        <div className="nav-island relative flex h-19 max-w-full items-center gap-2 rounded-[40px] px-3 sm:gap-3 sm:px-4">
+          {NAV_ITEMS.filter((i) => i.href !== "/settings").map((item) => {
             const active =
               item.href === "/"
                 ? pathname === "/"
@@ -204,15 +225,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group relative flex h-11 w-11 shrink-0 touch-manipulation select-none items-center justify-center rounded-xl outline-none active:scale-95 sm:h-13 sm:w-13 sm:rounded-[24px] ${
-                  active ? "nav-active-item" : ""
-                }`}
+                style={
+                  active
+                    ? {
+                        background: "var(--foreground)",
+                        color: "var(--foreground-on-active)",
+                      }
+                    : undefined
+                }
+                className="group relative flex h-14 w-14 shrink-0 touch-manipulation select-none items-center justify-center rounded-2xl outline-none active:scale-95 sm:h-15 sm:w-15 sm:rounded-[28px]"
               >
                 <item.icon
-                  className={`h-[22px] w-[22px] ${
-                    active
-                      ? "text-foreground dark:text-white"
-                      : "text-foreground/80 group-hover:text-foreground dark:text-white/65 dark:group-hover:text-white"
+                  className={`h-6 w-6 ${
+                    active ? "" : "text-foreground/80 group-hover:text-foreground"
                   }`}
                   strokeWidth={active ? 2.25 : 2}
                 />

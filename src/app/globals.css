@@ -255,14 +255,14 @@ a:focus-visible,
 }
 
 /* Prevent the "white border flash" when buttons toggle between
-   glass-pill ↔ glass-card or nav-active-item is added/removed.
+   glass-pill ↔ glass-card or bg-active is added/removed.
    With `transition-all` the box-shadow / border-color animates through
    an intermediate value — looks like a 0.1s flash. Restrict transitions
    on these utilities to color/transform only. */
 .glass-pill,
 .glass-card,
 .glass-panel,
-.nav-active-item,
+.bg-active,
 .nav-island,
 .btn-primary,
 .btn-secondary,
@@ -412,16 +412,6 @@ a:focus-visible,
     inset 0 1px 0 rgba(255, 220, 175, 0.05);
 }
 
-@utility nav-active-item {
-  background: var(--foreground);
-  color: var(--foreground-on-active);
-  border: 1px solid var(--foreground);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
-}
-
-.nav-active-item svg {
-  color: var(--foreground-on-active) !important;
-}
 
 /* ─── Inputs ─── */
 @utility input-glass {
