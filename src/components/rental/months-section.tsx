@@ -9,23 +9,30 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MonthPickerModal } from "@/components/ui/month-picker-modal";
 import { ImageViewerModal } from "@/components/ui/image-viewer-modal";
+import { Modal } from "@/components/ui/modal";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { computeMonth } from "@/lib/rental-calc";
 import {
   METERED_KINDS,
   FIXED_KINDS,
   type UtilityKind,
+  type RentMonth,
 } from "@/types/rental";
 import { UTILITY_ICON, UTILITY_TINT } from "@/lib/utility-meta";
 import { MonthDetail } from "./month-detail";
+import { MonthView } from "./month-view";
 
 const monthLabel = (m: string) =>
   format(parseISO(`${m}-01`), "LLLL yyyy", { locale: uk });
 
 export function MonthsSection() {
-  const { months, createMonth, updateMonthReadings } = useRentalStore();
+  const { months, createMonth, updateMonthReadings, deleteMonth } =
+    useRentalStore();
   const [openId, setOpenId] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [viewingMonth, setViewingMonth] = useState<RentMonth | null>(null);
+  const [monthToDelete, setMonthToDelete] = useState<RentMonth | null>(null);
 
   const sorted = useMemo(
     () => [...months].sort((a, b) => b.month.localeCompare(a.month)),
@@ -68,8 +75,8 @@ export function MonthsSection() {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <p className="flex-1 text-sm text-foreground/55">
-          Кожен місяць — окремий запис із показниками лічильників, фото квитанції
-          та сумами оплат.
+          Кожен місяць — окремий запис із показниками лічильників, фото
+          квитанції та сумами оплат.
         </p>
         <Button variant="primary" onClick={() => setPickerOpen(true)}>
           <Plus className="h-4 w-4" /> Місяць
@@ -93,7 +100,7 @@ export function MonthsSection() {
             return (
               <button
                 key={m.id}
-                onClick={() => setOpenId(m.id)}
+                onClick={() => setViewingMonth(m)}
                 className="glass-card rounded-2xl p-4 text-left transition-all hover:scale-[1.01] active:scale-[0.99]"
               >
                 <div className="flex items-start justify-between gap-3">
@@ -175,7 +182,9 @@ export function MonthsSection() {
 
                 <div className="mt-3 flex flex-wrap gap-1.5 text-[11px]">
                   {m.readings
-                    .filter((r) => METERED_KINDS.includes(r.kind as UtilityKind))
+                    .filter((r) =>
+                      METERED_KINDS.includes(r.kind as UtilityKind),
+                    )
                     .map((r) => {
                       const Icon = UTILITY_ICON[r.kind as UtilityKind];
                       const tint = UTILITY_TINT[r.kind as UtilityKind];
@@ -209,6 +218,39 @@ export function MonthsSection() {
       />
 
       <ImageViewerModal src={previewSrc} onClose={() => setPreviewSrc(null)} />
+
+      <Modal
+        open={!!viewingMonth}
+        onClose={() => setViewingMonth(null)}
+        title="Оренда"
+        size="lg"
+      >
+        {viewingMonth && (
+          <MonthView
+            month={viewingMonth}
+            onEdit={() => {
+              setOpenId(viewingMonth.id);
+              setViewingMonth(null);
+            }}
+            onDelete={() => setMonthToDelete(viewingMonth)}
+          />
+        )}
+      </Modal>
+
+      <ConfirmModal
+        open={!!monthToDelete}
+        onClose={() => setMonthToDelete(null)}
+        title="Видалити місяць?"
+        description={`Ви дійсно хочете видалити місяць ${monthToDelete ? monthLabel(monthToDelete.month) : ""}? Цю дію неможливо скасувати.`}
+        confirmLabel="Видалити"
+        onConfirm={async () => {
+          if (monthToDelete) {
+            await deleteMonth(monthToDelete.id);
+            setMonthToDelete(null);
+            setViewingMonth(null);
+          }
+        }}
+      />
     </div>
   );
 }
