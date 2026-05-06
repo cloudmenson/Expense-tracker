@@ -68,9 +68,13 @@ export function MonthlyBarChart({
               width={50}
             />
             <Tooltip
-              contentStyle={{
-                ...tooltipStyle,
-              }}
+              contentStyle={tooltipStyle}
+              formatter={(val) =>
+                Number(val).toLocaleString("uk-UA", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                })
+              }
             />
             <Bar
               dataKey="person1"
@@ -140,7 +144,10 @@ export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
                 </Pie>
                 <Tooltip
                   formatter={(val) =>
-                    `${currency} ${Number(val).toLocaleString("uk-UA")}`
+                    `${currency} ${Number(val).toLocaleString("uk-UA", {
+                      minimumFractionDigits: 0,
+                      maximumFractionDigits: 2,
+                    })}`
                   }
                   contentStyle={tooltipStyle}
                 />
@@ -203,7 +210,15 @@ export function SpendingTrendChart({ data }: TrendChartProps) {
               axisLine={false}
               width={45}
             />
-            <Tooltip contentStyle={tooltipStyle} />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              formatter={(val) =>
+                Number(val).toLocaleString("uk-UA", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                })
+              }
+            />
             <Area
               type="monotone"
               dataKey="amount"
@@ -263,7 +278,15 @@ export function PersonCompareChart({
               axisLine={false}
               width={80}
             />
-            <Tooltip contentStyle={tooltipStyle} />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              formatter={(val) =>
+                Number(val).toLocaleString("uk-UA", {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                })
+              }
+            />
             <Bar
               dataKey="person1"
               fill={person1Color}
