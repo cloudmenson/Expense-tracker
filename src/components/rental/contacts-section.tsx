@@ -235,7 +235,6 @@ function ContactFormModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Олена Петрівна"
-              autoFocus
             />
           </div>
           <div>

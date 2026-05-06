@@ -50,15 +50,20 @@ export function StatCard({
       <div className="flex items-start justify-between">
         <div className="space-y-1.5">
           <p
-            className="text-[11px] font-semibold uppercase tracking-[0.22em]"
-            style={{ color: labelColor ?? "var(--foreground)", opacity: 0.5 }}
+            className="text-[11px] font-black uppercase tracking-[0.22em]"
+            style={{
+              color: labelColor
+                ? `color-mix(in srgb, ${labelColor} 70%, var(--foreground))`
+                : "var(--foreground)",
+              opacity: labelColor ? 1 : 0.72,
+            }}
           >
             {label}
           </p>
           <p className="text-2xl font-black tracking-tight sm:text-[1.8rem]">
             {displayValue}
           </p>
-          {sub && <p className="text-xs text-foreground/45">{sub}</p>}
+          {sub && <p className="text-xs text-foreground/65">{sub}</p>}
         </div>
         {avatarImage ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -82,7 +87,7 @@ export function StatCard({
       </div>
       {trend !== undefined && (
         <div className="mt-3 flex items-center gap-1.5">
-          <div className="flex items-center gap-1 rounded-lg bg-foreground/6 px-2 py-1 text-[11px] font-semibold text-foreground/50">
+          <div className="flex items-center gap-1 rounded-lg bg-foreground/8 px-2 py-1 text-[11px] font-semibold text-foreground/75">
             {trend >= 0 ? (
               <TrendingUp className="h-3 w-3" />
             ) : (
@@ -90,7 +95,7 @@ export function StatCard({
             )}
             <span>{Math.abs(trend).toFixed(1)}%</span>
           </div>
-          <span className="text-[11px] text-foreground/32">
+          <span className="text-[11px] text-foreground/55">
             vs прошлий місяць
           </span>
         </div>

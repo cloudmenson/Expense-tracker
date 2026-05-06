@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
+import { ArrowLeft, Package, Search } from "lucide-react";
+import { Modal } from "@/components/ui/modal";
+import { Input } from "@/components/ui/input";
 
 const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
   {
@@ -208,153 +210,98 @@ interface EmojiPickerProps {
 export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [panelStyle, setPanelStyle] = useState<CSSProperties>({});
-  const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const listRef = useRef<HTMLDivElement | null>(null);
 
-  const filteredGroups = search
+  const q = search.trim().toLowerCase();
+  const filteredGroups = q
     ? EMOJI_GROUPS.map((g) => ({
         ...g,
-        emojis: g.emojis.filter(() =>
-          g.label.toLowerCase().includes(search.toLowerCase()),
-        ),
+        emojis: g.label.toLowerCase().includes(q) ? g.emojis : [],
       })).filter((g) => g.emojis.length > 0)
     : EMOJI_GROUPS;
 
-  useEffect(() => {
-    if (!open) return;
-
-    const updatePosition = () => {
-      const trigger = triggerRef.current;
-      if (!trigger || typeof window === "undefined") return;
-
-      const rect = trigger.getBoundingClientRect();
-      const isMobile = window.innerWidth < 640;
-
-      if (isMobile) {
-        setPanelStyle({
-          left: "50%",
-          top: "50%",
-          width: "calc(100vw - 24px)",
-          maxWidth: "24rem",
-          maxHeight: "min(70dvh, 440px)",
-          transform: "translate(-50%, -50%)",
-        });
-        return;
-      }
-
-      const panelWidth = 288;
-      const panelHeight = 420;
-      const sidePadding = 12;
-      const spaceBelow = window.innerHeight - rect.bottom - sidePadding;
-      const left = Math.min(
-        Math.max(rect.left, sidePadding),
-        window.innerWidth - panelWidth - sidePadding,
-      );
-      const top =
-        spaceBelow >= panelHeight
-          ? rect.bottom + 8
-          : Math.max(sidePadding, rect.top - panelHeight - 8);
-
-      setPanelStyle({
-        left,
-        top,
-        width: "18rem",
-        maxHeight: "min(70dvh, 440px)",
-      });
-    };
-
-    updatePosition();
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition, true);
-
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition, true);
-    };
-  }, [open]);
-
   return (
-    <div className="relative">
+    <>
       <button
-        ref={triggerRef}
         type="button"
-        onClick={() => setOpen(!open)}
-        className="glass-pill flex h-11 w-11 items-center justify-center rounded-xl text-xl transition-all hover:-translate-y-0.5 active:scale-95 sm:h-12 sm:w-12 sm:text-2xl"
+        onClick={() => {
+          setSearch("");
+          setOpen(true);
+        }}
+        className="glass-pill flex h-11 w-11 items-center justify-center rounded-xl text-xl active:scale-95 sm:h-12 sm:w-12 sm:text-2xl"
+        aria-label="Обрати іконку"
       >
-        {value || "📦"}
+        {value ? <span>{value}</span> : <Package className="h-5 w-5 text-foreground/55" />}
       </button>
 
-      {typeof document !== "undefined" &&
-        open &&
-        createPortal(
-          <>
-            <div
-              data-allow-modal-outside="true"
-              className="fixed inset-0 pointer-events-auto"
-              style={{ zIndex: 100 }}
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Оберіть іконку"
+        size="md"
+        tall
+      >
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
               onClick={() => setOpen(false)}
+              aria-label="Назад"
+              className="glass-pill flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-foreground/70 hover:text-foreground"
             >
-              <div className="h-full bg-black/30 sm:bg-transparent" />
-            </div>
-
-            <div
-              data-allow-modal-outside="true"
-              className="glass-panel fixed pointer-events-auto rounded-2xl p-4 sm:p-3"
-              style={{ ...panelStyle, zIndex: 101 }}
-              onClick={(e) => e.stopPropagation()}
-              onWheelCapture={(e) => {
-                const list = listRef.current;
-                if (!list) return;
-                list.scrollTop += e.deltaY;
-                e.preventDefault();
-              }}
-            >
-              <input
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <div className="relative flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 field-icon" />
+              <Input
                 type="text"
-                placeholder="Шукати..."
+                placeholder="Пошук категорії…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="input-glass mb-3 w-full text-sm"
+                className="pl-10"
+                autoFocus={false}
               />
-              <div
-                ref={listRef}
-                className="overflow-y-auto overscroll-contain [touch-action:pan-y]"
-                style={{ maxHeight: "min(calc(70dvh - 80px), 360px)" }}
-              >
-                <div className="space-y-3">
-                  {filteredGroups.map((group) => (
-                    <div key={group.label}>
-                      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-foreground/40">
-                        {group.label}
-                      </p>
-                      <div className="flex flex-wrap gap-0.5 p-0.5">
-                        {group.emojis.map((emoji) => (
-                          <button
-                            key={emoji}
-                            type="button"
-                            onClick={() => {
-                              onChange(emoji);
-                              setOpen(false);
-                            }}
-                            className={`flex h-9 w-9 items-center justify-center rounded-lg text-lg transition-all hover:bg-foreground/10 sm:h-8 sm:w-8 ${
-                              value === emoji
-                                ? "bg-rose-500/18 ring-2 ring-rose-400/38"
-                                : ""
-                            }`}
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
-          </>,
-          document.body,
-        )}
-    </div>
+          </div>
+
+          <div className="space-y-4 pb-2">
+            {filteredGroups.length === 0 ? (
+              <p className="py-8 text-center text-sm text-foreground/45">
+                Нічого не знайдено
+              </p>
+            ) : (
+              filteredGroups.map((group) => (
+                <div key={group.label}>
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-foreground/45">
+                    {group.label}
+                  </p>
+                  <div className="grid grid-cols-7 gap-1.5 sm:grid-cols-8">
+                    {group.emojis.map((emoji) => {
+                      const selected = value === emoji;
+                      return (
+                        <button
+                          key={emoji}
+                          type="button"
+                          onClick={() => {
+                            onChange(emoji);
+                            setOpen(false);
+                          }}
+                          className={`flex aspect-square w-full items-center justify-center rounded-lg text-xl active:scale-95 ${
+                            selected
+                              ? "bg-active"
+                              : "hover:bg-foreground/8"
+                          }`}
+                        >
+                          {emoji}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 }

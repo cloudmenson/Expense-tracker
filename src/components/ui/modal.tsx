@@ -23,7 +23,7 @@ export function Modal({
   title,
   children,
   size = "md",
-  closeOnOverlay = true,
+  closeOnOverlay = false,
   closeOnEscape = true,
   tall = false,
   allowOverflow = false,
@@ -51,6 +51,12 @@ export function Modal({
 
         {/* Panel — bottom sheet on mobile, centered card on sm+ */}
         <DialogPrimitive.Content
+          onOpenAutoFocus={(event) => {
+            // Prevent Radix from auto-focusing the first focusable element when
+            // the dialog opens — on mobile this triggers the keyboard which is
+            // an unwanted behaviour for non-form modals.
+            event.preventDefault();
+          }}
           onEscapeKeyDown={(event) => {
             if (!closeOnEscape) {
               event.preventDefault();
