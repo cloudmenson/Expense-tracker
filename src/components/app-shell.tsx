@@ -141,15 +141,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium outline-none transition-colors duration-150 focus:outline-none focus-visible:outline-none ${
+                style={
                   active
-                    ? "glass-pill text-foreground"
-                    : "text-foreground/42 hover:text-foreground/80"
+                    ? {
+                        background: "var(--foreground)",
+                        color: "var(--foreground-on-active)",
+                      }
+                    : undefined
+                }
+                className={`group flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium outline-none ${
+                  active
+                    ? "shadow-sm"
+                    : "text-foreground/70 hover:bg-foreground/8 hover:text-foreground"
                 }`}
               >
                 <item.icon
-                  className={`h-5 w-5 shrink-0 transition-colors ${active ? "text-foreground/80" : "text-foreground/30 group-hover:text-foreground/60"}`}
-                  strokeWidth={active ? 2 : 1.75}
+                  className={`h-5 w-5 shrink-0 ${active ? "" : "text-foreground/70 group-hover:text-foreground"}`}
+                  strokeWidth={active ? 2.25 : 1.9}
                 />
                 <span className={active ? "font-semibold" : ""}>
                   {item.label}
@@ -178,7 +186,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* ── Content ── */}
       <main
-        className="mobile-scrollbar-hidden flex-1 pt-[calc(84px+max(12px,env(safe-area-inset-top)))] pb-[calc(112px+env(safe-area-inset-bottom))] lg:pl-[calc(17rem+2rem)] lg:pt-0 lg:pb-0"
+        className="mobile-scrollbar-hidden flex-1 pt-[calc(84px+max(10px,env(safe-area-inset-top)))] pb-[calc(96px+env(safe-area-inset-bottom))] lg:pt-0 lg:pb-0 lg:pl-76"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -186,7 +194,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         style={{ touchAction: "pan-y" }}
       >
         <div
-          className={`mx-auto max-w-6xl px-4 py-5 transition-all duration-220 ease-out sm:px-5 lg:px-8 lg:py-8 ${
+          className={`mx-auto max-w-6xl px-4 py-4 transition-all duration-220 ease-out sm:px-5 sm:py-5 lg:px-8 lg:py-8 ${
             isNavigating
               ? swipeDirection === "left"
                 ? "-translate-x-2 opacity-85"
@@ -199,8 +207,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
 
       {/* ── Mobile bottom nav (island) ── */}
-      <nav className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+14px)] z-40 flex justify-center px-6 lg:hidden">
-        <div className="nav-island relative flex h-[72px] items-center gap-2 rounded-[36px] px-3">
+      <nav className="fixed inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+12px)] z-40 flex justify-center px-3 lg:hidden">
+        <div className="nav-island relative flex h-[64px] max-w-full items-center gap-1 rounded-[32px] px-2 sm:gap-2 sm:px-3">
           {NAV_ITEMS.map((item) => {
             const active =
               item.href === "/"
@@ -210,15 +218,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group relative flex h-13 w-13 touch-manipulation select-none items-center justify-center rounded-[24px] outline-none transition-colors duration-200 focus:outline-none focus-visible:outline-none active:scale-95 ${
+                className={`group relative flex h-11 w-11 shrink-0 touch-manipulation select-none items-center justify-center rounded-xl outline-none active:scale-95 sm:h-13 sm:w-13 sm:rounded-[24px] ${
                   active ? "nav-active-item" : ""
                 }`}
               >
                 <item.icon
-                  className={`h-[22px] w-[22px] transition-colors ${
+                  className={`h-[22px] w-[22px] ${
                     active
                       ? "text-foreground dark:text-white"
-                      : "text-foreground/65 group-hover:text-foreground dark:text-white/55 dark:group-hover:text-white/80"
+                      : "text-foreground/80 group-hover:text-foreground dark:text-white/65 dark:group-hover:text-white"
                   }`}
                   strokeWidth={active ? 2.25 : 2}
                 />

@@ -320,7 +320,8 @@ export default function DashboardPage() {
             <>
               Ви впевнені, що хочете видалити{" "}
               <span className="font-semibold text-foreground">
-                {expenseToDelete.emoji || "📦"} {expenseToDelete.title}
+                {expenseToDelete.emoji ? `${expenseToDelete.emoji} ` : ""}
+                {expenseToDelete.title}
               </span>{" "}
               на суму{" "}
               <span className="font-semibold text-foreground">

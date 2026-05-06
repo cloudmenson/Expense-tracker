@@ -1,5 +1,6 @@
 "use client";
 
+import { Package } from "lucide-react";
 import type { Expense, Category } from "@/types/expense";
 import { PersonAvatar } from "@/components/person-avatar";
 import { formatMoney } from "@/lib/utils";
@@ -47,18 +48,22 @@ export function ExpenseListItem({
       onClick={() => onView?.(expense)}
       className="glass-card group rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5"
       style={{
-        borderLeft: `3px solid ${borderColor}40`,
+        borderLeft: `5px solid ${borderColor}`,
       }}
     >
       <div className="flex items-center gap-3">
         {/* Clickable area — opens detail on mobile */}
         <div className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 sm:cursor-default">
-          {/* Emoji */}
+          {/* Icon */}
           <div
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-lg sm:h-12 sm:w-12 sm:text-xl"
-            style={{ backgroundColor: `${categoryColor}18` }}
+            style={{ backgroundColor: `${categoryColor}18`, color: categoryColor }}
           >
-            {expense.emoji || category?.emoji || "📦"}
+            {expense.emoji || category?.emoji ? (
+              <span>{expense.emoji || category?.emoji}</span>
+            ) : (
+              <Package className="h-5 w-5" />
+            )}
           </div>
 
           {/* Details — takes remaining space */}

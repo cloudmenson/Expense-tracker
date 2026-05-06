@@ -14,6 +14,7 @@ import {
   AreaChart,
   Area,
 } from "recharts";
+import { PieChart as PieChartIcon } from "lucide-react";
 import type { Category } from "@/types/expense";
 
 const tooltipStyle = {
@@ -100,53 +101,68 @@ interface CategoryPieProps {
 }
 
 export function CategoryPieChart({ data, total, currency }: CategoryPieProps) {
+  const isEmpty = data.length === 0 || total === 0;
   return (
     <div className="widget-no-outline glass-card rounded-2xl p-5">
       <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/45">
         За категоріями
       </p>
-      <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-        <div className="h-48 w-48 shrink-0">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={80}
-                paddingAngle={3}
-                dataKey="value"
-                strokeWidth={0}
-              >
-                {data.map((entry, i) => (
-                  <Cell key={i} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(val) =>
-                  `${currency} ${Number(val).toLocaleString("uk-UA")}`
-                }
-                contentStyle={tooltipStyle}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+      {isEmpty ? (
+        <div className="flex min-h-48 flex-col items-center justify-center text-center">
+          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-foreground/6 ring-1 ring-foreground/8">
+            <PieChartIcon className="h-6 w-6 text-foreground/45" />
+          </div>
+          <p className="text-sm font-semibold text-foreground/70">
+            Немає витрат за цей місяць
+          </p>
+          <p className="mt-1 text-xs text-foreground/45">
+            Додай першу витрату — і тут зʼявиться розклад по категоріях
+          </p>
         </div>
-        <div className="min-w-0 flex-1 -mr-1 max-h-48 space-y-1.5 overflow-y-auto pr-1">
-          {data.map((d) => (
-            <div key={d.name} className="flex items-center gap-2 text-xs">
-              <div
-                className="h-2.5 w-2.5 shrink-0 rounded-full"
-                style={{ backgroundColor: d.color }}
-              />
-              <span className="truncate text-foreground/60">{d.name}</span>
-              <span className="ml-auto shrink-0 font-semibold tabular-nums">
-                {total > 0 ? ((d.value / total) * 100).toFixed(1) : 0}%
-              </span>
-            </div>
-          ))}
+      ) : (
+        <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+          <div className="h-48 w-48 shrink-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={80}
+                  paddingAngle={3}
+                  dataKey="value"
+                  strokeWidth={0}
+                >
+                  {data.map((entry, i) => (
+                    <Cell key={i} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(val) =>
+                    `${currency} ${Number(val).toLocaleString("uk-UA")}`
+                  }
+                  contentStyle={tooltipStyle}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="min-w-0 flex-1 -mr-1 max-h-48 space-y-1.5 overflow-y-auto pr-1">
+            {data.map((d) => (
+              <div key={d.name} className="flex items-center gap-2 text-xs">
+                <div
+                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: d.color }}
+                />
+                <span className="truncate text-foreground/60">{d.name}</span>
+                <span className="ml-auto shrink-0 font-semibold tabular-nums">
+                  {total > 0 ? ((d.value / total) * 100).toFixed(1) : 0}%
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

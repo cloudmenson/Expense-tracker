@@ -185,17 +185,21 @@ export default function CategoryExpensesPage() {
         </div>
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all ${
+          className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
             showFilters || activeFilterCount > 0
-              ? "bg-brand-soft text-brand-deep"
-              : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+              ? "bg-active"
+              : "glass-pill text-foreground/55 hover:text-foreground"
           }`}
         >
           <SlidersHorizontal className="h-4 w-4" />
           {activeFilterCount > 0 && (
             <span
-              className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white"
-              style={{ background: "var(--brand)" }}
+              className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold"
+              style={{
+                background: "var(--background)",
+                color: "var(--foreground)",
+                boxShadow: "0 0 0 2px var(--foreground)",
+              }}
             >
               {activeFilterCount}
             </span>
@@ -216,7 +220,7 @@ export default function CategoryExpensesPage() {
                 onClick={() => setSelectedPerson("all")}
                 className={`rounded-xl px-4 py-1.5 text-xs font-semibold transition-all ${
                   selectedPerson === "all"
-                    ? "bg-foreground text-background shadow-sm"
+                    ? "bg-active shadow-sm"
                     : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
                 }`}
               >
@@ -277,23 +281,13 @@ export default function CategoryExpensesPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowCalendar(true)}
-                className={`flex items-center gap-1.5 rounded-xl py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold ${
                   hasDateFilter
-                    ? "shadow-sm ring-1 ring-foreground/10"
-                    : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
+                    ? "bg-active"
+                    : "glass-pill text-foreground/55 hover:text-foreground"
                 }`}
-                style={
-                  hasDateFilter
-                    ? { backgroundColor: "#e11d4818", color: "#e11d48" }
-                    : undefined
-                }
               >
-                <span
-                  className="flex h-5 w-5 items-center justify-center rounded-xl text-white"
-                  style={{ backgroundColor: "#e11d48" }}
-                >
-                  <CalendarDays className="h-3 w-3" />
-                </span>
+                <CalendarDays className="h-3.5 w-3.5" />
                 {dateLabel ?? "Обрати дати"}
               </button>
               {hasDateFilter && (
@@ -336,7 +330,7 @@ export default function CategoryExpensesPage() {
                   onClick={() => setSortBy(val)}
                   className={`rounded-xl px-3 py-2 text-xs font-medium transition-all ${
                     sortBy === val
-                      ? "bg-foreground text-background"
+                      ? "bg-active"
                       : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
                   }`}
                 >
@@ -428,7 +422,8 @@ export default function CategoryExpensesPage() {
             <>
               Ви впевнені, що хочете видалити{" "}
               <span className="font-semibold text-foreground">
-                {expenseToDelete.emoji || "📦"} {expenseToDelete.title}
+                {expenseToDelete.emoji ? `${expenseToDelete.emoji} ` : ""}
+                {expenseToDelete.title}
               </span>{" "}
               на суму{" "}
               <span className="font-semibold text-foreground">

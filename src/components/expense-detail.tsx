@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Package } from "lucide-react";
 import type { Expense, Category } from "@/types/expense";
 import { PersonAvatar } from "@/components/person-avatar";
 import { formatMoney } from "@/lib/utils";
@@ -43,9 +43,16 @@ export function ExpenseDetail({
       <div className="flex items-start gap-4">
         <div
           className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-2xl"
-          style={{ backgroundColor: (category?.color ?? "#94a3b8") + "18" }}
+          style={{
+            backgroundColor: (category?.color ?? "#94a3b8") + "18",
+            color: category?.color ?? "#94a3b8",
+          }}
         >
-          {expense.emoji || category?.emoji || "📦"}
+          {expense.emoji || category?.emoji ? (
+            <span>{expense.emoji || category?.emoji}</span>
+          ) : (
+            <Package className="h-6 w-6" />
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="text-lg font-bold">{expense.title}</h3>

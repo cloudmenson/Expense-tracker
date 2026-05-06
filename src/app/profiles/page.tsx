@@ -377,7 +377,7 @@ export default function ProfilesPage() {
               </div>
 
               {/* Camera icon */}
-              <label className="absolute bottom-0 right-0 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-xl bg-foreground text-background shadow-md transition-transform hover:scale-110 active:scale-95">
+              <label className="absolute bottom-0 right-0 z-10 flex h-7 w-7 cursor-pointer items-center justify-center rounded-xl bg-active shadow-md transition-transform hover:scale-110 active:scale-95">
                 <input
                   type="file"
                   accept="image/*"

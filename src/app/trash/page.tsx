@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Trash2, RotateCcw, X } from "lucide-react";
+import { Trash2, RotateCcw, X, Package, Folder } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -102,9 +102,18 @@ export default function TrashPage() {
                     backgroundColor: isExpense
                       ? "rgba(148,163,184,0.12)"
                       : (data.color ?? "#94a3b8") + "18",
+                    color: isExpense
+                      ? "var(--foreground)"
+                      : (data.color ?? "#94a3b8"),
                   }}
                 >
-                  {data.emoji || (isExpense ? "📦" : "🗂️")}
+                  {data.emoji ? (
+                    <span>{data.emoji}</span>
+                  ) : isExpense ? (
+                    <Package className="h-5 w-5" />
+                  ) : (
+                    <Folder className="h-5 w-5" />
+                  )}
                 </div>
 
                 {/* Info */}

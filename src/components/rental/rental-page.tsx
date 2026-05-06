@@ -40,10 +40,10 @@ export function RentalPage() {
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
+              className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-medium sm:px-4 sm:text-sm ${
                 active
-                  ? "glass-card text-brand-deep ring-2 ring-brand/35"
-                  : "text-foreground/55 hover:bg-foreground/4"
+                  ? "bg-active"
+                  : "text-foreground/55 hover:text-foreground"
               }`}
             >
               <Icon className="h-4 w-4" />

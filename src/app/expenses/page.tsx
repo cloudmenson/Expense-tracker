@@ -291,28 +291,28 @@ export default function ExpensesPage() {
         </div>
       </div>
       <div className="glass-pill inline-flex w-full gap-1 rounded-xl p-1.5 sm:w-auto">
-        <button
-          type="button"
-          onClick={() => setActiveTab("categories")}
-          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all sm:flex-none ${
-            activeTab === "categories"
-              ? "btn-primary min-h-0 px-4 py-2.5"
-              : "text-foreground/50 hover:text-foreground"
-          }`}
-        >
-          Категорії
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("all")}
-          className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all sm:flex-none ${
-            activeTab === "all"
-              ? "btn-primary min-h-0 px-4 py-2.5"
-              : "text-foreground/50 hover:text-foreground"
-          }`}
-        >
-          Все
-        </button>
+        {(
+          [
+            { val: "categories" as const, label: "Категорії" },
+            { val: "all" as const, label: "Все" },
+          ]
+        ).map((opt) => {
+          const active = activeTab === opt.val;
+          return (
+            <button
+              key={opt.val}
+              type="button"
+              onClick={() => setActiveTab(opt.val)}
+              className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold sm:flex-none ${
+                active
+                  ? "bg-active"
+                  : "text-foreground/55 hover:text-foreground"
+              }`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
       </div>
 
       {activeTab === "categories" ? (
@@ -383,15 +383,22 @@ export default function ExpensesPage() {
             <button
               type="button"
               onClick={() => setShowFilters((v) => !v)}
-              className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all ${
+              className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
                 showFilters || activeFilterCount > 0
-                  ? "glass-card text-rose-600 dark:text-pink-300"
-                  : "glass-pill text-foreground/50 hover:bg-white/14"
+                  ? "bg-active"
+                  : "glass-pill text-foreground/55 hover:text-foreground"
               }`}
             >
               <SlidersHorizontal className="h-4 w-4" />
               {activeFilterCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-xl bg-rose-500 text-[9px] font-bold text-white">
+                <span
+                  className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold"
+                  style={{
+                    background: "var(--background)",
+                    color: "var(--foreground)",
+                    boxShadow: "0 0 0 2px var(--foreground)",
+                  }}
+                >
                   {activeFilterCount}
                 </span>
               )}
@@ -473,23 +480,13 @@ export default function ExpensesPage() {
                   <button
                     type="button"
                     onClick={() => setShowCalendar(true)}
-                    className={`flex items-center gap-1.5 rounded-xl py-1.5 pl-1.5 pr-3.5 text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold ${
                       hasDateFilter
-                        ? "glass-card shadow-sm ring-1 ring-white/10"
-                        : "glass-pill text-foreground/50 hover:bg-white/14"
+                        ? "bg-active"
+                        : "glass-pill text-foreground/55 hover:text-foreground"
                     }`}
-                    style={
-                      hasDateFilter
-                        ? { backgroundColor: "#e11d4818", color: "#e11d48" }
-                        : undefined
-                    }
                   >
-                    <span
-                      className="flex h-5 w-5 items-center justify-center rounded-xl text-white"
-                      style={{ backgroundColor: "#e11d48" }}
-                    >
-                      <CalendarDays className="h-3 w-3" />
-                    </span>
+                    <CalendarDays className="h-3.5 w-3.5" />
                     {dateLabel ?? "Обрати дати"}
                   </button>
                   {hasDateFilter && (
@@ -533,7 +530,7 @@ export default function ExpensesPage() {
                       onClick={() => setSortBy(val)}
                       className={`rounded-xl px-3 py-2 text-xs font-medium transition-all ${
                         sortBy === val
-                          ? "bg-foreground text-background"
+                          ? "bg-active"
                           : "bg-foreground/5 text-foreground/50 hover:bg-foreground/10"
                       }`}
                     >
@@ -631,7 +628,8 @@ export default function ExpensesPage() {
             <>
               Ви впевнені, що хочете видалити{" "}
               <span className="font-semibold text-foreground">
-                {expenseToDelete.emoji || "📦"} {expenseToDelete.title}
+                {expenseToDelete.emoji ? `${expenseToDelete.emoji} ` : ""}
+                {expenseToDelete.title}
               </span>{" "}
               на суму{" "}
               <span className="font-semibold text-foreground">

@@ -10,6 +10,8 @@ import {
   Loader2,
   Bell,
   BellOff,
+  Sun,
+  Moon,
 } from "lucide-react";
 import {
   getPermission,
@@ -227,19 +229,24 @@ export default function SettingsPage() {
       <div className="glass-card rounded-xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Тема оформлення</h2>
         <div className="grid grid-cols-2 gap-2">
-          {(["light", "dark"] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTheme(t)}
-              className={`rounded-2xl px-2 py-3 text-xs font-medium transition-all sm:px-4 sm:text-sm ${
-                theme === t
-                  ? "glass-card text-brand-deep ring-2 ring-brand/35"
-                  : "glass-pill text-foreground/50 hover:bg-foreground/4"
-              }`}
-            >
-              {t === "light" ? "☀️ Світла" : "🌙 Темна"}
-            </button>
-          ))}
+          {(["light", "dark"] as const).map((t) => {
+            const active = theme === t;
+            const Icon = t === "light" ? Sun : Moon;
+            return (
+              <button
+                key={t}
+                onClick={() => setTheme(t)}
+                className={`flex items-center justify-center gap-2 rounded-2xl border px-2 py-3 text-xs font-medium sm:px-4 sm:text-sm ${
+                  active
+                    ? "border-transparent bg-active"
+                    : "border-border bg-surface text-foreground/55 hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {t === "light" ? "Світла" : "Темна"}
+              </button>
+            );
+          })}
         </div>
       </div>
 

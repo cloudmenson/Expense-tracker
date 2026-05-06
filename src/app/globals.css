@@ -8,105 +8,107 @@
 
 /* ─── Light theme (default) ─── */
 :root {
-  --background: #faf3e7;
-  --foreground: #3a2a1f;
-  --muted: #9c8470;
+  --background: #f7efde;
+  --foreground: #4a3424;
+  --foreground-on-active: #fdf6e8;
+  --muted: #897363;
 
-  --surface: #fffaf0;
-  --surface-strong: #fffdf6;
-  --surface-sunken: #f3e8d5;
-  --border: #e7d6bc;
-  --border-strong: #d8c2a0;
+  --surface: #ffffff;
+  --surface-strong: #ffffff;
+  --surface-sunken: #efe5d2;
+  --border: #ddcdb1;
+  --border-strong: #c4ab85;
 
-  --brand: #d97757;
-  --brand-strong: #e8956d;
-  --brand-deep: #b85a3d;
-  --brand-soft: rgba(217, 119, 87, 0.14);
+  --brand: #cf6e4e;
+  --brand-strong: #e88869;
+  --brand-deep: #9c4a32;
+  --brand-soft: rgba(207, 110, 78, 0.14);
 
-  --accent-sage: #8aa17a;
-  --accent-sage-soft: rgba(138, 161, 122, 0.16);
-  --accent-honey: #e0a86b;
-  --accent-honey-soft: rgba(224, 168, 107, 0.18);
-  --accent-rose: #d68a8a;
+  --accent-sage: #7a9569;
+  --accent-sage-soft: rgba(122, 149, 105, 0.16);
+  --accent-honey: #d99847;
+  --accent-honey-soft: rgba(217, 152, 71, 0.18);
+  --accent-rose: #c97676;
 
-  --success: #6f9462;
-  --success-soft: rgba(111, 148, 98, 0.16);
-  --danger: #c75a4a;
-  --danger-soft: rgba(199, 90, 74, 0.14);
-  --warning: #d99845;
-  --warning-soft: rgba(217, 152, 69, 0.16);
+  --success: #5e8856;
+  --success-soft: rgba(94, 136, 86, 0.16);
+  --danger: #b94e3f;
+  --danger-soft: rgba(185, 78, 63, 0.14);
+  --warning: #c9883a;
+  --warning-soft: rgba(201, 136, 58, 0.16);
 
   /* legacy "glass" tokens — kept for utility name compat, repurposed as warm soft surfaces */
-  --glass-bg: #fffaf0;
-  --glass-bg-strong: #fffdf6;
-  --glass-border: #e7d6bc;
-  --glass-highlight: rgba(255, 255, 255, 0.7);
-  --glass-edge: rgba(112, 76, 50, 0.08);
-  --glass-shadow: 0 18px 40px rgba(120, 70, 40, 0.10);
+  --glass-bg: #ffffff;
+  --glass-bg-strong: #ffffff;
+  --glass-border: #ddcdb1;
+  --glass-highlight: rgba(255, 255, 255, 0.95);
+  --glass-edge: rgba(80, 56, 36, 0.08);
+  --glass-shadow: 0 18px 40px rgba(120, 70, 40, 0.08);
 
-  --panel-gradient: linear-gradient(160deg, #fffaf0 0%, #fbeed7 100%);
-  --dot-color: rgba(180, 140, 95, 0.14);
+  --panel-gradient: linear-gradient(160deg, #ffffff 0%, #fbf4e3 100%);
+  --dot-color: rgba(170, 130, 85, 0.12);
 
-  --nav-island-bg: #fffaf0;
-  --nav-island-border: #e7d6bc;
-  --nav-active-bg: #f3e2c4;
+  --nav-island-bg: #ffffff;
+  --nav-island-border: #ddcdb1;
+  --nav-active-bg: #f0e0bc;
 
   --shadow-soft: 0 2px 6px rgba(120, 70, 40, 0.06), 0 8px 22px rgba(120, 70, 40, 0.08);
-  --shadow-cozy: 0 4px 10px rgba(120, 70, 40, 0.08), 0 14px 34px rgba(120, 70, 40, 0.10);
-  --shadow-lift: 0 6px 14px rgba(120, 70, 40, 0.10), 0 22px 50px rgba(120, 70, 40, 0.14);
+  --shadow-cozy: 0 4px 10px rgba(120, 70, 40, 0.07), 0 14px 34px rgba(120, 70, 40, 0.09);
+  --shadow-lift: 0 6px 14px rgba(120, 70, 40, 0.09), 0 22px 50px rgba(120, 70, 40, 0.12);
 
   --radius-pebble: 14px;
   --radius-card: 22px;
   --radius-pillow: 28px;
 }
 
-/* ─── Dark theme ─── */
+/* ─── Dark theme — deep cool charcoal with warm amber accent ─── */
 .dark {
-  --background: #14171c;
-  --foreground: #ecedf1;
-  --muted: #8b8e98;
+  --background: #0f1218;
+  --foreground: #ece6d8;
+  --foreground-on-active: #1a140e;
+  --muted: #9b958a;
 
-  --surface: #1d2026;
-  --surface-strong: #23262d;
-  --surface-sunken: #0e1014;
-  --border: #2c3038;
-  --border-strong: #3a3f49;
+  --surface: #1a1d26;
+  --surface-strong: #21242f;
+  --surface-sunken: #0a0c11;
+  --border: #2c3140;
+  --border-strong: #3d4356;
 
-  --brand: #f0a06a;
-  --brand-strong: #ffbe8a;
-  --brand-deep: #d4824f;
-  --brand-soft: rgba(240, 160, 106, 0.16);
+  --brand: #f4a06b;
+  --brand-strong: #ffba88;
+  --brand-deep: #d18458;
+  --brand-soft: rgba(244, 160, 107, 0.16);
 
-  --accent-sage: #9eb892;
-  --accent-sage-soft: rgba(158, 184, 146, 0.14);
-  --accent-honey: #ecbf72;
-  --accent-honey-soft: rgba(236, 191, 114, 0.14);
-  --accent-rose: #e3a092;
+  --accent-sage: #a3bf95;
+  --accent-sage-soft: rgba(163, 191, 149, 0.14);
+  --accent-honey: #efc079;
+  --accent-honey-soft: rgba(239, 192, 121, 0.14);
+  --accent-rose: #e8a395;
 
-  --success: #93b886;
-  --success-soft: rgba(147, 184, 134, 0.16);
-  --danger: #e88a78;
-  --danger-soft: rgba(232, 138, 120, 0.16);
-  --warning: #ecbf72;
-  --warning-soft: rgba(236, 191, 114, 0.16);
+  --success: #95bd86;
+  --success-soft: rgba(149, 189, 134, 0.16);
+  --danger: #ec8d7a;
+  --danger-soft: rgba(236, 141, 122, 0.16);
+  --warning: #efc079;
+  --warning-soft: rgba(239, 192, 121, 0.16);
 
-  --glass-bg: #1d2026;
-  --glass-bg-strong: #23262d;
-  --glass-border: #2c3038;
+  --glass-bg: #1a1d26;
+  --glass-bg-strong: #21242f;
+  --glass-border: #2c3140;
   --glass-highlight: rgba(255, 255, 255, 0.04);
   --glass-edge: rgba(255, 255, 255, 0.03);
-  --glass-shadow: 0 22px 56px rgba(0, 0, 0, 0.45);
+  --glass-shadow: 0 22px 56px rgba(0, 0, 0, 0.5);
 
-  --panel-gradient: linear-gradient(160deg, #23262d 0%, #1a1c22 100%);
-  --dot-color: rgba(220, 220, 230, 0.04);
+  --panel-gradient: linear-gradient(160deg, #21242f 0%, #161922 100%);
+  --dot-color: rgba(220, 220, 240, 0.04);
 
-  --nav-island-bg: #1a1c22;
-  --nav-island-border: #2c3038;
-  --nav-active-bg: #2c3038;
+  --nav-island-bg: #161922;
+  --nav-island-border: #2c3140;
+  --nav-active-bg: #2c3140;
 
-  --shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.35), 0 10px 24px rgba(0, 0, 0, 0.4);
-  --shadow-cozy: 0 4px 10px rgba(0, 0, 0, 0.4), 0 16px 38px rgba(0, 0, 0, 0.45);
-  --shadow-lift: 0 6px 14px rgba(0, 0, 0, 0.45), 0 24px 56px rgba(0, 0, 0, 0.5);
+  --shadow-soft: 0 2px 6px rgba(0, 0, 0, 0.4), 0 10px 24px rgba(0, 0, 0, 0.45);
+  --shadow-cozy: 0 4px 10px rgba(0, 0, 0, 0.45), 0 16px 38px rgba(0, 0, 0, 0.5);
+  --shadow-lift: 0 6px 14px rgba(0, 0, 0, 0.5), 0 24px 56px rgba(0, 0, 0, 0.55);
 }
 
 @theme inline {
@@ -160,22 +162,22 @@ body {
   -webkit-overflow-scrolling: touch;
   background-image:
     radial-gradient(
-      ellipse 110% 55% at 50% -10%,
-      rgba(255, 220, 170, 0.55),
-      transparent 60%
+      ellipse 110% 50% at 50% -10%,
+      rgba(255, 220, 170, 0.45),
+      transparent 65%
     ),
     radial-gradient(
-      ellipse 70% 35% at 85% 95%,
-      rgba(217, 119, 87, 0.10),
+      ellipse 65% 30% at 90% 95%,
+      rgba(207, 110, 78, 0.07),
       transparent 70%
     ),
     radial-gradient(
-      ellipse 60% 30% at 12% 88%,
-      rgba(138, 161, 122, 0.12),
+      ellipse 60% 28% at 10% 90%,
+      rgba(122, 149, 105, 0.08),
       transparent 70%
     ),
     radial-gradient(circle, var(--dot-color) 1px, transparent 1px),
-    linear-gradient(180deg, #fdf6e8 0%, #faf0dd 50%, #f4e7cd 100%);
+    linear-gradient(180deg, #faf3e3 0%, #f7efde 50%, #f1e6cc 100%);
   background-size:
     auto,
     auto,
@@ -188,17 +190,17 @@ body {
 .dark body {
   background-image:
     radial-gradient(
-      ellipse 110% 45% at 50% -10%,
-      rgba(240, 160, 106, 0.07),
+      ellipse 105% 42% at 50% -8%,
+      rgba(244, 160, 107, 0.08),
       transparent 65%
     ),
     radial-gradient(
       ellipse 70% 38% at 88% 92%,
-      rgba(158, 184, 146, 0.05),
+      rgba(110, 130, 175, 0.05),
       transparent 70%
     ),
     radial-gradient(circle, var(--dot-color) 1px, transparent 1px),
-    linear-gradient(180deg, #181b21 0%, #14171c 50%, #10131a 100%);
+    linear-gradient(180deg, #14171f 0%, #0f1218 50%, #0a0d12 100%);
   background-size:
     auto,
     auto,
@@ -230,6 +232,43 @@ body::before {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Kill native browser focus rings & mobile tap-highlight everywhere.
+   We rely on hover/active/ring-* utilities for visual feedback. */
+button,
+a,
+[role="button"],
+[tabindex] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus,
+button:focus-visible,
+a:focus,
+a:focus-visible,
+[role="button"]:focus,
+[role="button"]:focus-visible,
+[tabindex]:focus,
+[tabindex]:focus-visible {
+  outline: none;
+}
+
+/* Prevent the "white border flash" when buttons toggle between
+   glass-pill ↔ glass-card or nav-active-item is added/removed.
+   With `transition-all` the box-shadow / border-color animates through
+   an intermediate value — looks like a 0.1s flash. Restrict transitions
+   on these utilities to color/transform only. */
+.glass-pill,
+.glass-card,
+.glass-panel,
+.nav-active-item,
+.nav-island,
+.btn-primary,
+.btn-secondary,
+.surface-card {
+  transition-property: background-color, color, transform, opacity !important;
+  transition-duration: 150ms !important;
 }
 
 ::selection {
@@ -276,6 +315,16 @@ a {
 
 @utility subtle-ring {
   box-shadow: 0 0 0 1px var(--border);
+}
+
+/* ─── Active/selected state — gentle warm brown ─── */
+@utility bg-active {
+  background: var(--foreground);
+  color: var(--foreground-on-active);
+}
+
+.bg-active svg {
+  color: var(--foreground-on-active) !important;
 }
 
 /* ─── "Glass" card → cozy paper card ─── */
@@ -364,17 +413,14 @@ a {
 }
 
 @utility nav-active-item {
-  background: var(--nav-active-bg);
-  border: 1px solid var(--border-strong);
-  box-shadow:
-    0 4px 10px rgba(120, 70, 40, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  background: var(--foreground);
+  color: var(--foreground-on-active);
+  border: 1px solid var(--foreground);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
 }
 
-.dark .nav-active-item {
-  box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 220, 175, 0.06);
+.nav-active-item svg {
+  color: var(--foreground-on-active) !important;
 }
 
 /* ─── Inputs ─── */
@@ -442,60 +488,31 @@ select.input-glass option {
   color: var(--foreground);
 }
 
-/* ─── Primary button (terracotta) ─── */
+/* ─── Primary button (foreground / dark cocoa) ─── */
 @utility btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 46px;
+  height: 48px;
   padding: 0 22px;
   border-radius: var(--radius-pebble);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.01em;
-  color: #fffaf2;
-  background: linear-gradient(
-    140deg,
-    var(--brand-strong) 0%,
-    var(--brand) 60%,
-    var(--brand-deep) 100%
-  );
-  box-shadow:
-    0 6px 16px rgba(217, 119, 87, 0.32),
-    0 1px 0 rgba(255, 255, 255, 0.30) inset,
-    0 -2px 0 rgba(120, 50, 30, 0.18) inset;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    filter 0.18s ease;
+  color: var(--background);
+  background: var(--foreground);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
   cursor: pointer;
   border: none;
 }
 
 .btn-primary:hover {
-  transform: translateY(-1px);
-  filter: saturate(1.05) brightness(1.03);
-  box-shadow:
-    0 10px 24px rgba(217, 119, 87, 0.38),
-    0 1px 0 rgba(255, 255, 255, 0.34) inset,
-    0 -2px 0 rgba(120, 50, 30, 0.20) inset;
+  filter: brightness(1.08);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
-  box-shadow:
-    0 3px 8px rgba(217, 119, 87, 0.28),
-    0 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 -1px 0 rgba(120, 50, 30, 0.16) inset;
-}
-
-.dark .btn-primary {
-  color: #1b130d;
-  box-shadow:
-    0 6px 16px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 -2px 0 rgba(80, 40, 20, 0.4) inset;
+  filter: brightness(0.96);
 }
 
 /* ─── Secondary button (cream paper) ─── */
@@ -504,39 +521,21 @@ select.input-glass option {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 46px;
+  height: 48px;
   padding: 0 20px;
   border-radius: var(--radius-pebble);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.01em;
   background: var(--surface-strong);
-  border: 1.5px solid var(--border);
-  box-shadow:
-    inset 0 1px 0 var(--glass-highlight),
-    0 2px 6px rgba(120, 70, 40, 0.06);
+  border: 1px solid var(--border);
   color: var(--foreground);
-  transition:
-    transform 0.18s ease,
-    background 0.18s ease,
-    border-color 0.18s ease;
   cursor: pointer;
 }
 
 .btn-secondary:hover {
-  transform: translateY(-1px);
   background: var(--surface);
   border-color: var(--border-strong);
-}
-
-.btn-secondary:active {
-  transform: translateY(0);
-}
-
-.dark .btn-secondary {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 220, 175, 0.04),
-    0 3px 10px rgba(0, 0, 0, 0.35);
 }
 
 /* ─── Animations ─── */
