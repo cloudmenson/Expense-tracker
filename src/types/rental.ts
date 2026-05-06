@@ -1,25 +1,25 @@
 export type UtilityKind =
   | "gas"
-  | "cold_water"
-  | "hot_water"
+  | "cold_water_bathroom"
+  | "cold_water_kitchen"
   | "electricity"
   | "internet"
   | "rent";
 
 export const UTILITY_LABELS: Record<UtilityKind, string> = {
   gas: "Газ",
-  cold_water: "Холодна вода",
-  hot_water: "Гаряча вода",
+  cold_water_bathroom: "Вода — туалет",
+  cold_water_kitchen: "Вода — кухня",
   electricity: "Електрика",
   internet: "Інтернет",
   rent: "Квартплата",
 };
 
 export const METERED_KINDS: UtilityKind[] = [
-  "gas",
-  "cold_water",
-  "hot_water",
   "electricity",
+  "cold_water_bathroom",
+  "cold_water_kitchen",
+  "gas",
 ];
 
 export const FIXED_KINDS: UtilityKind[] = ["internet", "rent"];

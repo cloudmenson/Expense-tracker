@@ -8,6 +8,7 @@ import { useRentalStore } from "@/lib/rental-store";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MonthPickerModal } from "@/components/ui/month-picker-modal";
+import { ImageViewerModal } from "@/components/ui/image-viewer-modal";
 import { computeMonth } from "@/lib/rental-calc";
 import {
   METERED_KINDS,
@@ -24,6 +25,7 @@ export function MonthsSection() {
   const { months, createMonth, updateMonthReadings } = useRentalStore();
   const [openId, setOpenId] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
 
   const sorted = useMemo(
     () => [...months].sort((a, b) => b.month.localeCompare(a.month)),
@@ -114,12 +116,29 @@ export function MonthsSection() {
                     </p>
                   </div>
                   {m.invoicePhoto ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={m.invoicePhoto}
-                      alt=""
-                      className="h-14 w-14 shrink-0 rounded-2xl object-cover ring-1 ring-foreground/10"
-                    />
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPreviewSrc(m.invoicePhoto ?? null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setPreviewSrc(m.invoicePhoto ?? null);
+                        }
+                      }}
+                      className="block h-14 w-14 shrink-0 cursor-zoom-in overflow-hidden rounded-2xl ring-1 ring-foreground/10"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={m.invoicePhoto}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                    </span>
                   ) : (
                     <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-foreground/5 text-foreground/45">
                       <Receipt className="h-5 w-5" />
@@ -188,6 +207,8 @@ export function MonthsSection() {
         title="Новий місяць"
         disabledMonths={existingMonths}
       />
+
+      <ImageViewerModal src={previewSrc} onClose={() => setPreviewSrc(null)} />
     </div>
   );
 }

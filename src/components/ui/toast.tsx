@@ -23,6 +23,18 @@ export function useToast() {
 
 let _nextId = 0;
 
+const TINT: Record<ToastType, string> = {
+  success: "var(--success)",
+  error: "var(--danger)",
+  info: "var(--brand)",
+};
+
+const TINT_SOFT: Record<ToastType, string> = {
+  success: "var(--success-soft)",
+  error: "var(--danger-soft)",
+  info: "var(--brand-soft)",
+};
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
@@ -42,43 +54,46 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        className="fixed bottom-[calc(68px+env(safe-area-inset-bottom))] left-4 right-4 z-100 flex flex-col items-stretch gap-2 lg:bottom-6 lg:left-auto lg:right-6 lg:w-80"
+        className="fixed bottom-[calc(80px+env(safe-area-inset-bottom))] left-4 right-4 z-100 flex flex-col items-stretch gap-2 lg:bottom-6 lg:left-auto lg:right-6 lg:w-80"
       >
-        {toasts.map((t) => (
-          <div
-            key={t.id}
-            className={`glass-panel flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium ${
-              t.type === "success"
-                ? "text-emerald-900 dark:text-emerald-100"
-                : t.type === "error"
-                  ? "text-rose-900 dark:text-rose-100"
-                  : "text-foreground"
-            }`}
-            style={{
-              backgroundColor:
-                t.type === "success"
-                  ? "var(--success-soft)"
-                  : t.type === "error"
-                    ? "var(--danger-soft)"
-                    : "color-mix(in srgb, var(--glass-bg-strong) 94%, transparent)",
-            }}
-          >
-            {t.type === "success" ? (
-              <CheckCircle2 className="h-4 w-4 shrink-0" />
-            ) : t.type === "error" ? (
-              <XCircle className="h-4 w-4 shrink-0" />
-            ) : (
-              <Info className="h-4 w-4 shrink-0" />
-            )}
-            <p className="flex-1">{t.message}</p>
-            <button
-              onClick={() => dismiss(t.id)}
-              className="shrink-0 opacity-70 transition-opacity hover:opacity-100"
+        {toasts.map((t) => {
+          const Icon =
+            t.type === "success"
+              ? CheckCircle2
+              : t.type === "error"
+                ? XCircle
+                : Info;
+          return (
+            <div
+              key={t.id}
+              className="flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium"
+              style={{
+                background: "var(--surface-strong)",
+                color: "var(--foreground)",
+                borderColor: "var(--border)",
+                boxShadow: "var(--shadow-lift)",
+              }}
             >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        ))}
+              <span
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
+                style={{
+                  backgroundColor: TINT_SOFT[t.type],
+                  color: TINT[t.type],
+                }}
+              >
+                <Icon className="h-4 w-4" />
+              </span>
+              <p className="flex-1 leading-snug">{t.message}</p>
+              <button
+                onClick={() => dismiss(t.id)}
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-foreground/45 transition-colors hover:bg-foreground/8 hover:text-foreground"
+                aria-label="Закрити"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          );
+        })}
       </div>
     </ToastContext.Provider>
   );

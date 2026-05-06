@@ -226,14 +226,22 @@ export function PhotoUpload({
   return (
     <div className={cn("space-y-2", className)}>
       {value ? (
-        <div className="relative overflow-hidden rounded-2xl ring-1 ring-foreground/10">
+        <div
+          className="relative flex items-center justify-center overflow-hidden rounded-2xl ring-1 ring-foreground/10"
+          style={{
+            background:
+              "color-mix(in srgb, var(--foreground) 5%, var(--surface-sunken))",
+            minHeight: "8rem",
+            maxHeight: "26rem",
+          }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={value}
             alt=""
             onClick={onPreview ? () => onPreview(value) : undefined}
             className={cn(
-              "block max-h-72 w-full object-cover",
+              "block h-auto max-h-104 w-full object-contain",
               onPreview && "cursor-zoom-in",
             )}
           />

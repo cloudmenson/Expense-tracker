@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { DatePickerModal } from "@/components/ui/date-picker-modal";
 import { PhotoUpload } from "@/components/ui/photo-upload";
-import { ImagePreviewModal } from "@/components/ui/image-preview-modal";
+import { ImageViewerModal } from "@/components/ui/image-viewer-modal";
 import { computeMonth } from "@/lib/rental-calc";
 import {
   METERED_KINDS,
@@ -306,7 +306,7 @@ export function MonthDetail({ month, onBack }: Props) {
         </Button>
       </div>
 
-      <ImagePreviewModal src={previewSrc} onClose={() => setPreviewSrc(null)} />
+      <ImageViewerModal src={previewSrc} onClose={() => setPreviewSrc(null)} />
 
       <DatePickerModal
         open={showDatePicker}

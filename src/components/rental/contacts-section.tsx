@@ -10,7 +10,7 @@ import { Modal } from "@/components/ui/modal";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PhotoUpload } from "@/components/ui/photo-upload";
-import { ImagePreviewModal } from "@/components/ui/image-preview-modal";
+import { ImageViewerModal } from "@/components/ui/image-viewer-modal";
 import {
   Select,
   SelectContent,
@@ -104,7 +104,7 @@ export function ContactsSection() {
         }
       />
 
-      <ImagePreviewModal src={previewSrc} onClose={() => setPreviewSrc(null)} />
+      <ImageViewerModal src={previewSrc} onClose={() => setPreviewSrc(null)} />
     </div>
   );
 }
