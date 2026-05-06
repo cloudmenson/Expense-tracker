@@ -26,6 +26,7 @@ import {
 } from "@/lib/notifications";
 import { useExpenseStore } from "@/lib/store";
 import { useTheme } from "@/components/theme-provider";
+import { ThemePresetPicker } from "@/components/theme-preset-picker";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
@@ -285,6 +286,17 @@ export default function SettingsPage() {
               </button>
             );
           })}
+        </div>
+
+        <div className="mt-6">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-foreground/55">
+            Палітра
+          </p>
+          <p className="mb-3 text-xs text-foreground/55">
+            Змінює акцентний колір для світлої й темної теми. Перший
+            (перекреслений) — стандартна палітра.
+          </p>
+          <ThemePresetPicker />
         </div>
       </div>
 

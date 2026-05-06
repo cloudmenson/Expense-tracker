@@ -72,6 +72,40 @@ export const metadata: Metadata = {
   },
 };
 
+import { THEME_PRESETS } from "@/lib/theme-presets";
+
+// Tiny script injected into <head> that runs synchronously *before* React
+// hydrates. Reads theme + preset from localStorage and applies them to the
+// <html> element so there's no flash of unthemed content (FOUC).
+//
+// We serialize the same palette data the React provider uses so the two
+// stay in sync — single source of truth in `theme-presets.ts`.
+function buildThemeBootstrapScript(): string {
+  const palettes: Record<string, { l: Record<string, string>; d: Record<string, string> }> = {};
+  for (const p of THEME_PRESETS) {
+    if (p.id === "default") continue;
+    palettes[p.id] = {
+      l: p.light as Record<string, string>,
+      d: p.dark as Record<string, string>,
+    };
+  }
+  const PALETTES_JSON = JSON.stringify(palettes);
+  return `(function(){try{
+var d=document.documentElement,s=localStorage;
+var t=s.getItem('theme');t=(t==='dark'||t==='light')?t:'light';
+if(t==='dark')d.classList.add('dark');
+d.style.colorScheme=t;
+var P=${PALETTES_JSON};
+var p=s.getItem('theme-preset');
+if(p&&P[p]){
+  var pal=P[p][t==='dark'?'d':'l'];
+  for(var k in pal){d.style.setProperty(k,pal[k]);}
+}
+}catch(e){}})();`;
+}
+
+const themeBootstrapScript = buildThemeBootstrapScript();
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -84,6 +118,12 @@ export default function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
+      <head>
+        <script
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: themeBootstrapScript }}
+        />
+      </head>
       <body className="flex min-h-dvh flex-col overflow-x-hidden bg-background text-foreground">
         <div className="ambient-bg" />
         <ClientProviders>{children}</ClientProviders>
