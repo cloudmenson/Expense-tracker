@@ -19,23 +19,21 @@ export function ThemePresetPicker() {
             title={p.name}
             aria-label={p.name}
             aria-pressed={active}
-            className="relative flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-md outline-none active:scale-90"
+            className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md outline-none active:scale-95"
             style={{
               background: isDefault
                 ? "var(--surface-strong)"
                 : `linear-gradient(135deg, ${p.swatch.from} 0%, ${p.swatch.to} 100%)`,
               border: `1px solid ${active ? "var(--foreground)" : "var(--border-strong)"}`,
-              boxShadow: active
-                ? "0 0 0 2px var(--foreground)"
-                : undefined,
+              boxShadow: active ? "0 0 0 2px var(--foreground)" : undefined,
             }}
           >
             {isDefault && (
               <span
                 aria-hidden
-                className="pointer-events-none absolute left-0 right-0 top-1/2 origin-center -translate-y-1/2 rotate-[135deg]"
+                className="pointer-events-none absolute left-1 right-1 top-1/2 origin-center -translate-y-1/2 rotate-[135deg]"
                 style={{
-                  borderTop: "2px solid #ff3d4f",
+                  borderTop: "2.5px solid #ff3d4f",
                 }}
               />
             )}
