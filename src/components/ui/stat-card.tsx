@@ -80,7 +80,7 @@ export function StatCard({
             {avatarName?.trim().charAt(0).toUpperCase() ?? "?"}
           </div>
         ) : Icon ? (
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/6 ring-1 ring-foreground/8 text-foreground/50">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/6 ring-1 ring-foreground/8 text-foreground/50 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3">
             <Icon className="h-4.5 w-4.5" />
           </div>
         ) : null}

@@ -15,7 +15,7 @@ import type { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
 import { useExpenseStore } from "@/lib/store";
-import { formatMoney, monthLabel } from "@/lib/utils";
+import { cn, formatMoney, monthLabel } from "@/lib/utils";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
 import { ExpenseListItem } from "@/components/expense-list-item";
@@ -385,13 +385,19 @@ export default function ExpensesPage() {
             <button
               type="button"
               onClick={() => setShowFilters((v) => !v)}
-              className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+              className={cn(
+                "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors",
                 showFilters || activeFilterCount > 0
                   ? "bg-active"
-                  : "glass-pill text-foreground/55 hover:text-foreground"
-              }`}
+                  : "glass-pill text-foreground/55 hover:text-foreground",
+              )}
             >
-              <SlidersHorizontal className="h-4 w-4" />
+              <SlidersHorizontal
+                className={cn(
+                  "h-4 w-4 transition-transform duration-300",
+                  showFilters && "rotate-90",
+                )}
+              />
               {activeFilterCount > 0 && (
                 <span
                   className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold"
@@ -408,7 +414,7 @@ export default function ExpensesPage() {
           </div>
 
           {showFilters && (
-            <div className="glass-card space-y-4 rounded-xl p-4">
+            <div className="glass-card animate-in space-y-4 rounded-xl p-4">
               <div>
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
                   Хто платив

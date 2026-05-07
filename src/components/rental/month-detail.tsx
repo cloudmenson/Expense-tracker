@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, CalendarDays } from "lucide-react";
+import { Loader2, CalendarDays, ChevronDown } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
+import { cn } from "@/lib/utils";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
@@ -259,6 +260,12 @@ export function MonthDetail({ month, onBack }: Props) {
                   очистити
                 </span>
               )}
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 shrink-0 opacity-50 transition-transform duration-200",
+                  showDatePicker && "rotate-180",
+                )}
+              />
             </button>
           </div>
         </div>

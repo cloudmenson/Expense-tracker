@@ -66,7 +66,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           return (
             <div
               key={t.id}
-              className="flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium"
+              className="animate-in flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium"
               style={{
                 background: "var(--surface-strong)",
                 color: "var(--foreground)",

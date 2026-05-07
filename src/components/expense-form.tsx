@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useMemo, useRef } from "react";
-import { Plus, ShoppingCart, ShoppingBag, CalendarDays } from "lucide-react";
+import {
+  Plus,
+  ShoppingCart,
+  ShoppingBag,
+  CalendarDays,
+  ChevronDown,
+} from "lucide-react";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
@@ -356,6 +362,12 @@ export function ExpenseForm({
                 <span className="flex-1 text-sm">
                   {format(parseISO(form.date), "d MMMM yyyy", { locale: uk })}
                 </span>
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 shrink-0 opacity-50 transition-transform duration-200",
+                    showDatePicker && "rotate-180",
+                  )}
+                />
               </button>
             </div>
             <div>

@@ -15,7 +15,7 @@ import type { DateRange } from "react-day-picker";
 import { uk } from "date-fns/locale";
 import { format } from "date-fns";
 import { useExpenseStore } from "@/lib/store";
-import { formatMoney } from "@/lib/utils";
+import { cn, formatMoney } from "@/lib/utils";
 import { ExpenseListItem } from "@/components/expense-list-item";
 import { PersonAvatar } from "@/components/person-avatar";
 import { ExpenseForm } from "@/components/expense-form";
@@ -182,13 +182,19 @@ export default function CategoryExpensesPage() {
         </div>
         <button
           onClick={() => setShowFilters((v) => !v)}
-          className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+          className={cn(
+            "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors",
             showFilters || activeFilterCount > 0
               ? "bg-active"
-              : "glass-pill text-foreground/55 hover:text-foreground"
-          }`}
+              : "glass-pill text-foreground/55 hover:text-foreground",
+          )}
         >
-          <SlidersHorizontal className="h-4 w-4" />
+          <SlidersHorizontal
+            className={cn(
+              "h-4 w-4 transition-transform duration-300",
+              showFilters && "rotate-90",
+            )}
+          />
           {activeFilterCount > 0 && (
             <span
               className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold"
@@ -206,7 +212,7 @@ export default function CategoryExpensesPage() {
 
       {/* ── Expandable filter panel ── */}
       {showFilters && (
-        <div className="glass-card space-y-4 rounded-xl p-4">
+        <div className="glass-card animate-in space-y-4 rounded-xl p-4">
           {/* Person filter */}
           <div>
             <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
