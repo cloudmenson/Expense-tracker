@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 import type {
   Expense,
@@ -92,7 +93,9 @@ type ExpenseDraftPatch = Partial<Omit<ExpenseDraft, "paidBy">> & {
   paidBy?: StrictPayer;
 };
 
-export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
+export const useExpenseStore = create<ExpenseStore>()(
+  persist(
+    (set, get) => ({
   expenses: [],
   categories: DEFAULT_CATEGORIES,
   settings: defaultSettings,
@@ -101,9 +104,15 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
   _loading: false,
   _mutating: false,
 
-  /* ── Hydrate from MongoDB ── */
+  /* ── Hydrate from MongoDB ──
+   *
+   *  Always runs once per browser load (StoreProvider's effect mounts once).
+   *  We only short-circuit on `_loading` to dedupe concurrent calls; the
+   *  `_hydrated` flag is owned by the persist middleware (set true once the
+   *  localStorage cache is restored) so the UI can render cached data
+   *  instantly and we still refresh from the server in the background. */
   hydrate: async () => {
-    if (get()._hydrated || get()._loading) return;
+    if (get()._loading) return;
     set({ _loading: true });
 
     try {
@@ -479,4 +488,26 @@ export const useExpenseStore = create<ExpenseStore>()((set, get) => ({
       set({ _mutating: false });
     }
   },
-}));
+    }),
+    {
+      name: "expense-store",
+      version: 1,
+      storage: createJSONStorage(() => localStorage),
+      // Only persist data fields. The flags (`_hydrated`, `_loading`,
+      // `_mutating`) and the on-demand `trashItems` list stay ephemeral so
+      // every page reload re-fetches fresh data from MongoDB while the UI
+      // renders the cached snapshot instantly in the meantime.
+      partialize: (state) => ({
+        expenses: state.expenses,
+        categories: state.categories,
+        settings: state.settings,
+      }),
+      // Once the cache is restored (or confirmed empty on first visit) we
+      // can hide the skeleton — UI renders with whatever we've got, and
+      // `hydrate()` keeps running in the background to pull fresh data.
+      onRehydrateStorage: () => (state) => {
+        if (state) state._hydrated = true;
+      },
+    },
+  ),
+);

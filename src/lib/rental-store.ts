@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type {
   Contact,
   ContactDraft,
@@ -40,14 +41,19 @@ interface RentalStore {
   deleteMonth: (id: string) => Promise<void>;
 }
 
-export const useRentalStore = create<RentalStore>()((set, get) => ({
+export const useRentalStore = create<RentalStore>()(
+  persist(
+    (set, get) => ({
   contacts: [],
   months: [],
   hydrated: false,
   loading: false,
 
   hydrate: async () => {
-    if (get().hydrated || get().loading) return;
+    // Same rationale as the expense store: refetch once per session, but
+    // `hydrated` is set to true by `onRehydrateStorage` so the UI doesn't
+    // skeleton-flash when we already have cached data in localStorage.
+    if (get().loading) return;
     set({ loading: true });
     try {
       const data = await fetcher<{
@@ -125,4 +131,22 @@ export const useRentalStore = create<RentalStore>()((set, get) => ({
     await fetcher(`${BASE}/months/${id}`, { method: "DELETE" });
     set({ months: get().months.filter((m) => m.id !== id) });
   },
-}));
+    }),
+    {
+      name: "rental-store",
+      version: 1,
+      storage: createJSONStorage(() => localStorage),
+      // Persist only the data; `hydrated` / `loading` reset on each load so
+      // the next session always re-syncs with MongoDB.
+      partialize: (state) => ({
+        contacts: state.contacts,
+        months: state.months,
+      }),
+      // Mark `hydrated` true once the localStorage snapshot is restored so
+      // /rental can render its cached state immediately while we re-fetch.
+      onRehydrateStorage: () => (state) => {
+        if (state) state.hydrated = true;
+      },
+    },
+  ),
+);
