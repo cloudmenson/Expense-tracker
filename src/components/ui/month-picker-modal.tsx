@@ -1,9 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarCheck } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface MonthPickerModalProps {
   open: boolean;
@@ -77,6 +78,14 @@ export function MonthPickerModal({
     }
   };
 
+  const currentMonthKey = fmt(now.getFullYear(), now.getMonth() + 1);
+  const todayDisabled = disabledSet.has(currentMonthKey);
+  const pickToday = () => {
+    if (todayDisabled) return;
+    setYear(now.getFullYear());
+    setPickedMonth(currentMonthKey);
+  };
+
   return (
     <Modal open={open} onClose={onClose} title={title} size="sm">
       {/* Year navigator */}
@@ -115,13 +124,14 @@ export function MonthPickerModal({
               type="button"
               onClick={() => !disabled && setPickedMonth(key)}
               disabled={disabled}
-              className={`flex h-12 items-center justify-center rounded-xl text-sm font-semibold transition-colors ${
+              className={cn(
+                "flex h-12 items-center justify-center rounded-xl text-sm font-semibold transition-colors",
                 selected
                   ? "glass-card text-brand-deep ring-2 ring-brand/35"
                   : disabled
                     ? "bg-foreground/5 text-foreground/25"
-                    : "glass-pill text-foreground/70 hover:bg-foreground/4"
-              }`}
+                    : "glass-pill text-foreground/70 hover:bg-foreground/4",
+              )}
             >
               <span>{label}</span>
               {isCurrent && !selected && (
@@ -135,7 +145,18 @@ export function MonthPickerModal({
         })}
       </div>
 
-      <div className="mt-6 flex gap-2">
+      <Button
+        type="button"
+        variant="secondary"
+        className="mt-4 w-full"
+        onClick={pickToday}
+        disabled={busy || todayDisabled}
+      >
+        <CalendarCheck className="h-4 w-4" />
+        Поточний місяць
+      </Button>
+
+      <div className="mt-3 flex gap-2">
         <Button
           type="button"
           variant="secondary"
