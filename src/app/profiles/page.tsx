@@ -14,9 +14,8 @@ import {
   UserRound,
   Mail,
   Upload,
-  ArrowLeft,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { BackButton } from "@/components/ui/back-button";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { useToast } from "@/components/ui/toast";
 import { Modal } from "@/components/ui/modal";
@@ -44,7 +43,6 @@ const AVATAR_COLORS = [
 export default function ProfilesPage() {
   const { toast } = useToast();
   const { settings, _patchSettings } = useExpenseStore();
-  const router = useRouter();
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -251,14 +249,7 @@ export default function ProfilesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-start gap-3">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          aria-label="Назад"
-          className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground/60 transition-colors hover:bg-foreground/10 hover:text-foreground"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
+        <BackButton />
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Профілі

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Loader2, CalendarDays } from "lucide-react";
+import { Loader2, CalendarDays } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
@@ -100,9 +101,7 @@ export function MonthDetail({ month, onBack }: Props) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
-        <Button variant="secondary" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" /> Назад
-        </Button>
+        <BackButton onClick={onBack} />
         <DeleteIconButton
           variant="ghost"
           size="lg"

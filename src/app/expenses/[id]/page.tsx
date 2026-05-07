@@ -2,9 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import {
-  ArrowLeft,
   Plus,
   Search,
   Receipt,
@@ -12,6 +10,7 @@ import {
   SlidersHorizontal,
   X,
 } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 import type { DateRange } from "react-day-picker";
 import { uk } from "date-fns/locale";
 import { format } from "date-fns";
@@ -130,12 +129,7 @@ export default function CategoryExpensesPage() {
     <div className="space-y-4">
       {/* ── Back + header ── */}
       <div className="flex items-start gap-3">
-        <Link
-          href="/expenses"
-          className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground/60 transition-colors hover:bg-foreground/10 hover:text-foreground"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
+        <BackButton href="/expenses" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2.5">
             {cat && (

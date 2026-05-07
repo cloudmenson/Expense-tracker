@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowLeft, Package, Search } from "lucide-react";
+import { Package, Search } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
 import { Modal } from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
 
@@ -242,14 +243,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
       >
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Назад"
-              className="glass-pill flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-foreground/70 hover:text-foreground"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </button>
+            <BackButton onClick={() => setOpen(false)} className="mt-0" />
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 field-icon" />
               <Input

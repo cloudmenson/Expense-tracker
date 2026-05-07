@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, Trash2, RotateCcw, X, Package, Folder } from "lucide-react";
+import { Trash2, RotateCcw, X, Package, Folder } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
+import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -29,7 +29,6 @@ export default function TrashPage() {
     _mutating,
   } = useExpenseStore();
   const { toast } = useToast();
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [confirmClear, setConfirmClear] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<TrashItem | null>(null);
@@ -42,14 +41,7 @@ export default function TrashPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-start gap-3">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          aria-label="Назад"
-          className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground/60 transition-colors hover:bg-foreground/10 hover:text-foreground"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
+        <BackButton />
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold">Кошик</h1>
           <p className="mt-1 text-sm text-foreground/50">
