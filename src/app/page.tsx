@@ -14,6 +14,7 @@ import {
 import { StatCard } from "@/components/ui/stat-card";
 import { BudgetProgress } from "@/components/budget-progress";
 import { MonthlyBarChart, CategoryPieChart } from "@/components/charts";
+import { SpendingHeatmap } from "@/components/spending-heatmap";
 import { ExpenseListItem } from "@/components/expense-list-item";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
@@ -267,6 +268,12 @@ export default function DashboardPage() {
               currency={settings.currency}
             />
           </div>
+
+          {/* Spending heatmap */}
+          <SpendingHeatmap
+            expenses={expenses}
+            currency={settings.currency}
+          />
 
           {/* Recent expenses */}
           <div>

@@ -57,7 +57,7 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
         {/* Rent */}
         <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
           <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-            Оренда
+            Оренда квартири
           </span>
           <span className="text-sm font-semibold">
             {month.rentAmount?.toLocaleString("uk-UA")} ₴
@@ -67,7 +67,7 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
         {/* Charged */}
         <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
           <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-            Додаткові витрати
+            Комунальні послуги
           </span>
           <span className="text-sm font-semibold">
             {month.charged?.toLocaleString("uk-UA")} ₴
@@ -99,7 +99,7 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
         {/* Readings */}
         <div className="glass-pill rounded-xl px-4 py-3">
           <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-foreground/40">
-            Показники лічильників
+            Показники лічильників та інша інформація
           </span>
           <div className="space-y-2">
             {ALL_KINDS.map((kind) => {
