@@ -21,6 +21,8 @@ import { ExpenseListItem } from "@/components/expense-list-item";
 import { PersonAvatar } from "@/components/person-avatar";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { DateRangePickerModal } from "@/components/ui/date-range-picker-modal";
@@ -159,28 +161,29 @@ export default function CategoryExpensesPage() {
             </div>
           </div>
         </div>
-        <button
+        <Button
+          type="button"
           onClick={() => {
             setEditing(null);
             setShowForm(true);
           }}
-          className="btn-primary mt-0.5 shrink-0"
+          className="mt-0.5 shrink-0"
         >
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Додати</span>
-        </button>
+        </Button>
       </div>
 
       {/* ── Toolbar ── */}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="field-icon pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-          <input
+          <Input
             type="text"
             placeholder="Пошук..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="input-glass w-full pl-9 text-sm"
+            className="pl-9 text-sm"
           />
         </div>
         <button
@@ -399,7 +402,7 @@ export default function CategoryExpensesPage() {
         size="md"
         closeOnOverlay={false}
         closeOnEscape={false}
-        tall
+        maxHeight="85dvh"
       >
         <ExpenseForm
           expense={editing}

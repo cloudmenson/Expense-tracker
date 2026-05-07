@@ -238,7 +238,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
         onClose={() => setOpen(false)}
         title="Оберіть іконку"
         size="md"
-        tall
+        maxHeight="50dvh"
       >
         <div className="space-y-3">
           <div className="flex items-center gap-2">

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { useExpenseStore } from "@/lib/store";
 import { CategoryForm } from "@/components/category-form";
 import { Modal } from "@/components/ui/modal";
@@ -80,18 +82,18 @@ export default function CategoriesPage() {
             {categories.length} категорій
           </p>
         </div>
-        <button
+        <Button
+          type="button"
           onClick={() => {
             if (_mutating) return;
             setEditing(null);
             setShowForm(true);
           }}
           disabled={_mutating}
-          className="btn-primary"
         >
           <Plus className="h-4 w-4" />
           Нова категорія
-        </button>
+        </Button>
       </div>
 
       {/* Grid */}
@@ -147,13 +149,13 @@ export default function CategoriesPage() {
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 {cat.isCustom && (
-                  <button
+                  <DeleteIconButton
+                    variant="ghost"
+                    size="md"
                     onClick={() => handleDelete(cat)}
                     disabled={_mutating}
-                    className="flex h-9 w-9 touch-manipulation items-center justify-center rounded-xl text-foreground/30 transition-colors hover:bg-rose-500/10 hover:text-rose-500 active:bg-rose-500/10 active:text-rose-500"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                    className="touch-manipulation"
+                  />
                 )}
               </div>
             </div>

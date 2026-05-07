@@ -1,13 +1,8 @@
 "use client";
 
 import { useState, useMemo, useRef } from "react";
-import {
-  Plus,
-  Trash2,
-  ShoppingCart,
-  ShoppingBag,
-  CalendarDays,
-} from "lucide-react";
+import { Plus, ShoppingCart, ShoppingBag, CalendarDays } from "lucide-react";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
 import { useExpenseStore } from "@/lib/store";
@@ -20,7 +15,7 @@ import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { todayISO } from "@/lib/utils";
+import { cn, todayISO } from "@/lib/utils";
 import type { ExpenseDraft, Expense, ExpenseItem } from "@/types/expense";
 
 interface ExpenseFormProps {
@@ -167,7 +162,7 @@ export function ExpenseForm({
       <form onSubmit={handleSubmit} className="space-y-5">
         <fieldset
           disabled={_mutating}
-          className={`space-y-5 ${_mutating ? "opacity-70" : ""}`}
+          className={cn("space-y-5", _mutating && "opacity-70")}
         >
           {/* Mode toggle */}
           {!expense && (
@@ -175,11 +170,12 @@ export function ExpenseForm({
               <button
                 type="button"
                 onClick={() => setIsList(false)}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold ${
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold",
                   !isList
                     ? "bg-active"
-                    : "text-foreground/55 hover:text-foreground"
-                }`}
+                    : "text-foreground/55 hover:text-foreground",
+                )}
               >
                 <ShoppingBag className="h-4 w-4" />
                 Один товар
@@ -187,11 +183,12 @@ export function ExpenseForm({
               <button
                 type="button"
                 onClick={() => setIsList(true)}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold ${
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold",
                   isList
                     ? "bg-active"
-                    : "text-foreground/55 hover:text-foreground"
-                }`}
+                    : "text-foreground/55 hover:text-foreground",
+                )}
               >
                 <ShoppingCart className="h-4 w-4" />
                 Список покупок
@@ -249,13 +246,12 @@ export function ExpenseForm({
                       min={0}
                       step={0.01}
                     />
-                    <button
-                      type="button"
+                    <DeleteIconButton
+                      variant="soft"
                       onClick={() => removeItem(i)}
-                      className="glass-pill flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-foreground/36 transition-colors hover:bg-rose-500/12 hover:text-rose-500"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                      className="h-10 w-10"
+                      label="Видалити товар"
+                    />
                   </div>
                 ))}
               </div>
@@ -306,11 +302,12 @@ export function ExpenseForm({
                   onPointerUp={onCatPressEnd}
                   onPointerLeave={onCatPressEnd}
                   onPointerCancel={onCatPressEnd}
-                  className={`no-select-callout group relative flex flex-col items-center gap-1 rounded-lg p-2 text-center transition-all hover:scale-105 active:scale-95 ${
+                  className={cn(
+                    "no-select-callout group relative flex flex-col items-center justify-center gap-1 rounded-lg p-2 text-center transition-all hover:scale-105 active:scale-95",
                     form.categoryId === cat.id
                       ? "glass-card ring-2 ring-brand/35"
-                      : "glass-pill hover:bg-foreground/4"
-                  }`}
+                      : "glass-pill hover:bg-foreground/4",
+                  )}
                 >
                   <span className="text-xl transition-transform group-hover:animate-emoji-bounce">
                     {cat.emoji}
@@ -371,11 +368,12 @@ export function ExpenseForm({
                     key={p}
                     type="button"
                     onClick={() => set("paidBy", p)}
-                    className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-medium ${
+                    className={cn(
+                      "flex min-h-12 flex-1 items-center justify-center rounded-xl px-3 text-sm font-medium",
                       form.paidBy === p
                         ? "bg-active"
-                        : "glass-pill text-foreground/60 hover:text-foreground"
-                    }`}
+                        : "glass-pill text-foreground/60 hover:text-foreground",
+                    )}
                   >
                     <span className="flex items-center justify-center gap-2">
                       <PersonAvatar

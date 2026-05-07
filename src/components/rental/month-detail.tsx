@@ -1,12 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  ArrowLeft,
-  Trash2,
-  Loader2,
-  CalendarDays,
-} from "lucide-react";
+import { ArrowLeft, Loader2, CalendarDays } from "lucide-react";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
 import { useRentalStore } from "@/lib/rental-store";
@@ -107,14 +103,13 @@ export function MonthDetail({ month, onBack }: Props) {
         <Button variant="secondary" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" /> Назад
         </Button>
-        <button
-          type="button"
+        <DeleteIconButton
+          variant="ghost"
+          size="lg"
           onClick={() => setConfirmDelete(true)}
-          className="flex h-11 w-11 items-center justify-center rounded-2xl text-foreground/45 transition-colors hover:bg-rose-500/10 hover:text-rose-500"
-          aria-label="Видалити місяць"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+          className="rounded-2xl"
+          label="Видалити місяць"
+        />
       </div>
 
       {/* Summary card */}

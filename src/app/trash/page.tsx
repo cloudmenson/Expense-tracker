@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Trash2, RotateCcw, X, Package, Folder } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Trash2, RotateCcw, X, Package, Folder } from "lucide-react";
 import { useExpenseStore } from "@/lib/store";
+import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useToast } from "@/components/ui/toast";
@@ -27,6 +29,7 @@ export default function TrashPage() {
     _mutating,
   } = useExpenseStore();
   const { toast } = useToast();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [confirmClear, setConfirmClear] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<TrashItem | null>(null);
@@ -38,22 +41,31 @@ export default function TrashPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-start gap-3">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label="Назад"
+          className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground/60 transition-colors hover:bg-foreground/10 hover:text-foreground"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold">Кошик</h1>
           <p className="mt-1 text-sm text-foreground/50">
             Видалені елементи зберігаються 7 днів
           </p>
         </div>
         {trashItems.length > 0 && (
-          <button
+          <Button
+            variant="danger"
+            type="button"
             onClick={() => setConfirmClear(true)}
             disabled={_mutating}
-            className="flex items-center gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-2 text-sm font-medium text-rose-500 transition-colors hover:bg-rose-500/20"
           >
             <Trash2 className="h-4 w-4" />
             Очистити все
-          </button>
+          </Button>
         )}
       </div>
 

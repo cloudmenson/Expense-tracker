@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Phone, User as UserIcon } from "lucide-react";
+import { Plus, Pencil, Phone, User as UserIcon } from "lucide-react";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { useRentalStore } from "@/lib/rental-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -175,14 +176,7 @@ function ContactCard({
         >
           <Pencil className="h-4 w-4" />
         </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="flex h-9 w-9 items-center justify-center rounded-xl text-foreground/30 hover:bg-rose-500/10 hover:text-rose-500"
-          aria-label="Видалити"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+        <DeleteIconButton variant="ghost" size="md" onClick={onDelete} />
       </div>
     </div>
   );

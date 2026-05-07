@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2, CalendarDays } from "lucide-react";
+import { Pencil, CalendarDays } from "lucide-react";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
 import { computeMonth } from "@/lib/rental-calc";
@@ -171,12 +172,7 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
           Редагувати
         </button>
 
-        <button
-          onClick={onDelete}
-          className="flex h-11 items-center justify-center gap-2 rounded-xl bg-rose-500/10 px-6 font-medium text-rose-500 transition-colors hover:bg-rose-500/20 active:bg-rose-500/20"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+        <DeleteIconButton onClick={onDelete} label="Видалити місяць" />
       </div>
 
       <ImageViewerModal src={previewSrc} onClose={() => setPreviewSrc(null)} />

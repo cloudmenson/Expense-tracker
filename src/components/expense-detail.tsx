@@ -1,8 +1,10 @@
 "use client";
 
-import { Pencil, Trash2, Package } from "lucide-react";
+import { Pencil, Package } from "lucide-react";
 import type { Expense, Category } from "@/types/expense";
 import { PersonAvatar } from "@/components/person-avatar";
+import { Button } from "@/components/ui/button";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { formatMoney } from "@/lib/utils";
 
 interface ExpenseDetailProps {
@@ -140,17 +142,12 @@ export function ExpenseDetail({
 
       {/* Edit & Delete buttons */}
       <div className="flex gap-3">
-        <button onClick={onEdit} className="btn-primary flex-1">
+        <Button type="button" onClick={onEdit} className="flex-1">
           <Pencil className="h-4 w-4" />
           Редагувати
-        </button>
+        </Button>
 
-        <button
-          onClick={onDelete}
-          className="flex h-11 items-center justify-center gap-2 rounded-xl bg-rose-500/10 px-6 font-medium text-rose-500 transition-colors hover:bg-rose-500/20 active:bg-rose-500/20"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+        <DeleteIconButton onClick={onDelete} label="Видалити витрату" />
       </div>
     </div>
   );

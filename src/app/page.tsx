@@ -18,6 +18,7 @@ import { ExpenseListItem } from "@/components/expense-list-item";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
 import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useToast } from "@/components/ui/toast";
@@ -155,16 +156,16 @@ export default function DashboardPage() {
           </h1>
           <p className="mt-1 text-sm text-foreground/50">{summary.label}</p>
         </div>
-        <button
+        <Button
+          type="button"
           onClick={() => {
             setEditing(null);
             setShowForm(true);
           }}
-          className="btn-primary"
         >
           <Plus className="h-4 w-4" />
           Додати витрату
-        </button>
+        </Button>
       </div>
 
       {expenses.length === 0 ? (
@@ -304,7 +305,7 @@ export default function DashboardPage() {
         size="md"
         closeOnOverlay={false}
         closeOnEscape={false}
-        tall
+        maxHeight="85dvh"
       >
         <ExpenseForm expense={editing} onDone={() => setShowForm(false)} />
       </Modal>

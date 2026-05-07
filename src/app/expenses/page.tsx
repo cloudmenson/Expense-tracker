@@ -20,6 +20,7 @@ import { ExpenseForm } from "@/components/expense-form";
 import { ExpenseDetail } from "@/components/expense-detail";
 import { ExpenseListItem } from "@/components/expense-list-item";
 import { PersonAvatar } from "@/components/person-avatar";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -217,18 +218,19 @@ export default function ExpensesPage() {
             </p>
           </div>
 
-          <button
+          <Button
+            type="button"
             onClick={() => {
               if (_mutating) return;
               setEditing(null);
               setShowForm(true);
             }}
             disabled={_mutating}
-            className="btn-primary self-start"
+            className="self-start"
           >
             <Plus className="h-4 w-4" />
             Додати
-          </button>
+          </Button>
         </div>
 
         <div className="glass-card w-full rounded-xl p-4 sm:p-5">
@@ -607,7 +609,7 @@ export default function ExpensesPage() {
         size="md"
         closeOnOverlay={false}
         closeOnEscape={false}
-        tall
+        maxHeight="85dvh"
       >
         <ExpenseForm
           expense={editing}

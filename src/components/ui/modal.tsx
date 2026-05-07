@@ -15,6 +15,10 @@ interface ModalProps {
   closeOnEscape?: boolean;
   tall?: boolean;
   allowOverflow?: boolean;
+  /** Explicit cap on panel height (CSS value, e.g. "50dvh"). Overrides the
+   *  default near-fullscreen cap. Useful when the content is short and a
+   *  full-height panel feels oversized. */
+  maxHeight?: string;
 }
 
 export function Modal({
@@ -27,6 +31,7 @@ export function Modal({
   closeOnEscape = true,
   tall = false,
   allowOverflow = false,
+  maxHeight,
 }: ModalProps) {
   const maxW =
     size === "sm"
@@ -87,7 +92,7 @@ export function Modal({
             "bottom-0 left-0 right-0 rounded-t-2xl",
             // Desktop: centered card
             "sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2",
-            tall ? "sm:max-h-[96dvh]" : "sm:max-h-[90dvh]",
+            !maxHeight && (tall ? "sm:max-h-[96dvh]" : "sm:max-h-[90dvh]"),
             allowOverflow ? "overflow-visible" : "overflow-hidden",
             "sm:rounded-2xl",
             maxW,
@@ -96,9 +101,11 @@ export function Modal({
             "data-[state=closed]:fade-out-0",
           )}
           style={{
-            maxHeight: tall
-              ? "calc(100dvh - env(safe-area-inset-top, 0px) - 8px)"
-              : "calc(100dvh - env(safe-area-inset-top, 0px) - 24px)",
+            maxHeight:
+              maxHeight ??
+              (tall
+                ? "calc(100dvh - env(safe-area-inset-top, 0px) - 8px)"
+                : "calc(100dvh - env(safe-area-inset-top, 0px) - 24px)"),
           }}
         >
           {/* Handle — mobile only */}

@@ -13,9 +13,11 @@ import {
   Loader2,
   UserRound,
   Mail,
-  Trash2,
   Upload,
+  ArrowLeft,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { useToast } from "@/components/ui/toast";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
@@ -42,6 +44,7 @@ const AVATAR_COLORS = [
 export default function ProfilesPage() {
   const { toast } = useToast();
   const { settings, _patchSettings } = useExpenseStore();
+  const router = useRouter();
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -218,8 +221,9 @@ export default function ProfilesPage() {
     return (
       <div className="space-y-6">
         {/* Header skeleton */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="space-y-2">
+        <div className="flex items-start gap-3">
+          <div className="mt-1 h-9 w-9 shrink-0 animate-pulse rounded-xl bg-foreground/8" />
+          <div className="min-w-0 flex-1 space-y-2">
             <div className="h-8 w-32 animate-pulse rounded-xl bg-foreground/8" />
             <div className="h-4 w-56 animate-pulse rounded-lg bg-foreground/5" />
           </div>
@@ -246,8 +250,16 @@ export default function ProfilesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <div>
+      <div className="flex items-start gap-3">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          aria-label="Назад"
+          className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground/60 transition-colors hover:bg-foreground/10 hover:text-foreground"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Профілі
           </h1>
@@ -323,18 +335,13 @@ export default function ProfilesPage() {
                     {p.inviteEmail}
                   </p>
                 </div>
-                <button
-                  type="button"
+                <DeleteIconButton
+                  variant="soft"
+                  size="sm"
                   onClick={() => handleRemoveInvite(p.id)}
                   disabled={isBusy}
-                  className="glass-pill flex h-8 w-8 items-center justify-center rounded-xl text-foreground/35 transition-colors hover:bg-rose-500/12 hover:text-rose-500"
-                >
-                  {savingId === p.id ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Trash2 className="h-4 w-4" />
-                  )}
-                </button>
+                  loading={savingId === p.id}
+                />
               </div>
             ))}
           </div>
