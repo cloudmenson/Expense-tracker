@@ -106,6 +106,12 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
               const reading = month.readings.find((r) => r.kind === kind);
               const Icon = UTILITY_ICON[kind];
               const tint = UTILITY_TINT[kind];
+              const prev = reading?.previous ?? 0;
+              const curr = reading?.current ?? 0;
+              const isMetered = METERED_KINDS.includes(kind);
+              const diff = curr - prev;
+              const diffLabel =
+                diff > 0 ? `+${diff}` : diff < 0 ? `${diff}` : "0";
               return (
                 <div
                   key={kind}
@@ -120,8 +126,21 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
                     </div>
                     {UTILITY_LABELS[kind]}
                   </span>
-                  <span className="font-semibold tabular-nums">
-                    {reading?.current ?? 0} ({reading?.previous ?? 0})
+                  <span className="font-bold tabular-nums">
+                    {isMetered ? (
+                      <>
+                        <span className="text-foreground/45">{prev}</span>
+                        <span className="mx-1.5 text-foreground/30">→</span>
+                        <span style={{ color: "var(--brand-deep)" }}>
+                          {curr}
+                        </span>
+                        <span className="ml-1.5 text-foreground/45">
+                          ({diffLabel})
+                        </span>
+                      </>
+                    ) : (
+                      <span style={{ color: "var(--brand-deep)" }}>{curr}</span>
+                    )}
                   </span>
                 </div>
               );
@@ -133,9 +152,10 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
         {month.invoicePhoto && (
           <div className="glass-pill rounded-xl px-4 py-3">
             <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-foreground/40">
-              Фото квитанції
+              Фото квитанції від ріелтора
             </span>
             <div className="flex h-32 w-full items-center justify-center rounded-lg border bg-foreground/5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={month.invoicePhoto}
                 alt="Квитанція"

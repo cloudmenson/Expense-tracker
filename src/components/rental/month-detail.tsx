@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Loader2, CalendarDays, ChevronDown } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { cn } from "@/lib/utils";
@@ -57,17 +57,6 @@ export function MonthDetail({ month, onBack }: Props) {
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  useEffect(() => {
-    setReadings(initialReadings);
-    setRentAmount(String(month.rentAmount || ""));
-    setCharged(month.charged ? String(month.charged) : "");
-    setPaid(month.paid ? String(month.paid) : "");
-    setPaidAt(month.paidAt ?? "");
-    setInvoicePhoto(month.invoicePhoto ?? "");
-    setNotes(month.notes ?? "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [month.id]);
 
   const updateReading = (kind: string, patch: Partial<RentReading>) =>
     setReadings((rs) =>
@@ -141,7 +130,7 @@ export function MonthDetail({ month, onBack }: Props) {
           </div>
           <div className="glass-pill rounded-xl px-3 py-2">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-foreground/45">
-              Комуналка
+              Комунальні послуги
             </p>
             <p className="mt-0.5 text-base font-bold tabular-nums">
               {totals.charged.toLocaleString("uk-UA")} ₴
@@ -161,7 +150,7 @@ export function MonthDetail({ month, onBack }: Props) {
           >
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold uppercase tracking-wider text-foreground/55">
-                {totals.unpaid > 0.5 ? "Залишилось доплатити" : "Оплачено"}
+                {totals.unpaid > 0.5 ? "Залишилось доплатити" : "Сплачено"}
               </span>
               <span
                 className={`font-bold tabular-nums ${
@@ -217,7 +206,7 @@ export function MonthDetail({ month, onBack }: Props) {
           <FixedAmount
             kind="rent"
             customIconKind="internet"
-            label="Комуналка від ріелтора"
+            label="Комунальні послуги від ріелтора"
             value={charged}
             onChange={setCharged}
             placeholder="0"
@@ -225,7 +214,7 @@ export function MonthDetail({ month, onBack }: Props) {
           <FixedAmount
             kind="rent"
             customIconKind="electricity"
-            label="Оплачено"
+            label="Сплачено"
             value={paid}
             onChange={setPaid}
             placeholder="0"
@@ -271,7 +260,7 @@ export function MonthDetail({ month, onBack }: Props) {
         </div>
         <div className="mt-3">
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/50">
-            Фото квитанції
+            Фото квитанції від ріелтора
           </label>
           <PhotoUpload
             variant="tile"

@@ -57,7 +57,7 @@ export function MonthsSection() {
       return {
         kind,
         previous: prev?.current ?? 0,
-        current: prev?.current ?? 0,
+        current: 0,
         photo: "",
       };
     });
@@ -68,7 +68,13 @@ export function MonthsSection() {
   };
 
   if (opened) {
-    return <MonthDetail month={opened} onBack={() => setOpenId(null)} />;
+    return (
+      <MonthDetail
+        key={opened.id}
+        month={opened}
+        onBack={() => setOpenId(null)}
+      />
+    );
   }
 
   return (
@@ -117,10 +123,25 @@ export function MonthsSection() {
                       })}{" "}
                       ₴
                     </p>
-                    <p className="text-[11px] text-foreground/45">
-                      {totals.rentAmount.toLocaleString("uk-UA")} +{" "}
-                      {totals.charged.toLocaleString("uk-UA")} ₴
-                    </p>
+                    <div className="mt-1.5 space-y-0.5 text-[11px] text-foreground/55">
+                      <p className="flex items-center justify-between gap-3">
+                        <span className="text-foreground/45">Квартплата</span>
+                        <span className="font-semibold tabular-nums">
+                          {totals.rentAmount.toLocaleString("uk-UA")} ₴
+                        </span>
+                      </p>
+                      <p className="flex items-center justify-between gap-3">
+                        <span className="text-foreground/45">
+                          Комунальні послуги
+                        </span>
+                        <span className="font-semibold tabular-nums">
+                          {totals.charged.toLocaleString("uk-UA", {
+                            maximumFractionDigits: 0,
+                          })}{" "}
+                          ₴
+                        </span>
+                      </p>
+                    </div>
                   </div>
                   {m.invoicePhoto ? (
                     <span
@@ -164,7 +185,7 @@ export function MonthsSection() {
                     }}
                   >
                     <span className="text-foreground/55">
-                      {totals.unpaid > 0.5 ? "Залишилось" : "Оплачено"}
+                      {totals.unpaid > 0.5 ? "Залишилось" : "Сплачено"}
                     </span>
                     <span
                       className={`font-bold tabular-nums ${

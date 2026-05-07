@@ -74,6 +74,35 @@ export async function POST(req: Request) {
     );
   }
 
+  // If the caller didn't supply readings, seed them from the most recent
+  // month preceding this one: previous = that month's current, current = 0.
+  // This way the new month always knows where the meter "started" without
+  // making the user re-type the old number.
+  let readings = (body.readings ?? []).map((r) => ({
+    kind: r.kind,
+    previous: Number(r.previous) || 0,
+    current: Number(r.current) || 0,
+    photo: r.photo ?? "",
+  }));
+
+  if (readings.length === 0) {
+    const prevDoc = (await RentMonthModel.findOne({
+      familyId: FAMILY,
+      month: { $lt: body.month },
+    })
+      .sort({ month: -1 })
+      .lean()) as { readings?: Array<Record<string, unknown>> } | null;
+
+    if (prevDoc?.readings?.length) {
+      readings = prevDoc.readings.map((r) => ({
+        kind: String(r.kind ?? ""),
+        previous: Number(r.current ?? 0),
+        current: 0,
+        photo: "",
+      }));
+    }
+  }
+
   const created = await RentMonthModel.create({
     familyId: FAMILY,
     month: body.month,
@@ -82,12 +111,7 @@ export async function POST(req: Request) {
     charged: Number(body.charged) || 0,
     paid: Number(body.paid) || 0,
     paidAt: body.paidAt ?? "",
-    readings: (body.readings ?? []).map((r) => ({
-      kind: r.kind,
-      previous: Number(r.previous) || 0,
-      current: Number(r.current) || 0,
-      photo: r.photo ?? "",
-    })),
+    readings,
     notes: body.notes ?? "",
   });
 
