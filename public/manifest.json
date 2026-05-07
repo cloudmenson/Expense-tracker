@@ -4,11 +4,13 @@
   "description": "Приватний трекер для двох — витрати, бюджет, аналітика.",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "background_color": "#f7efde",
   "theme_color": "#cf6e4e",
   "orientation": "portrait-primary",
   "scope": "/",
   "categories": ["finance", "utilities"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icons/icon-192.png",

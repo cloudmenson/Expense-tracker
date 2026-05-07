@@ -243,6 +243,58 @@ a,
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ─── Native-app feel ───
+   Strip every browsery affordance so the PWA doesn't betray itself
+   on long-press, pull-to-refresh, double-tap-zoom, edge-swipe, etc.
+   Most rules are unconditional (they're cheap and harmless on
+   desktop). The `display-mode: standalone` block tightens the screws
+   when actually installed — keeps text selection working in dev. */
+
+html,
+body {
+  /* No double-tap-to-zoom; taps register instantly. */
+  touch-action: manipulation;
+  /* Long-press → no iOS magnifier / "save image" / share sheet. */
+  -webkit-touch-callout: none;
+}
+
+img,
+svg {
+  /* No drag-out preview on desktop, no long-press save on mobile. */
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Stop the iOS rubber-band bounce / Android pull-to-refresh on the
+   document scroller. `overscroll-behavior: none` on html/body is also
+   set above; this just makes sure the main scroll surface contains
+   its own overscroll. */
+main {
+  overscroll-behavior: contain;
+}
+
+/* Standalone (installed PWA) gets the full lockdown. */
+@media (display-mode: standalone) {
+  /* Selection off on UI chrome — buttons/cards/headers aren't pages. */
+  body {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* …but keep text fields, content-editable, and the opt-in
+     `.selectable` class usable so users can still copy notes etc. */
+  input,
+  textarea,
+  [contenteditable="true"],
+  .selectable,
+  .selectable * {
+    user-select: text;
+    -webkit-user-select: text;
+    -webkit-touch-callout: default;
+  }
+}
+
 button:focus,
 button:focus-visible,
 a:focus,
