@@ -130,7 +130,11 @@ export function SpendingHeatmap({
       </div>
 
       <div className="overflow-x-auto pb-1">
-        <div className="flex flex-col gap-1.5">
+        {/* w-full: stretch to parent width on desktop.
+            min-w-max: but never shrink below natural content width — this is
+            what triggers the horizontal scrollbar on narrow viewports
+            instead of cramming cells. */}
+        <div className="flex w-full min-w-max flex-col gap-1.5">
           {/* Month labels row, aligned with grid columns */}
           <div className="flex gap-1.5">
             <div className="w-6 shrink-0" />
@@ -140,7 +144,7 @@ export function SpendingHeatmap({
                 return (
                   <div
                     key={i}
-                    className="min-w-0 max-w-5.5 flex-1 whitespace-nowrap text-[10px] font-semibold uppercase tracking-wider text-foreground/45"
+                    className="min-w-3.5 max-w-5.5 flex-1 whitespace-nowrap text-[10px] font-semibold uppercase tracking-wider text-foreground/45"
                   >
                     {ml?.label ?? ""}
                   </div>
@@ -162,13 +166,14 @@ export function SpendingHeatmap({
               ))}
             </div>
 
-            {/* Grid — columns stretch to fill width, capped so cells stay
-                GitHub-ish (≤20px) on huge screens. */}
+            {/* Grid — columns flex-1 with a min/max so they stretch on
+                desktop (up to ~22px each) but never shrink below 14px,
+                keeping cells GitHub-sized and forcing overflow on phones. */}
             <div className="flex flex-1 gap-0.75">
               {grid.map((col, ci) => (
                 <div
                   key={ci}
-                  className="flex min-w-0 max-w-5.5 flex-1 flex-col gap-0.75"
+                  className="flex min-w-3.5 max-w-5.5 flex-1 flex-col gap-0.75"
                 >
                   {col.map((cell) => {
                     const future = cell.date > today;

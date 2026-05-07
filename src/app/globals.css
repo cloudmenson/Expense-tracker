@@ -243,6 +243,19 @@ a,
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Pointer cursor on anything that's actually clickable.
+   Chrome 122+ defaults <button> to `cursor: default`, so we restore
+   the expected affordance everywhere. Disabled controls fall back
+   to the not-allowed cursor (handled by `disabled:cursor-not-allowed`
+   utilities or browser defaults). */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+a[href],
+label[for],
+summary {
+  cursor: pointer;
+}
+
 /* ─── Native-app feel ───
    Strip every browsery affordance so the PWA doesn't betray itself
    on long-press, pull-to-refresh, double-tap-zoom, edge-swipe, etc.

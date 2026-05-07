@@ -46,6 +46,8 @@ export function ExpenseListItem({
   return (
     <div
       onClick={() => onView?.(expense)}
+      role={onView ? "button" : undefined}
+      tabIndex={onView ? 0 : undefined}
       className="glass-card group rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5"
       style={{
         borderLeft: `5px solid ${borderColor}`,
