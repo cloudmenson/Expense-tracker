@@ -156,7 +156,7 @@ export async function GET() {
         isCustom: c.isCustom,
       })),
       settings: {
-        currency: settings?.currency ?? "$",
+        currency: settings?.currency ?? "₴",
         theme: settings?.theme ?? "system",
         person1Name: p1?.name ?? "Партнер 1",
         person2Name: p2?.name ?? "Партнер 2",

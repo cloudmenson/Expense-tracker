@@ -9,7 +9,7 @@ export interface ISettings {
 const SettingsSchema = new Schema(
   {
     _id: { type: String, default: "default" },
-    currency: { type: String, default: "$" },
+    currency: { type: String, default: "₴" },
     theme: {
       type: String,
       enum: ["light", "dark", "system"],

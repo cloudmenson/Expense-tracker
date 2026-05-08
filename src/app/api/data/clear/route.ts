@@ -32,7 +32,7 @@ export async function POST() {
     // Re-seed default settings
     await SettingsModel.create({
       _id: "default",
-      currency: "$",
+      currency: "₴",
       theme: "system",
     });
 

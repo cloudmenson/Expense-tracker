@@ -37,7 +37,7 @@ export async function GET() {
     const p2 = profileMap.get("person2");
 
     return NextResponse.json({
-      currency: settings?.currency ?? "$",
+      currency: settings?.currency ?? "₴",
       theme: settings?.theme ?? "system",
       person1Name: p1?.name ?? "Партнер 1",
       person2Name: p2?.name ?? "Партнер 2",

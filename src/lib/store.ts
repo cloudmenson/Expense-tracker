@@ -15,7 +15,7 @@ import * as api from "@/lib/api-client";
 
 /* ─── Default settings ─── */
 const defaultSettings: AppSettings = {
-  currency: "$",
+  currency: "₴",
   person1Name: "Партнер 1",
   person2Name: "Партнер 2",
   person1Income: 2500,

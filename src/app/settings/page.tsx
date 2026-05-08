@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from "react";
 import {
-  Save,
   Download,
   Upload,
   Trash2,
   AlertTriangle,
-  Loader2,
   Bell,
   BellOff,
   Sun,
@@ -30,19 +28,11 @@ import { ThemePresetPicker } from "@/components/theme-preset-picker";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import * as api from "@/lib/api-client";
 
 export default function SettingsPage() {
   const {
     settings,
-    updateSettings,
     expenses,
     categories,
     _setAll,
@@ -52,10 +42,7 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [showClear, setShowClear] = useState(false);
-  const [saving, setSaving] = useState(false);
   const [importing, setImporting] = useState(false);
-
-  const [currency, setCurrency] = useState(settings.currency);
 
   // Notifications
   const [notifEnabled, setNotifEnabled] = useState(false);
@@ -85,19 +72,6 @@ export default function SettingsPage() {
       setNotificationsEnabled(false);
       setNotifEnabled(false);
       toast("Сповіщення вимкнено", "success");
-    }
-  };
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      updateSettings({
-        currency,
-      });
-      await new Promise((r) => setTimeout(r, 300));
-      toast("Налаштування збережено", "success");
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -242,28 +216,6 @@ export default function SettingsPage() {
         </Link>
       </div>
 
-      {/* General settings */}
-      <div className="glass-card rounded-xl p-4 sm:p-6">
-        <h2 className="mb-4 text-base font-semibold">Загальні</h2>
-        <div className="grid gap-4 sm:grid-cols-1">
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-foreground/40">
-              Валюта
-            </label>
-            <Select value={currency} onValueChange={setCurrency}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="$">$ Долар</SelectItem>
-                <SelectItem value="€">€ Євро</SelectItem>
-                <SelectItem value="₴">₴ Гривня</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
       {/* Theme */}
       <div className="glass-card rounded-xl p-4 sm:p-6">
         <h2 className="mb-4 text-base font-semibold">Тема оформлення</h2>
@@ -338,20 +290,6 @@ export default function SettingsPage() {
           )}
         </div>
       )}
-
-      {/* Save */}
-      <Button
-        onClick={handleSave}
-        className="w-full sm:w-auto"
-        disabled={saving}
-      >
-        {saving ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <Save className="h-4 w-4" />
-        )}
-        {saving ? "Зберігається…" : "Зберегти налаштування"}
-      </Button>
 
       {/* Data management */}
       <div className="glass-card rounded-xl p-4 sm:p-6">

@@ -22,7 +22,7 @@ import type {
 } from "@/types/expense";
 
 /* ── Format currency ── */
-export function formatMoney(amount: number, currency = "$"): string {
+export function formatMoney(amount: number, currency = "₴"): string {
   return `${currency} ${amount.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
