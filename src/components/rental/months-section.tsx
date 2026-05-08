@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Plus, Calendar, Receipt } from "lucide-react";
+import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
+import { Calendar, Receipt } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
 import { useRentalStore } from "@/lib/rental-store";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { MonthPickerModal } from "@/components/ui/month-picker-modal";
 import { ImageViewerModal } from "@/components/ui/image-viewer-modal";
@@ -22,10 +21,14 @@ import { UTILITY_ICON, UTILITY_TINT } from "@/lib/utility-meta";
 import { MonthDetail } from "./month-detail";
 import { MonthView } from "./month-view";
 
+export interface MonthsSectionHandle {
+  openCreate: () => void;
+}
+
 const monthLabel = (m: string) =>
   format(parseISO(`${m}-01`), "LLLL yyyy", { locale: uk });
 
-export function MonthsSection() {
+export const MonthsSection = forwardRef<MonthsSectionHandle>(function MonthsSection(_props, ref) {
   const { months, createMonth, updateMonthReadings, deleteMonth } =
     useRentalStore();
   const [openId, setOpenId] = useState<string | null>(null);
@@ -33,6 +36,10 @@ export function MonthsSection() {
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [viewingMonth, setViewingMonth] = useState<RentMonth | null>(null);
   const [monthToDelete, setMonthToDelete] = useState<RentMonth | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    openCreate: () => setPickerOpen(true),
+  }));
 
   const sorted = useMemo(
     () => [...months].sort((a, b) => b.month.localeCompare(a.month)),
@@ -79,15 +86,10 @@ export function MonthsSection() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <p className="flex-1 text-sm text-foreground/55">
-          Кожен місяць — окремий запис із показниками лічильників, фото
-          квитанції та сумами оплат.
-        </p>
-        <Button variant="primary" onClick={() => setPickerOpen(true)}>
-          <Plus className="h-4 w-4" /> Місяць
-        </Button>
-      </div>
+      <p className="text-sm text-foreground/55">
+        Кожен місяць — окремий запис із показниками лічильників, фото
+        квитанції та сумами оплат.
+      </p>
 
       {sorted.length === 0 ? (
         <EmptyState
@@ -274,4 +276,4 @@ export function MonthsSection() {
       />
     </div>
   );
-}
+});

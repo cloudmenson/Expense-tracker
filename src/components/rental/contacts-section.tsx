@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, Pencil, Phone, User as UserIcon } from "lucide-react";
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { Pencil, Phone, User as UserIcon } from "lucide-react";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { useRentalStore } from "@/lib/rental-store";
 import { Button } from "@/components/ui/button";
@@ -34,26 +34,29 @@ const ROLE_OPTIONS: ContactRole[] = [
   "other",
 ];
 
-export function ContactsSection() {
+export interface ContactsSectionHandle {
+  openCreate: () => void;
+}
+
+export const ContactsSection = forwardRef<ContactsSectionHandle>(function ContactsSection(_props, ref) {
   const { contacts, createContact, updateContact, deleteContact } =
     useRentalStore();
   const [editing, setEditing] = useState<Contact | "new" | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Contact | null>(null);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
 
+  useImperativeHandle(ref, () => ({
+    openCreate: () => setEditing("new"),
+  }));
+
   const sorted = [...contacts].sort((a, b) => a.order - b.order);
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <p className="flex-1 text-sm text-foreground/55">
-          Контакти, повʼязані з квартирою. Додай скільки потрібно — орендодавець,
-          ріелтор, сусід.
-        </p>
-        <Button variant="primary" onClick={() => setEditing("new")}>
-          <Plus className="h-4 w-4" /> Контакт
-        </Button>
-      </div>
+      <p className="text-sm text-foreground/55">
+        Контакти, повʼязані з квартирою. Додай скільки потрібно — орендодавець,
+        ріелтор, сусід.
+      </p>
 
       {sorted.length === 0 ? (
         <EmptyState
@@ -108,7 +111,7 @@ export function ContactsSection() {
       <ImageViewerModal src={previewSrc} onClose={() => setPreviewSrc(null)} />
     </div>
   );
-}
+});
 
 function ContactCard({
   contact,

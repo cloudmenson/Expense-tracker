@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Calendar, Users, Loader2, type LucideIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Calendar, Users, Loader2, Plus, type LucideIcon } from "lucide-react";
 import { useRentalStore } from "@/lib/rental-store";
-import { ContactsSection } from "./contacts-section";
-import { MonthsSection } from "./months-section";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  ContactsSection,
+  type ContactsSectionHandle,
+} from "./contacts-section";
+import { MonthsSection, type MonthsSectionHandle } from "./months-section";
 
 type Tab = "months" | "contacts";
 
@@ -13,23 +18,41 @@ const TABS: { key: Tab; label: string; icon: LucideIcon }[] = [
   { key: "contacts", label: "Контакти", icon: Users },
 ];
 
+const ADD_LABEL: Record<Tab, string> = {
+  months: "Місяць",
+  contacts: "Контакт",
+};
+
 export function RentalPage() {
   const { hydrated, hydrate } = useRentalStore();
   const [tab, setTab] = useState<Tab>("months");
+
+  const monthsRef = useRef<MonthsSectionHandle>(null);
+  const contactsRef = useRef<ContactsSectionHandle>(null);
 
   useEffect(() => {
     hydrate();
   }, [hydrate]);
 
+  const handleAdd = () => {
+    if (tab === "months") monthsRef.current?.openCreate();
+    else contactsRef.current?.openCreate();
+  };
+
   return (
     <div className="space-y-5">
-      <div className="space-y-1.5">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Оренда
-        </h1>
-        <p className="text-sm text-foreground/55">
-          Контакти, тарифи й розрахунки за місяцями
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1.5">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Оренда
+          </h1>
+          <p className="text-sm text-foreground/55">
+            Контакти, тарифи й розрахунки за місяцями
+          </p>
+        </div>
+        <Button type="button" onClick={handleAdd} disabled={!hydrated}>
+          <Plus className="h-4 w-4" /> {ADD_LABEL[tab]}
+        </Button>
       </div>
 
       <div className="glass-pill inline-flex w-full gap-1 rounded-2xl p-1.5 sm:w-auto">
@@ -39,12 +62,14 @@ export function RentalPage() {
           return (
             <button
               key={t.key}
+              type="button"
               onClick={() => setTab(t.key)}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-medium sm:px-4 sm:text-sm ${
+              className={cn(
+                "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm",
                 active
                   ? "bg-active"
-                  : "text-foreground/55 hover:text-foreground"
-              }`}
+                  : "text-foreground/55 hover:text-foreground",
+              )}
             >
               <Icon className="h-4 w-4" />
               <span>{t.label}</span>
@@ -59,9 +84,9 @@ export function RentalPage() {
           Завантаження…
         </div>
       ) : tab === "months" ? (
-        <MonthsSection />
+        <MonthsSection ref={monthsRef} />
       ) : (
-        <ContactsSection />
+        <ContactsSection ref={contactsRef} />
       )}
     </div>
   );
