@@ -42,8 +42,15 @@ const FILTERS: { key: Filter; label: string; icon: LucideIcon }[] = [
 ];
 
 export function WishlistPage() {
-  const { items, hydrate, hydrated, createItem, updateItem, deleteItem } =
-    useWishlistStore();
+  const {
+    items,
+    hydrate,
+    hydrated,
+    loading,
+    createItem,
+    updateItem,
+    deleteItem,
+  } = useWishlistStore();
   const { settings } = useExpenseStore();
 
   const [filter, setFilter] = useState<Filter>("all");
@@ -134,10 +141,30 @@ export function WishlistPage() {
         )}
       </div>
 
+      {/* Background-fetch indicator — visible right above the cards */}
+      {hydrated && loading && (
+        <div
+          className="flex items-center justify-center gap-2 text-xs text-foreground/55"
+          aria-live="polite"
+        >
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          Оновлюємо…
+        </div>
+      )}
+
       {/* Grid */}
       {!hydrated ? (
-        <div className="glass-card flex min-h-40 items-center justify-center gap-2 rounded-2xl text-sm text-foreground/45">
-          <Loader2 className="h-4 w-4 animate-spin" /> Завантаження…
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="glass-card flex gap-3 rounded-2xl p-4">
+              <div className="h-20 w-20 shrink-0 animate-pulse rounded-2xl bg-foreground/8" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-3/4 animate-pulse rounded-lg bg-foreground/8" />
+                <div className="h-6 w-24 animate-pulse rounded-lg bg-foreground/8" />
+                <div className="h-3 w-full animate-pulse rounded-lg bg-foreground/5" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : filtered.length === 0 ? (
         <EmptyState
