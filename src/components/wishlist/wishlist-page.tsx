@@ -72,6 +72,11 @@ export function WishlistPage() {
     return sorted.filter((i) => i.status === filter);
   }, [items, filter]);
 
+  const totalShown = useMemo(
+    () => filtered.reduce((s, i) => s + (i.price || 0), 0),
+    [filtered],
+  );
+
   return (
     <div className="space-y-5">
       {/* Header */}
@@ -89,28 +94,44 @@ export function WishlistPage() {
         </Button>
       </div>
 
-      {/* Filter chips */}
-      <div className="glass-pill inline-flex w-full gap-1 rounded-2xl p-1.5 sm:w-auto">
-        {FILTERS.map((f) => {
-          const active = filter === f.key;
-          const Icon = f.icon;
-          return (
-            <button
-              key={f.key}
-              type="button"
-              onClick={() => setFilter(f.key)}
-              className={cn(
-                "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm",
-                active
-                  ? "bg-active"
-                  : "text-foreground/55 hover:text-foreground",
-              )}
+      {/* Filter chips + total */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="glass-pill inline-flex w-full gap-1 rounded-2xl p-1.5 sm:w-auto">
+          {FILTERS.map((f) => {
+            const active = filter === f.key;
+            const Icon = f.icon;
+            return (
+              <button
+                key={f.key}
+                type="button"
+                onClick={() => setFilter(f.key)}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm",
+                  active
+                    ? "bg-active"
+                    : "text-foreground/55 hover:text-foreground",
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                {f.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {filtered.length > 0 && (
+          <div className="flex items-baseline gap-2 sm:flex-col sm:items-end sm:gap-0.5">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/45">
+              Разом
+            </span>
+            <span
+              className="text-lg font-black tabular-nums sm:text-xl"
+              style={{ color: "var(--brand-deep)" }}
             >
-              <Icon className="h-4 w-4" />
-              {f.label}
-            </button>
-          );
-        })}
+              {formatMoney(totalShown, settings.currency)}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Grid */}
