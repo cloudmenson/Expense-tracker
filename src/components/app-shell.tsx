@@ -7,6 +7,7 @@ import {
   Receipt,
   Settings,
   Home,
+  ShoppingBag,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { HeartLogo } from "@/components/heart-logo";
@@ -25,6 +26,12 @@ const NAV_ITEMS = [
     label: "Оренда",
     mobileLabel: "Оренда",
     icon: Home,
+  },
+  {
+    href: "/wishlist",
+    label: "Хочу купити",
+    mobileLabel: "Хочу",
+    icon: ShoppingBag,
   },
   {
     href: "/settings",
