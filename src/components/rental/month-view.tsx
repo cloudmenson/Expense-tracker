@@ -127,7 +127,7 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
                     {UTILITY_LABELS[kind]}
                   </span>
                   <span className="font-bold tabular-nums">
-                    {isMetered ? (
+                    {isMetered && (prev !== 0 || curr !== 0) ? (
                       <>
                         <span className="text-foreground/45">{prev}</span>
                         <span className="mx-1.5 text-foreground/30">→</span>
