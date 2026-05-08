@@ -29,8 +29,8 @@ const NAV_ITEMS = [
   },
   {
     href: "/wishlist",
-    label: "Хочу купити",
-    mobileLabel: "Хочу",
+    label: "Вішліст",
+    mobileLabel: "Вішліст",
     icon: ShoppingBag,
   },
   {

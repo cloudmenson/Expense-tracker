@@ -10,7 +10,10 @@ import {
   SlidersHorizontal,
   CalendarDays,
   X,
+  Tag,
+  LayoutGrid,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import { uk } from "date-fns/locale";
@@ -295,22 +298,33 @@ export default function ExpensesPage() {
       <div className="glass-pill inline-flex w-full gap-1 rounded-xl p-1.5 sm:w-auto">
         {(
           [
-            { val: "categories" as const, label: "Категорії" },
-            { val: "all" as const, label: "Все" },
+            {
+              val: "categories" as const,
+              label: "Категорії",
+              icon: Tag as LucideIcon,
+            },
+            {
+              val: "all" as const,
+              label: "Все",
+              icon: LayoutGrid as LucideIcon,
+            },
           ]
         ).map((opt) => {
           const active = activeTab === opt.val;
+          const Icon = opt.icon;
           return (
             <button
               key={opt.val}
               type="button"
               onClick={() => setActiveTab(opt.val)}
-              className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold sm:flex-none ${
+              className={cn(
+                "flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold sm:flex-none",
                 active
                   ? "bg-active"
-                  : "text-foreground/55 hover:text-foreground"
-              }`}
+                  : "text-foreground/55 hover:text-foreground",
+              )}
             >
+              <Icon className="h-4 w-4" />
               {opt.label}
             </button>
           );

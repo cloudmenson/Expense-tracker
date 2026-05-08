@@ -78,7 +78,7 @@ export function WishlistPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Хочу купити
+            Вішліст
           </h1>
           <p className="mt-1 text-sm text-foreground/55">
             Список бажань — додавай фото, ціну й посилання, познач коли куплено.
@@ -530,18 +530,20 @@ function WishFormModal({
           <div className="glass-pill flex gap-1 rounded-xl p-1.5">
             {(["wanted", "bought"] as const).map((s) => {
               const active = status === s;
+              const Icon = s === "wanted" ? Heart : Check;
               return (
                 <button
                   key={s}
                   type="button"
                   onClick={() => setStatus(s)}
                   className={cn(
-                    "flex flex-1 items-center justify-center rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+                    "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
                     active
                       ? "bg-active"
                       : "text-foreground/55 hover:text-foreground",
                   )}
                 >
+                  <Icon className="h-4 w-4" />
                   {WISH_STATUS_LABELS[s]}
                 </button>
               );
