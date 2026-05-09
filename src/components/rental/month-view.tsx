@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, CalendarDays } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
 import { MonthExportButton } from "./month-export-button";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
-import { computeMonth } from "@/lib/rental-calc";
 import {
   METERED_KINDS,
   FIXED_KINDS,
@@ -17,9 +16,6 @@ import {
 import { UTILITY_ICON, UTILITY_TINT } from "@/lib/utility-meta";
 import { ImageViewerModal } from "@/components/ui/image-viewer-modal";
 
-const monthLabel = (m: string) =>
-  format(parseISO(`${m}-01`), "LLLL yyyy", { locale: uk });
-
 const ALL_KINDS: UtilityKind[] = [...METERED_KINDS, ...FIXED_KINDS];
 
 interface MonthViewProps {
@@ -29,76 +25,53 @@ interface MonthViewProps {
 }
 
 export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
-  const totals = computeMonth(month);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
 
   return (
     <div className="space-y-5">
-      {/* Top — 2 columns: header on left, info rows on right */}
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-5">
-        {/* Left column: icon + title + amount */}
-        <div className="flex items-start gap-4 sm:flex-1">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-2xl">
-            <CalendarDays className="h-6 w-6 text-brand" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-bold">{monthLabel(month.month)}</h3>
-            <p
-              className="mt-0.5 text-2xl font-extrabold"
-              style={{ color: "var(--brand-deep)" }}
-            >
-              {totals.total.toLocaleString("uk-UA", {
-                maximumFractionDigits: 0,
-              })}{" "}
-              ₴
-            </p>
-          </div>
+      {/* Info rows */}
+      <div className="space-y-3">
+        {/* Rent */}
+        <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
+          <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
+            Оренда квартири
+          </span>
+          <span className="text-sm font-semibold">
+            {month.rentAmount?.toLocaleString("uk-UA")} ₴
+          </span>
         </div>
 
-        {/* Right column: info rows */}
-        <div className="space-y-3 sm:flex-1">
-          {/* Rent */}
-          <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
-            <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-              Оренда квартири
-            </span>
-            <span className="text-sm font-semibold">
-              {month.rentAmount?.toLocaleString("uk-UA")} ₴
-            </span>
-          </div>
-
-          {/* Charged */}
-          <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
-            <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-              Комунальні послуги
-            </span>
-            <span className="text-sm font-semibold">
-              {month.charged?.toLocaleString("uk-UA")} ₴
-            </span>
-          </div>
-
-          {/* Paid */}
-          <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
-            <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-              Сплачено
-            </span>
-            <span className="text-sm font-semibold">
-              {month.paid?.toLocaleString("uk-UA")} ₴
-            </span>
-          </div>
-
-          {/* Paid At */}
-          {month.paidAt && (
-            <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
-              <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-                Дата оплати
-              </span>
-              <span className="text-sm font-semibold">
-                {format(parseISO(month.paidAt), "dd.MM.yyyy", { locale: uk })}
-              </span>
-            </div>
-          )}
+        {/* Charged */}
+        <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
+          <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
+            Комунальні послуги
+          </span>
+          <span className="text-sm font-semibold">
+            {month.charged?.toLocaleString("uk-UA")} ₴
+          </span>
         </div>
+
+        {/* Paid */}
+        <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
+          <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
+            Сплачено
+          </span>
+          <span className="text-sm font-semibold">
+            {month.paid?.toLocaleString("uk-UA")} ₴
+          </span>
+        </div>
+
+        {/* Paid At */}
+        {month.paidAt && (
+          <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
+            <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
+              Дата оплати
+            </span>
+            <span className="text-sm font-semibold">
+              {format(parseISO(month.paidAt), "dd.MM.yyyy", { locale: uk })}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Below — full width */}

@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Calendar, Receipt } from "lucide-react";
+import { Calendar, CalendarDays, Receipt } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
 import { useRentalStore } from "@/lib/rental-store";
@@ -37,6 +37,8 @@ interface MonthsSectionProps {
 
 const monthLabel = (m: string) =>
   format(parseISO(`${m}-01`), "LLLL yyyy", { locale: uk });
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export const MonthsSection = forwardRef<
   MonthsSectionHandle,
@@ -262,7 +264,13 @@ export const MonthsSection = forwardRef<
       <Modal
         open={!!viewingMonth}
         onClose={() => setViewingMonth(null)}
-        title="Оренда"
+        title={
+          <span className="flex items-center gap-2">
+            <CalendarDays className="h-4 w-4 sm:h-5 sm:w-5" />
+            Оренда за{" "}
+            {viewingMonth ? capitalize(monthLabel(viewingMonth.month)) : ""}
+          </span>
+        }
         size="lg"
       >
         {viewingMonth && (
