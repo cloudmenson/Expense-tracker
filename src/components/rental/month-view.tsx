@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, CalendarDays, Download, Loader2 } from "lucide-react";
+import { Pencil, CalendarDays } from "lucide-react";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
-import { Button } from "@/components/ui/button";
+import { MonthExportButton } from "./month-export-button";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
 import { computeMonth } from "@/lib/rental-calc";
@@ -31,94 +31,78 @@ interface MonthViewProps {
 export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
   const totals = computeMonth(month);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
-  const [exporting, setExporting] = useState(false);
-
-  const handleExport = async () => {
-    setExporting(true);
-    try {
-      const [{ pdf }, { MonthReportDocument }] = await Promise.all([
-        import("@react-pdf/renderer"),
-        import("./month-report-pdf"),
-      ]);
-      const blob = await pdf(<MonthReportDocument month={month} />).toBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `rental-${month.month}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } finally {
-      setExporting(false);
-    }
-  };
 
   return (
     <div className="space-y-5">
-      {/* Header — icon + title + amount */}
-      <div className="flex items-start gap-4">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-2xl">
-          <CalendarDays className="h-6 w-6 text-brand" />
+      {/* Top — 2 columns: header on left, info rows on right */}
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:gap-5">
+        {/* Left column: icon + title + amount */}
+        <div className="flex items-start gap-4 sm:flex-1">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-2xl">
+            <CalendarDays className="h-6 w-6 text-brand" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-lg font-bold">{monthLabel(month.month)}</h3>
+            <p
+              className="mt-0.5 text-2xl font-extrabold"
+              style={{ color: "var(--brand-deep)" }}
+            >
+              {totals.total.toLocaleString("uk-UA", {
+                maximumFractionDigits: 0,
+              })}{" "}
+              ₴
+            </p>
+          </div>
         </div>
-        <div className="min-w-0 flex-1">
-          <h3 className="text-lg font-bold">{monthLabel(month.month)}</h3>
-          <p
-            className="mt-0.5 text-2xl font-extrabold"
-            style={{ color: "var(--brand-deep)" }}
-          >
-            {totals.total.toLocaleString("uk-UA", {
-              maximumFractionDigits: 0,
-            })}{" "}
-            ₴
-          </p>
+
+        {/* Right column: info rows */}
+        <div className="space-y-3 sm:flex-1">
+          {/* Rent */}
+          <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
+            <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
+              Оренда квартири
+            </span>
+            <span className="text-sm font-semibold">
+              {month.rentAmount?.toLocaleString("uk-UA")} ₴
+            </span>
+          </div>
+
+          {/* Charged */}
+          <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
+            <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
+              Комунальні послуги
+            </span>
+            <span className="text-sm font-semibold">
+              {month.charged?.toLocaleString("uk-UA")} ₴
+            </span>
+          </div>
+
+          {/* Paid */}
+          <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
+            <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
+              Сплачено
+            </span>
+            <span className="text-sm font-semibold">
+              {month.paid?.toLocaleString("uk-UA")} ₴
+            </span>
+          </div>
+
+          {/* Paid At */}
+          {month.paidAt && (
+            <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
+              <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
+                Дата оплати
+              </span>
+              <span className="text-sm font-semibold">
+                {format(parseISO(month.paidAt), "dd.MM.yyyy", { locale: uk })}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Info rows */}
+      {/* Below — full width */}
       <div className="space-y-3">
-        {/* Rent */}
-        <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
-          <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-            Оренда квартири
-          </span>
-          <span className="text-sm font-semibold">
-            {month.rentAmount?.toLocaleString("uk-UA")} ₴
-          </span>
-        </div>
-
-        {/* Charged */}
-        <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
-          <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-            Комунальні послуги
-          </span>
-          <span className="text-sm font-semibold">
-            {month.charged?.toLocaleString("uk-UA")} ₴
-          </span>
-        </div>
-
-        {/* Paid */}
-        <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
-          <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-            Сплачено
-          </span>
-          <span className="text-sm font-semibold">
-            {month.paid?.toLocaleString("uk-UA")} ₴
-          </span>
-        </div>
-
-        {/* Paid At */}
-        {month.paidAt && (
-          <div className="glass-pill flex items-center justify-between rounded-xl px-4 py-3">
-            <span className="text-xs font-medium uppercase tracking-wider text-foreground/40">
-              Дата оплати
-            </span>
-            <span className="text-sm font-semibold">
-              {format(parseISO(month.paidAt), "dd.MM.yyyy", { locale: uk })}
-            </span>
-          </div>
-        )}
-
         {/* Readings */}
         <div className="glass-pill rounded-xl px-4 py-3">
           <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-foreground/40">
@@ -177,7 +161,7 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
             <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-foreground/40">
               Фото квитанції від ріелтора
             </span>
-            <div className="flex h-32 w-full items-center justify-center rounded-lg border bg-foreground/5">
+            <div className="flex h-12 w-full items-center justify-center rounded-lg border bg-foreground/5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={month.invoicePhoto}
@@ -215,20 +199,7 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
           Редагувати
         </button>
 
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={handleExport}
-          disabled={exporting}
-          aria-label="Експортувати PDF"
-        >
-          {exporting ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Download className="h-4 w-4" />
-          )}
-          PDF
-        </Button>
+        <MonthExportButton month={month} />
 
         <DeleteIconButton onClick={onDelete} label="Видалити місяць" />
       </div>

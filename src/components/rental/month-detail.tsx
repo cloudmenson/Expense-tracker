@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, CalendarDays, ChevronDown } from "lucide-react";
+import {
+  Loader2,
+  CalendarDays,
+  ChevronDown,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { cn } from "@/lib/utils";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
@@ -25,9 +31,12 @@ import {
   type RentReading,
 } from "@/types/rental";
 import { UTILITY_ICON, UTILITY_TINT } from "@/lib/utility-meta";
+import { MonthExportButton } from "./month-export-button";
 
 const monthLabel = (m: string) =>
   format(parseISO(`${m}-01`), "LLLL yyyy", { locale: uk });
+
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const ALL_KINDS: UtilityKind[] = [...METERED_KINDS, ...FIXED_KINDS];
 
@@ -91,14 +100,13 @@ export function MonthDetail({ month, onBack }: Props) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
-        <BackButton onClick={onBack} />
-        <DeleteIconButton
-          variant="ghost"
-          size="lg"
-          onClick={() => setConfirmDelete(true)}
-          className="rounded-2xl"
-          label="Видалити місяць"
-        />
+        <div className="flex min-w-0 items-center gap-3">
+          <BackButton onClick={onBack} />
+          <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
+            {capitalize(monthLabel(month.month))}
+          </h1>
+        </div>
+        <MonthExportButton month={month} />
       </div>
 
       {/* Summary card */}
@@ -138,34 +146,56 @@ export function MonthDetail({ month, onBack }: Props) {
           </div>
         </div>
 
-        {totals.paid > 0 && (
-          <div
-            className="mt-3 rounded-xl px-3 py-2"
-            style={{
-              backgroundColor:
-                totals.unpaid > 0.5
-                  ? "rgba(217,152,69,0.16)"
-                  : "rgba(111,148,98,0.16)",
-            }}
-          >
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold uppercase tracking-wider text-foreground/55">
-                {totals.unpaid > 0.5 ? "Залишилось доплатити" : "Сплачено"}
-              </span>
-              <span
-                className={`font-bold tabular-nums ${
-                  totals.unpaid > 0.5
-                    ? "text-amber-700 dark:text-amber-300"
-                    : "text-emerald-700 dark:text-emerald-300"
-                }`}
+        {totals.paid > 0 &&
+          (() => {
+            const fullyPaid = totals.unpaid <= 0.5;
+            const StatusIcon = fullyPaid ? CheckCircle2 : AlertCircle;
+            const accentText = fullyPaid
+              ? "text-emerald-700 dark:text-emerald-300"
+              : "text-amber-700 dark:text-amber-300";
+            const amount = fullyPaid ? totals.paid : totals.unpaid;
+            return (
+              <div
+                className={cn(
+                  "mt-3 flex items-center justify-between gap-3 rounded-xl border px-3.5 py-3",
+                )}
+                style={{
+                  backgroundColor: fullyPaid
+                    ? "rgba(111,148,98,0.22)"
+                    : "rgba(217,152,69,0.22)",
+                  borderColor: fullyPaid
+                    ? "rgba(111,148,98,0.45)"
+                    : "rgba(217,152,69,0.45)",
+                }}
               >
-                {totals.unpaid > 0.5
-                  ? `${totals.unpaid.toLocaleString("uk-UA", { maximumFractionDigits: 0 })} ₴`
-                  : `${totals.paid.toLocaleString("uk-UA", { maximumFractionDigits: 0 })} ₴`}
-              </span>
-            </div>
-          </div>
-        )}
+                <div className="flex items-center gap-2.5">
+                  <StatusIcon
+                    className={cn("h-5 w-5 shrink-0", accentText)}
+                    strokeWidth={2.4}
+                  />
+                  <span
+                    className={cn(
+                      "text-xs font-bold uppercase tracking-wider",
+                      accentText,
+                    )}
+                  >
+                    {fullyPaid ? "Сплачено" : "Залишилось доплатити"}
+                  </span>
+                </div>
+                <span
+                  className={cn(
+                    "text-lg font-extrabold tabular-nums",
+                    accentText,
+                  )}
+                >
+                  {amount.toLocaleString("uk-UA", {
+                    maximumFractionDigits: 0,
+                  })}{" "}
+                  ₴
+                </span>
+              </div>
+            );
+          })()}
       </div>
 
       {/* Metered readings — just numbers + photos, no cost calc */}
@@ -206,7 +236,7 @@ export function MonthDetail({ month, onBack }: Props) {
           <FixedAmount
             kind="rent"
             customIconKind="internet"
-            label="Комунальні послуги від ріелтора"
+            label="Сума до сплати від ріелтора"
             value={charged}
             onChange={setCharged}
             placeholder="0"
@@ -289,7 +319,14 @@ export function MonthDetail({ month, onBack }: Props) {
         />
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-3">
+        <DeleteIconButton
+          variant="ghost"
+          size="lg"
+          onClick={() => setConfirmDelete(true)}
+          className="rounded-2xl"
+          label="Видалити місяць"
+        />
         <Button onClick={onSave} disabled={saving}>
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {saving ? "Збереження…" : "Зберегти зміни"}
@@ -335,23 +372,30 @@ function ReadingRow({
 }) {
   const Icon = UTILITY_ICON[kind];
   const tint = UTILITY_TINT[kind];
+  const hasConsumption = consumed > 0;
   return (
-    <div className="glass-pill rounded-2xl p-3">
-      <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+    <div className="glass-pill rounded-2xl p-4">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div
-            className="flex h-9 w-9 items-center justify-center rounded-xl"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
             style={{ backgroundColor: tint.bg, color: tint.fg }}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-5 w-5" />
           </div>
-          <p className="text-sm font-semibold">{UTILITY_LABELS[kind]}</p>
+          <p className="truncate text-base font-bold">{UTILITY_LABELS[kind]}</p>
         </div>
-        <div className="text-right">
-          <p className="text-sm font-bold tabular-nums">
+        <div className="flex shrink-0 items-baseline gap-1.5">
+          <span
+            className="text-3xl font-black tabular-nums leading-none"
+            style={{ color: hasConsumption ? tint.fg : "var(--foreground)" }}
+          >
+            {hasConsumption ? "+" : ""}
             {consumed.toLocaleString("uk-UA", { maximumFractionDigits: 1 })}
-          </p>
-          <p className="text-[10px] text-foreground/45">витрачено</p>
+          </span>
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-foreground/45">
+            накрутило
+          </span>
         </div>
       </div>
 
@@ -367,7 +411,7 @@ function ReadingRow({
             onChange={(e) =>
               onChange({ previous: parseFloat(e.target.value) || 0 })
             }
-            className="text-sm"
+            className="text-base font-semibold tabular-nums"
             placeholder="0"
           />
         </div>
@@ -382,8 +426,9 @@ function ReadingRow({
             onChange={(e) =>
               onChange({ current: parseFloat(e.target.value) || 0 })
             }
-            className="text-sm"
+            className="text-base font-semibold tabular-nums"
             placeholder="0"
+            style={{ color: hasConsumption ? tint.fg : undefined }}
           />
         </div>
       </div>

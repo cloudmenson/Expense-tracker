@@ -137,6 +137,15 @@ const styles = StyleSheet.create({
     fontWeight: 700,
     color: BRAND,
   },
+  diffPill: {
+    fontSize: 10,
+    fontWeight: 700,
+    color: BRAND,
+    backgroundColor: "rgba(111, 74, 38, 0.10)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
 
   photosGrid: {
     flexDirection: "row",
@@ -245,12 +254,13 @@ export function MonthReportDocument({ month }: { month: RentMonth }) {
                 <Text style={styles.readingValueText}>
                   Було{" "}
                   <Text style={styles.readingNumber}>{formatNumber(prev)}</Text>
-                  {"  →  "}
+                  {"  ->  "}
                   стало:{" "}
                   <Text style={styles.readingCurrent}>
                     {formatNumber(curr)}
                   </Text>
-                  {"  "}({diffLabel})
+                  {"   "}
+                  <Text style={styles.diffPill}>({diffLabel})</Text>
                 </Text>
               </View>
             );

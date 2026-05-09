@@ -1,6 +1,12 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useMemo, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
 import { Calendar, Receipt } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
@@ -25,10 +31,17 @@ export interface MonthsSectionHandle {
   openCreate: () => void;
 }
 
+interface MonthsSectionProps {
+  onEditingChange?: (editing: boolean) => void;
+}
+
 const monthLabel = (m: string) =>
   format(parseISO(`${m}-01`), "LLLL yyyy", { locale: uk });
 
-export const MonthsSection = forwardRef<MonthsSectionHandle>(function MonthsSection(_props, ref) {
+export const MonthsSection = forwardRef<
+  MonthsSectionHandle,
+  MonthsSectionProps
+>(function MonthsSection({ onEditingChange }, ref) {
   const { months, createMonth, updateMonthReadings, deleteMonth } =
     useRentalStore();
   const [openId, setOpenId] = useState<string | null>(null);
@@ -40,6 +53,10 @@ export const MonthsSection = forwardRef<MonthsSectionHandle>(function MonthsSect
   useImperativeHandle(ref, () => ({
     openCreate: () => setPickerOpen(true),
   }));
+
+  useEffect(() => {
+    onEditingChange?.(openId !== null);
+  }, [openId, onEditingChange]);
 
   const sorted = useMemo(
     () => [...months].sort((a, b) => b.month.localeCompare(a.month)),

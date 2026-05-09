@@ -24,3 +24,41 @@ export async function fileToCompressedDataUrl(
 
   return canvas.toDataURL("image/jpeg", quality);
 }
+
+/**
+ * Re-encode a photo data URI as JPEG if it's in a format @react-pdf/renderer
+ * can't decode (only JPEG and PNG are supported). Returns the original URI
+ * for already-supported formats and pass-through for empty values.
+ */
+export async function ensureJpegDataUri(
+  dataUri: string | undefined,
+): Promise<string | undefined> {
+  if (!dataUri) return dataUri;
+  if (!dataUri.startsWith("data:image/")) return dataUri;
+  const lower = dataUri.slice(0, 30).toLowerCase();
+  if (
+    lower.startsWith("data:image/jpeg") ||
+    lower.startsWith("data:image/jpg") ||
+    lower.startsWith("data:image/png")
+  ) {
+    return dataUri;
+  }
+
+  return new Promise<string>((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        resolve(dataUri);
+        return;
+      }
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = () => resolve(dataUri);
+    img.src = dataUri;
+  });
+}

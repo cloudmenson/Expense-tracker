@@ -26,6 +26,7 @@ const ADD_LABEL: Record<Tab, string> = {
 export function RentalPage() {
   const { hydrated, loading, hydrate } = useRentalStore();
   const [tab, setTab] = useState<Tab>("months");
+  const [editingMonth, setEditingMonth] = useState(false);
 
   const monthsRef = useRef<MonthsSectionHandle>(null);
   const contactsRef = useRef<ContactsSectionHandle>(null);
@@ -41,52 +42,55 @@ export function RentalPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1.5">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Оренда
-          </h1>
-          <p className="text-sm text-foreground/55">
-            Контакти, тарифи й розрахунки за місяцями
-          </p>
-        </div>
-        <Button type="button" onClick={handleAdd} disabled={!hydrated}>
-          <Plus className="h-4 w-4" /> {ADD_LABEL[tab]}
-        </Button>
-      </div>
+      {!editingMonth && (
+        <>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1.5">
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Оренда
+              </h1>
+              <p className="text-sm text-foreground/55">
+                Контакти, тарифи й розрахунки за місяцями
+              </p>
+            </div>
+            <Button type="button" onClick={handleAdd} disabled={!hydrated}>
+              <Plus className="h-4 w-4" /> {ADD_LABEL[tab]}
+            </Button>
+          </div>
 
-      <div className="glass-pill inline-flex w-full gap-1 rounded-2xl p-1.5 sm:w-auto">
-        {TABS.map((t) => {
-          const Icon = t.icon;
-          const active = tab === t.key;
-          return (
-            <button
-              key={t.key}
-              type="button"
-              onClick={() => setTab(t.key)}
-              className={cn(
-                "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm",
-                active
-                  ? "bg-active"
-                  : "text-foreground/55 hover:text-foreground",
-              )}
+          <div className="glass-pill inline-flex w-full gap-1 rounded-2xl p-1.5 sm:w-auto">
+            {TABS.map((t) => {
+              const Icon = t.icon;
+              const active = tab === t.key;
+              return (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setTab(t.key)}
+                  className={cn(
+                    "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm",
+                    active
+                      ? "bg-active"
+                      : "text-foreground/55 hover:text-foreground",
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{t.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {hydrated && loading && (
+            <div
+              className="flex items-center justify-center gap-2 text-xs text-foreground/55"
+              aria-live="polite"
             >
-              <Icon className="h-4 w-4" />
-              <span>{t.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Background-fetch indicator — visible right above the section */}
-      {hydrated && loading && (
-        <div
-          className="flex items-center justify-center gap-2 text-xs text-foreground/55"
-          aria-live="polite"
-        >
-          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          Оновлюємо…
-        </div>
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Оновлюємо…
+            </div>
+          )}
+        </>
       )}
 
       {!hydrated ? (
@@ -106,7 +110,7 @@ export function RentalPage() {
           </div>
         </div>
       ) : tab === "months" ? (
-        <MonthsSection ref={monthsRef} />
+        <MonthsSection ref={monthsRef} onEditingChange={setEditingMonth} />
       ) : (
         <ContactsSection ref={contactsRef} />
       )}
