@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, CalendarDays } from "lucide-react";
+import { Pencil, CalendarDays, Download, Loader2 } from "lucide-react";
 import { DeleteIconButton } from "@/components/ui/delete-icon-button";
+import { Button } from "@/components/ui/button";
 import { format, parseISO } from "date-fns";
 import { uk } from "date-fns/locale";
 import { computeMonth } from "@/lib/rental-calc";
@@ -30,6 +31,28 @@ interface MonthViewProps {
 export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
   const totals = computeMonth(month);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const [{ pdf }, { MonthReportDocument }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("./month-report-pdf"),
+      ]);
+      const blob = await pdf(<MonthReportDocument month={month} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rental-${month.month}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-5">
@@ -185,12 +208,27 @@ export function MonthView({ month, onEdit, onDelete }: MonthViewProps) {
         )}
       </div>
 
-      {/* Edit & Delete buttons */}
+      {/* Edit, Export & Delete buttons */}
       <div className="flex gap-3">
         <button onClick={onEdit} className="btn-primary flex-1">
           <Pencil className="h-4 w-4" />
           Редагувати
         </button>
+
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleExport}
+          disabled={exporting}
+          aria-label="Експортувати PDF"
+        >
+          {exporting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
+          PDF
+        </Button>
 
         <DeleteIconButton onClick={onDelete} label="Видалити місяць" />
       </div>
